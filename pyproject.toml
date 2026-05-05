@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sysml-docgen"
+version = "0.1.0"
+description = "SysML model-based document generation prototype with MMS, VE, MDK, and DocGen."
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.111,<1.0",
+  "uvicorn>=0.30,<1.0",
+  "pydantic>=2.7,<3.0",
+  "pymongo>=4.6,<5.0",
+  "httpx>=0.27,<1.0",
+]
+
+[project.optional-dependencies]
+jupyter = ["ipython>=8", "notebook>=7"]
+
+[tool.setuptools.packages.find]
+include = ["sysml_docgen*", "mdk*"]

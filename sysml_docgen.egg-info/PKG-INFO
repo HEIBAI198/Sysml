@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: sysml-docgen
+Version: 0.1.0
+Summary: SysML model-based document generation prototype with MMS, VE, MDK, and DocGen.
+Requires-Python: >=3.10
+Requires-Dist: fastapi<1.0,>=0.111
+Requires-Dist: uvicorn<1.0,>=0.30
+Requires-Dist: pydantic<3.0,>=2.7
+Requires-Dist: pymongo<5.0,>=4.6
+Requires-Dist: httpx<1.0,>=0.27
+Provides-Extra: jupyter
+Requires-Dist: ipython>=8; extra == "jupyter"
+Requires-Dist: notebook>=7; extra == "jupyter"

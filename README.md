@@ -6,7 +6,7 @@
 
 - `MMS` 模型管理：项目、分支、元素 CRUD、提交快照、标签、差异比较、回滚、合并、审计日志。
 - `VE` 视图编辑器：浏览器内查看和编辑 SysML 元素，展示需求图、结构图、行为图和追踪矩阵。
-- `MDK` 工具集成：支持 JSON/XMI 导入导出，并提供 `tools/mdk_sync.py` 模拟 Cameo、Jupyter、MATLAB 等外部工具同步。
+- `MDK` 工具集成：提供可复用 Python 客户端、命令行入口、Cameo XMI、Jupyter Notebook 和 MATLAB 分析脚本适配器。
 - `DocGen` 文档生成：按模板生成 Markdown、HTML、PDF，并写入模型指纹、来源分支、来源提交和追踪矩阵。
 - 权限控制：演示用户分为 `admin`、`author`、`reader`，并结合项目 `roles` 做读写控制。
 
@@ -50,11 +50,16 @@ http://127.0.0.1:8000/docs
 ## MDK 命令行示例
 
 ```powershell
-python tools/mdk_sync.py push --file data/import_example.json --commit
+python tools/mdk_sync.py parse --file data/import_example.json --tool json
+python tools/mdk_sync.py push --file data/import_example.json --tool json --commit --validate
+python tools/mdk_sync.py push --file mdk/jupyter/example_analysis.ipynb --tool jupyter --commit --validate
+python tools/mdk_sync.py push --file mdk/matlab/example_analysis.m --tool matlab --commit --validate
 python tools/mdk_sync.py pull --format json --out data/exported_model.json
 python tools/mdk_sync.py pull --format xmi --out data/exported_model.xmi
 python tools/mdk_sync.py generate --format pdf --out data/generated_document.pdf
 ```
+
+更多外部工具集成方式见 [docs/mdk.md](docs/mdk.md)。
 
 ## DocGen 模板标记
 
@@ -79,9 +84,12 @@ sysml_docgen/app.py        REST API：MMS / VE / MDK / DocGen
 sysml_docgen/store.py      SQLite 模型仓库、版本和审计
 sysml_docgen/metamodel.py  SysML 元模型、校验和图数据
 sysml_docgen/docgen.py     模板渲染、追踪矩阵和文档输出
+sysml_docgen/mdk.py        MDK 客户端和工具适配器
 sysml_docgen/xmi.py        JSON/XMI 交换
 static/                    Web VE
 tools/mdk_sync.py          MDK 风格同步客户端
+mdk/jupyter/               Jupyter 集成 helper 和示例
+mdk/matlab/                MATLAB 集成函数和示例
 data/sample_project.json   卫星电源系统示例模型
 outputs/                   运行时生成的文档输出
 tests/                     单元测试与接口测试

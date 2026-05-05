@@ -2,8 +2,12 @@ __pycache__/
 *.pyc
 server.out.log
 server.err.log
+server-*.log
 data/store.json
 data/store.sqlite3
 data/exported_model.json
 data/generated_document.*
 outputs/
+.tmp-shadcn-admin/
+frontend/node_modules/
+frontend/dist/

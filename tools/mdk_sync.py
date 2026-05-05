@@ -1,9 +1,4 @@
-"""A small MDK-style sync client for the SysML DocGen prototype.
-
-Usage examples:
-  python tools/mdk_sync.py push --file data/import_example.json
-  python tools/mdk_sync.py pull --out data/exported_model.json
-"""
+"""Command-line MDK adapter for Cameo, Jupyter, MATLAB, JSON, and XMI flows."""
 
 from __future__ import annotations
 
@@ -12,71 +7,61 @@ import base64
 import json
 import sys
 from pathlib import Path
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from sysml_docgen.mdk import (
+    DEFAULT_BRANCH,
+    DEFAULT_PROJECT,
+    DEFAULT_SERVER,
+    MdkClient,
+    MdkConfig,
+    MdkError,
+    load_model_file,
+    write_document,
+)
 
 
-DEFAULT_SERVER = "http://127.0.0.1:8000"
-DEFAULT_PROJECT = "satellite-power"
-DEFAULT_BRANCH = "main"
-
-
-def request_json(server: str, method: str, path: str, payload: dict | None = None) -> dict:
-    return json.loads(request_bytes(server, method, path, payload).decode("utf-8"))
-
-
-def request_bytes(server: str, method: str, path: str, payload: dict | None = None) -> bytes:
-    body = None if payload is None else json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    request = Request(
-        f"{server.rstrip('/')}{path}",
-        data=body,
-        method=method,
-        headers={
-            "Content-Type": "application/json",
-            "X-User": "engineer",
-            "X-Role": "author",
-        },
+def make_client(args: argparse.Namespace) -> MdkClient:
+    return MdkClient(
+        MdkConfig(
+            server=args.server,
+            project=args.project,
+            branch=args.branch,
+            username=args.user,
+            role=args.role,
+            token=args.token,
+        )
     )
-    try:
-        with urlopen(request, timeout=20) as response:
-            return response.read()
-    except HTTPError as exc:
-        detail = exc.read().decode("utf-8")
-        raise SystemExit(f"HTTP {exc.code}: {detail}") from exc
-    except URLError as exc:
-        raise SystemExit(f"无法连接 MMS 服务：{exc.reason}") from exc
+
+
+def parse(args: argparse.Namespace) -> None:
+    model = load_model_file(args.file, args.tool)
+    summary = {
+        "source": model.get("source", {}),
+        "format": model["format"],
+        "element_count": len(model.get("elements", [])),
+        "elements": model.get("elements", []),
+    }
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
 
 
 def push(args: argparse.Namespace) -> None:
-    source = Path(args.file)
-    if args.format == "xmi" or source.suffix.lower() in {".xmi", ".xml"}:
-        payload = {"format": "xmi", "xmi": source.read_text(encoding="utf-8")}
-    else:
-        payload = json.loads(source.read_text(encoding="utf-8"))
-    result = request_json(
-        args.server,
-        "POST",
-        f"/api/projects/{args.project}/branches/{args.branch}/import",
-        payload,
+    result = make_client(args).push_file(
+        args.file,
+        tool=args.tool,
+        commit=args.commit,
+        message=args.message,
+        validate=args.validate,
     )
-    if args.commit:
-        commit = request_json(
-            args.server,
-            "POST",
-            f"/api/projects/{args.project}/branches/{args.branch}/commit",
-            {"message": args.message},
-        )
-        result["commit"] = commit["commit"]
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
 def pull(args: argparse.Namespace) -> None:
-    path = f"/api/projects/{args.project}/branches/{args.branch}/export"
-    if args.format == "xmi":
-        text = request_bytes(args.server, "GET", f"{path}?format=xmi").decode("utf-8")
-    else:
-        result = request_json(args.server, "GET", path)
-        text = json.dumps(result, ensure_ascii=False, indent=2)
+    result = make_client(args).pull_model(args.format)
+    text = result if isinstance(result, str) else json.dumps(result, ensure_ascii=False, indent=2)
     if args.out:
         Path(args.out).write_text(text, encoding="utf-8")
         print(f"已导出到 {args.out}")
@@ -84,50 +69,59 @@ def pull(args: argparse.Namespace) -> None:
         print(text)
 
 
+def validate(args: argparse.Namespace) -> None:
+    result = make_client(args).validate()
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+
+
 def generate(args: argparse.Namespace) -> None:
     template = Path(args.template).read_text(encoding="utf-8") if args.template else None
-    result = request_json(
-        args.server,
-        "POST",
-        f"/api/projects/{args.project}/branches/{args.branch}/documents",
-        {"template": template, "format": args.format},
-    )
-    document = result["document"]
-    if args.format == "pdf":
-        content = base64.b64decode(document["pdf_base64"])
-    else:
-        content = document["markdown"] if args.format == "markdown" else document["html"]
+    document = make_client(args).generate_document(args.format, template)
     if args.out:
-        if isinstance(content, bytes):
-            Path(args.out).write_bytes(content)
-        else:
-            Path(args.out).write_text(content, encoding="utf-8")
-        print(f"已生成 {args.out}")
-    elif isinstance(content, bytes):
-        sys.stdout.buffer.write(content)
+        write_document(document, args.format, args.out)
+        print(f"已生成文档 {args.out}")
+        return
+    if args.format == "pdf":
+        sys.stdout.buffer.write(base64.b64decode(document["pdf_base64"]))
     else:
-        print(content)
+        key = "markdown" if args.format == "markdown" else "html"
+        print(document[key])
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="MDK-style SysML model sync client")
+def add_common_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--server", default=DEFAULT_SERVER)
     parser.add_argument("--project", default=DEFAULT_PROJECT)
     parser.add_argument("--branch", default=DEFAULT_BRANCH)
+    parser.add_argument("--user", default="engineer")
+    parser.add_argument("--role", choices=["admin", "author", "reader"], default="author")
+    parser.add_argument("--token", default="")
 
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="SysML DocGen MDK sync client")
+    add_common_options(parser)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    push_parser = subparsers.add_parser("push", help="push model JSON into MMS")
+    parse_parser = subparsers.add_parser("parse", help="parse a tool model into the normalized MDK payload")
+    parse_parser.add_argument("--file", required=True)
+    parse_parser.add_argument("--tool", default="auto")
+    parse_parser.set_defaults(func=parse)
+
+    push_parser = subparsers.add_parser("push", help="push a tool model into MMS")
     push_parser.add_argument("--file", required=True)
-    push_parser.add_argument("--format", choices=["json", "xmi"], default="json")
+    push_parser.add_argument("--tool", default="auto")
     push_parser.add_argument("--commit", action="store_true")
-    push_parser.add_argument("--message", default="MDK 同步模型")
+    push_parser.add_argument("--message", default="MDK 同步提交")
+    push_parser.add_argument("--validate", action="store_true")
     push_parser.set_defaults(func=push)
 
-    pull_parser = subparsers.add_parser("pull", help="pull model JSON from MMS")
+    pull_parser = subparsers.add_parser("pull", help="pull a branch model from MMS")
     pull_parser.add_argument("--out")
     pull_parser.add_argument("--format", choices=["json", "xmi"], default="json")
     pull_parser.set_defaults(func=pull)
+
+    validate_parser = subparsers.add_parser("validate", help="validate the branch model after tool sync")
+    validate_parser.set_defaults(func=validate)
 
     gen_parser = subparsers.add_parser("generate", help="generate a document through DocGen")
     gen_parser.add_argument("--template")
@@ -141,7 +135,10 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
-    args.func(args)
+    try:
+        args.func(args)
+    except MdkError as exc:
+        raise SystemExit(str(exc)) from exc
 
 
 if __name__ == "__main__":
