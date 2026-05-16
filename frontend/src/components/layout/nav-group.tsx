@@ -271,5 +271,6 @@ function openWorkbenchSection(hash: string) {
     return
   }
 
-  window.location.hash = hash
+  window.history.pushState(null, '', hash)
+  window.dispatchEvent(new HashChangeEvent('hashchange'))
 }

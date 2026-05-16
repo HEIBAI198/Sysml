@@ -166,6 +166,8 @@ type ApiOptions = RequestInit & {
   role?: SysmlRole
 }
 
+const apiBase = (import.meta.env.VITE_SYSML_API_BASE || '').replace(/\/$/, '')
+
 const identityStorageKey = 'sysml_identity'
 const tokenStorageKey = 'sysml_token'
 
@@ -203,7 +205,7 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
   const token = identity?.token || window.localStorage.getItem(tokenStorageKey)
   if (token) headers.set('Authorization', `Bearer ${token}`)
 
-  const response = await fetch(path, {
+  const response = await fetch(`${apiBase}${path}`, {
     ...options,
     headers,
   })

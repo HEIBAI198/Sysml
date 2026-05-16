@@ -1,8 +1,17 @@
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from sysml_docgen.auth import login, verify_token
-from sysml_docgen.docgen import build_traceability, generate_document, html_to_pdf_bytes, render_template
+from sysml_docgen.docgen import (
+    _layout_unicode_pdf_pages,
+    build_traceability,
+    generate_document,
+    html_to_pdf_bytes,
+    markdown_to_docx_builtin,
+    markdown_to_docx_pandoc,
+    render_template,
+)
 from sysml_docgen.metamodel import build_diagram, validate_repository
 from sysml_docgen.store import diff_snapshots
 from sysml_docgen.xmi import elements_to_xmi, parse_xmi_elements
@@ -105,14 +114,73 @@ class DocGenTest(unittest.TestCase):
         self.assertIn("演示项目", document["markdown"])
         self.assertIn("<!doctype html>", document["html"])
         self.assertIn("pdf_base64", document)
+        self.assertIn("docx_base64", document)
         self.assertTrue(Path(document["files"]["html"]).exists())
         self.assertTrue(Path(document["files"]["pdf"]).exists())
+        self.assertTrue(Path(document["files"]["docx"]).exists())
         self.assertIn("validation", document)
         self.assertEqual(len(self.project["branches"]["main"]["documents"]), 1)
 
     def test_pdf_fallback_returns_valid_pdf_bytes(self):
         pdf = html_to_pdf_bytes("<h1>Demo</h1>", "# Demo")
         self.assertTrue(pdf.startswith(b"%PDF-"))
+
+    def test_quarto_pandoc_enables_docx_without_standalone_pandoc(self):
+        expected = b"DOCXBYTES"
+        with patch("sysml_docgen.docgen.QUARTO_PATH", "quarto"), patch(
+            "sysml_docgen.docgen._run_quarto_render",
+            return_value=expected,
+        ) as render:
+            docx = markdown_to_docx_pandoc("# 标题\n\n中文内容")
+
+        self.assertEqual(docx, expected)
+        render.assert_called_once()
+        self.assertIn("format:", render.call_args.args[0])
+        self.assertEqual(render.call_args.args[1], "docx")
+
+    def test_builtin_docx_returns_valid_docx_package(self):
+        docx = markdown_to_docx_builtin("# 标题\n\n| 列 | 值 |\n| --- | --- |\n| 中文 | 正常 |")
+        self.assertTrue(docx.startswith(b"PK"))
+        self.assertIn(b"word/document.xml", docx)
+
+    def test_pdf_prefers_markdown_unicode_renderer_when_quarto_available(self):
+        expected = b"%PDF-quarto"
+        with patch("sysml_docgen.docgen.PANDOC_AVAILABLE", True), patch(
+            "sysml_docgen.docgen.PDF_ENGINE",
+            "quarto",
+        ), patch(
+            "sysml_docgen.docgen.markdown_to_pdf_pandoc",
+            return_value=expected,
+        ) as render:
+            pdf = html_to_pdf_bytes("<h1>乱码?</h1>", "# 中文标题", "演示项目")
+
+        self.assertEqual(pdf, expected)
+        render.assert_called_once_with("# 中文标题", "演示项目")
+
+    def test_builtin_pdf_layout_keeps_latin_text_and_wraps_tables(self):
+        markdown = "\n".join(
+            [
+                "# Demo",
+                "",
+                "## Requirements",
+                "| ID | Name | Requirement Text | Verification |",
+                "| --- | --- | --- | --- |",
+                *[
+                    "| REQ-001 | Notebook energy margin requirement | "
+                    "Battery SOC shall remain above 30 percent in the worst eclipse period. | Analysis |"
+                    for _ in range(28)
+                ],
+            ]
+        )
+
+        pages, used_text = _layout_unicode_pdf_pages(markdown)
+        content = "\n".join("\n".join(page) for page in pages)
+
+        self.assertGreaterEqual(len(pages), 2)
+        self.assertIn("(Requirements)", content)
+        self.assertIn("(REQ-001)", content)
+        self.assertIn(" re S", content)
+        self.assertIn("Battery SOC shall remain", used_text)
 
     def test_xmi_roundtrip_preserves_elements_and_relations(self):
         export_payload = {

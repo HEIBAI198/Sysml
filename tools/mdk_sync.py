@@ -83,6 +83,11 @@ def generate(args: argparse.Namespace) -> None:
         return
     if args.format == "pdf":
         sys.stdout.buffer.write(base64.b64decode(document["pdf_base64"]))
+    elif args.format == "docx":
+        docx_base64 = document.get("docx_base64")
+        if not docx_base64:
+            raise MdkError("DOCX 内容不可用，请确认已安装 Quarto 或 Pandoc")
+        sys.stdout.buffer.write(base64.b64decode(docx_base64))
     else:
         key = "markdown" if args.format == "markdown" else "html"
         print(document[key])
@@ -125,7 +130,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     gen_parser = subparsers.add_parser("generate", help="generate a document through DocGen")
     gen_parser.add_argument("--template")
-    gen_parser.add_argument("--format", choices=["html", "markdown", "pdf"], default="html")
+    gen_parser.add_argument("--format", choices=["html", "markdown", "pdf", "docx"], default="html")
     gen_parser.add_argument("--out")
     gen_parser.set_defaults(func=generate)
 

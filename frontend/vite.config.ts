@@ -7,6 +7,11 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import { playwright } from '@vitest/browser-playwright'
 
 // https://vite.dev/config/
+const apiProxyTarget =
+  process.env.VITE_SYSML_API_BASE ||
+  process.env.SYSML_API_BASE ||
+  'http://127.0.0.1:8000'
+
 export default defineConfig({
   plugins: [
     tanstackRouter({
@@ -19,6 +24,22 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+    },
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: apiProxyTarget,
+        changeOrigin: true,
+      },
+    },
+  },
+  preview: {
+    proxy: {
+      '/api': {
+        target: apiProxyTarget,
+        changeOrigin: true,
+      },
     },
   },
   test: {

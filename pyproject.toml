@@ -17,6 +17,8 @@ dependencies = [
 
 [project.optional-dependencies]
 jupyter = ["ipython>=8", "notebook>=7"]
+pdf = ["fpdf2>=2.8"]
+all = ["ipython>=8", "notebook>=7", "fpdf2>=2.8"]
 
 [tool.setuptools.packages.find]
 include = ["sysml_docgen*", "mdk*"]

@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la ~/.claude/ 2>/dev/null || echo \"No ~/.claude directory\")",
+      "Read(//c/Users/86189/.claude/**)",
+      "Bash(python3 -c ' *)",
+      "Bash(python -c ' *)",
+      "Bash(pandoc --version)",
+      "Bash(python -B -m unittest tests.test_docgen -v)",
+      "Bash(pip install *)",
+      "Bash(pnpm build *)",
+      "Bash(npm --version)",
+      "Read(//c/Users/86189/AppData/Local/pnpm/**)",
+      "Read(//c/Users/86189/AppData/Roaming/npm/**)",
+      "Bash(npm install *)",
+      "Bash(npx vite *)",
+      "Bash(winget install *)",
+      "Bash(which wkhtmltopdf *)",
+      "Read(//c/Program Files/wkhtmltopdf/bin/**)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Program Files \\(x86\\)/**)"
+    ]
+  }
+}

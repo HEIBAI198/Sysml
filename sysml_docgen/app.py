@@ -15,8 +15,20 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from .auth import identity_from_headers, login
-from .config import FRONTEND_DIST_DIR, MAX_MODEL_BYTES, OUTPUT_DIR, STATIC_DIR
-from .docgen import build_traceability, generate_document, html_to_pdf_bytes
+from .config import (
+    DEFAULT_FONT,
+    DEFAULT_THEME,
+    FONT_PRESETS,
+    FRONTEND_DIST_DIR,
+    MAX_MODEL_BYTES,
+    OUTPUT_DIR,
+    PANDOC_PATH,
+    PDF_ENGINE,
+    QUARTO_PATH,
+    STATIC_DIR,
+    THEME_PRESETS,
+)
+from .docgen import build_traceability, generate_document, html_to_pdf_bytes, pandoc_available, quarto_available
 from .files import delete_output_file, list_output_files, resolve_output_file
 from .metamodel import build_diagram, metamodel_payload
 from .ops import configure_logging, metrics_payload, request_logging_middleware
@@ -67,6 +79,7 @@ def create_app() -> FastAPI:
     async def health(identity: dict[str, str] = Depends(read_identity)) -> dict[str, Any]:
         store = app.state.store
         backend = "mongodb" if store.__class__.__name__ == "MongoModelStore" else "sqlite"
+        doc_formats = ["html", "markdown", "pdf", "docx"]
         return {
             "status": "ok",
             "service": "SysML DocGen MMS",
@@ -76,16 +89,34 @@ def create_app() -> FastAPI:
             "components": ["MMS", "MDK", "DocGen", "VE"],
             "capabilities": {
                 "model_exchange": ["json", "xmi"],
-                "document_formats": ["html", "markdown", "pdf"],
-                "pdf_engine": "wkhtmltopdf" if shutil.which("wkhtmltopdf") else "builtin-fallback",
+                "document_formats": doc_formats,
+                "pdf_engine": PDF_ENGINE,
+                "pandoc": pandoc_available(),
+                "pandoc_path": PANDOC_PATH,
+                "quarto": quarto_available(),
+                "quarto_path": QUARTO_PATH,
                 "max_model_bytes": MAX_MODEL_BYTES,
                 "output_dir": str(OUTPUT_DIR),
                 "openapi": "/docs",
                 "access_control": "project roles: admin / author / reader",
                 "frontend": "external-dist" if app.state.frontend_dir != STATIC_DIR else "static-ve",
                 "frontend_dir": str(app.state.frontend_dir),
+                "themes": list(THEME_PRESETS.keys()),
+                "fonts": list(FONT_PRESETS.keys()),
             },
             "identity": identity,
+        }
+
+    @app.get("/api/docgen/config", tags=["DocGen"])
+    async def docgen_config() -> dict[str, Any]:
+        return {
+            "themes": {k: {"label": v["label"]} for k, v in THEME_PRESETS.items()},
+            "fonts": {k: {"label": v["label"], "family": v["family"]} for k, v in FONT_PRESETS.items()},
+            "defaults": {"theme": DEFAULT_THEME, "font": DEFAULT_FONT},
+            "pandoc_available": pandoc_available(),
+            "quarto_available": quarto_available(),
+            "docx_available": True,
+            "pdf_engine": PDF_ENGINE,
         }
 
     @app.get("/api/ready", tags=["Ops"])
@@ -379,7 +410,14 @@ def create_app() -> FastAPI:
         identity: dict[str, str] = Depends(authorize_write),
     ) -> dict[str, Any]:
         project = app.state.store.get_project(project_id)
-        document = generate_document(project, branch, payload.get("template"), payload.get("format", "html"))
+        document = generate_document(
+            project,
+            branch,
+            payload.get("template"),
+            payload.get("format", "html"),
+            payload.get("theme", DEFAULT_THEME),
+            payload.get("font", DEFAULT_FONT),
+        )
         app.state.store.touch_project(project_id)
         app.state.store.save()
         app.state.store.record_audit(project_id, branch, "generate_document", identity["username"], document["id"])
@@ -403,9 +441,21 @@ def create_app() -> FastAPI:
             pdf_bytes = (
                 base64.b64decode(pdf_base64)
                 if pdf_base64
-                else html_to_pdf_bytes(document.get("html", ""), document.get("markdown", ""))
+                else html_to_pdf_bytes(
+                    document.get("html", ""),
+                    document.get("markdown", ""),
+                    document.get("title", "SysML 文档"),
+                )
             )
             return Response(pdf_bytes, media_type="application/pdf")
+        if format == "docx":
+            docx_base64 = document.get("docx_base64", "")
+            if docx_base64:
+                return Response(
+                    base64.b64decode(docx_base64),
+                    media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                )
+            raise HTTPException(status_code=404, detail="DOCX not available, please regenerate this document")
         return {"document": document}
 
     @app.post("/api/mdk/parse", tags=["MDK"])
@@ -472,7 +522,11 @@ def create_app() -> FastAPI:
         branch = payload.get("branch") or "main"
         doc_type = payload.get("doc_type") or payload.get("format") or "html"
         project = app.state.store.get_project(project_id)
-        document = generate_document(project, branch, payload.get("template"), doc_type)
+        document = generate_document(
+            project, branch, payload.get("template"), doc_type,
+            payload.get("theme", DEFAULT_THEME),
+            payload.get("font", DEFAULT_FONT),
+        )
         app.state.store.touch_project(project_id)
         app.state.store.save()
         app.state.store.record_audit(project_id, branch, "mdk_generate_doc", identity["username"], document["id"])
@@ -482,13 +536,35 @@ def create_app() -> FastAPI:
             return Response(document["markdown"], media_type="text/markdown")
         if doc_type == "pdf":
             return Response(base64.b64decode(document["pdf_base64"]), media_type="application/pdf")
+        if doc_type == "docx":
+            docx_b64 = document.get("docx_base64", "")
+            if docx_b64:
+                return Response(base64.b64decode(docx_b64), media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+            raise HTTPException(status_code=422, detail="DOCX not available, please regenerate this document")
         return {"document": document}
+
+    @app.post("/api/docgen/docx", tags=["DocGen"])
+    async def generate_docx(payload: dict[str, Any], identity: dict[str, str] = Depends(authorize_write)) -> Response:
+        project_id = payload.get("project") or payload.get("model_name") or "satellite-power"
+        branch = payload.get("branch") or "main"
+        document = generate_document(
+            app.state.store.get_project(project_id), branch, payload.get("template"), "docx",
+            payload.get("theme", DEFAULT_THEME), payload.get("font", DEFAULT_FONT),
+        )
+        app.state.store.record_audit(project_id, branch, "generate_docx", identity["username"], document["id"])
+        docx_b64 = document.get("docx_base64", "")
+        if not docx_b64:
+            raise HTTPException(status_code=422, detail="DOCX not available, please regenerate this document")
+        return Response(base64.b64decode(docx_b64), media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
     @app.post("/api/docgen/html", tags=["DocGen"])
     async def generate_html(payload: dict[str, Any], identity: dict[str, str] = Depends(authorize_write)) -> HTMLResponse:
         project_id = payload.get("project") or payload.get("model_name") or "satellite-power"
         branch = payload.get("branch") or "main"
-        document = generate_document(app.state.store.get_project(project_id), branch, payload.get("template"), "html")
+        document = generate_document(
+            app.state.store.get_project(project_id), branch, payload.get("template"), "html",
+            payload.get("theme", DEFAULT_THEME), payload.get("font", DEFAULT_FONT),
+        )
         app.state.store.record_audit(project_id, branch, "generate_html", identity["username"], document["id"])
         return HTMLResponse(document["html"])
 
@@ -496,7 +572,10 @@ def create_app() -> FastAPI:
     async def generate_pdf(payload: dict[str, Any], identity: dict[str, str] = Depends(authorize_write)) -> Response:
         project_id = payload.get("project") or payload.get("model_name") or "satellite-power"
         branch = payload.get("branch") or "main"
-        document = generate_document(app.state.store.get_project(project_id), branch, payload.get("template"), "pdf")
+        document = generate_document(
+            app.state.store.get_project(project_id), branch, payload.get("template"), "pdf",
+            payload.get("theme", DEFAULT_THEME), payload.get("font", DEFAULT_FONT),
+        )
         app.state.store.record_audit(project_id, branch, "generate_pdf", identity["username"], document["id"])
         return Response(base64.b64decode(document["pdf_base64"]), media_type="application/pdf")
 

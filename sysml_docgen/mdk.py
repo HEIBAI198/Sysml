@@ -303,5 +303,11 @@ def write_document(document: dict[str, Any], output_format: str, out_path: str |
     if output_format == "pdf":
         path.write_bytes(base64.b64decode(document["pdf_base64"]))
         return
+    if output_format == "docx":
+        docx_base64 = document.get("docx_base64")
+        if not docx_base64:
+            raise MdkError("DOCX 内容不可用，请确认已安装 Quarto 或 Pandoc")
+        path.write_bytes(base64.b64decode(docx_base64))
+        return
     key = "markdown" if output_format == "markdown" else "html"
     path.write_text(document[key], encoding="utf-8")

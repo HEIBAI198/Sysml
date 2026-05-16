@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python server.py *)",
+      "Bash(python -B -m unittest discover -s tests *)",
+      "Bash(python -m py_compile *)",
+      "Bash(python tools/mdk_sync.py *)"
+    ]
+  }
+}

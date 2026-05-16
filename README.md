@@ -44,7 +44,7 @@ http://127.0.0.1:8000/docs
 3. 在“图形建模”中查看关系图，或添加 `satisfy`、`verify`、`refine`、`connect` 等关系。
 4. 点击“保存快照”，将当前模型提交到 MMS。
 5. 在“追踪矩阵”和“SysML 语义校验”中检查需求闭环。
-6. 在“文档生成”中编辑 DocGen 模板并生成 HTML、Markdown、PDF。
+6. 在”文档生成”中编辑 DocGen 模板并生成 HTML、Markdown、PDF、Word (DOCX)。
 7. 使用导出或 `tools/mdk_sync.py` 与外部工具交换 JSON/XMI 模型。
 
 ## MDK 命令行示例
@@ -57,6 +57,7 @@ python tools/mdk_sync.py push --file mdk/matlab/example_analysis.m --tool matlab
 python tools/mdk_sync.py pull --format json --out data/exported_model.json
 python tools/mdk_sync.py pull --format xmi --out data/exported_model.xmi
 python tools/mdk_sync.py generate --format pdf --out data/generated_document.pdf
+python tools/mdk_sync.py generate --format docx --out data/generated_document.docx
 ```
 
 更多外部工具集成方式见 [docs/mdk.md](docs/mdk.md)。
@@ -83,7 +84,7 @@ server.py                  FastAPI 启动入口
 sysml_docgen/app.py        REST API：MMS / VE / MDK / DocGen
 sysml_docgen/store.py      SQLite 模型仓库、版本和审计
 sysml_docgen/metamodel.py  SysML 元模型、校验和图数据
-sysml_docgen/docgen.py     模板渲染、追踪矩阵和文档输出
+sysml_docgen/docgen.py     模板渲染、追踪矩阵和文档输出（基于 Pandoc）
 sysml_docgen/mdk.py        MDK 客户端和工具适配器
 sysml_docgen/xmi.py        JSON/XMI 交换
 static/                    Web VE
@@ -114,6 +115,31 @@ SYSML_STORAGE=sqlite|mongodb
 SYSML_OUTPUT_DIR=outputs
 SYSML_FRONTEND_DIST=static
 SYSML_MAX_MODEL_BYTES=10485760
+SYSML_PANDOC_PATH=           # 可选，Pandoc 路径
+SYSML_PDF_ENGINE=pandoc|wkhtmltopdf|builtin-fallback
+SYSML_DOCX_REFERENCE=        # 可选，Word 参考模板 .docx
 ```
 
 PDF 生成默认支持内置 fallback，不依赖系统安装 `wkhtmltopdf`。如果运行环境中存在 `wkhtmltopdf`，系统会自动优先使用它。
+
+### 提升输出质量（推荐）
+
+安装 [Pandoc](https://pandoc.org/) 可显著提升 HTML/PDF/Word 输出质量（参考 [Quarto](https://quarto.org/) 的技术架构）：
+
+```powershell
+# Windows (推荐方式)
+winget install pandoc
+
+# 或使用 Chocolatey
+choco install pandoc
+
+# 高质量 PDF 引擎（可选，三选一）
+pip install weasyprint              # 轻量 HTML/CSS → PDF
+winget install MiKTeX.MiKTeX       # LaTeX → PDF（功能最强）
+winget install wkhtmltopdf          # WebKit → PDF
+```
+
+安装 Pandoc 后，系统将自动启用：
+- **HTML**：语法高亮、智能排版、更丰富的 CSS（斑马纹表格、响应式、打印优化）
+- **PDF**：多引擎支持（WeasyPrint / LaTeX / wkhtmltopdf）
+- **Word (DOCX)**：新增格式，支持参考模板自定义样式（`SYSML_DOCX_REFERENCE`）

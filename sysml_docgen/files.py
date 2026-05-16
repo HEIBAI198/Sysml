@@ -8,7 +8,7 @@ from typing import Any
 from .config import OUTPUT_DIR
 
 
-ALLOWED_SUFFIXES = {".html", ".md", ".pdf"}
+ALLOWED_SUFFIXES = {".html", ".md", ".pdf", ".docx"}
 
 
 def list_output_files(output_dir: Path = OUTPUT_DIR) -> list[dict[str, Any]]:
