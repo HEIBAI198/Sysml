@@ -23,6 +23,12 @@ python server.py --host 127.0.0.1 --port 8000
 
 If `frontend/dist` is missing, the service now returns a clear error instead of silently falling back to the legacy `static/` frontend.
 
+## 重构记录
+
+后端分层重构说明见：
+
+- [docs/backend-refactor-notes.md](docs/backend-refactor-notes.md)
+
 打开：
 
 ```text
