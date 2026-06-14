@@ -1,0 +1,19 @@
+{
+  "name": "3cx-desktop-replay",
+  "version": "18.12.407-replay",
+  "private": true,
+  "description": "Safe 3CX/X_TRADER supply-chain replay fixture.",
+  "scripts": {
+    "build": "node scripts/package-desktop.js",
+    "postinstall": "node scripts/simulated-desktop-postinstall.js"
+  },
+  "dependencies": {
+    "x-trader-codec": "4.7.1",
+    "electron": "25.9.8",
+    "axios": "1.6.8"
+  },
+  "devDependencies": {
+    "vendor-electron-builder": "2.0.0"
+  }
+}
+

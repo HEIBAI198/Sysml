@@ -1,0 +1,332 @@
+{
+    "scan_id":  "cicd-20260614024643",
+    "generated_at":  "2026-06-14T02:46:43.053917+00:00",
+    "target_path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo",
+    "target":  {
+                   "importId":  "imp_91c9f0f3fffd",
+                   "projectName":  "3CX X_TRADER replay",
+                   "sourceType":  "local",
+                   "path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo"
+               },
+    "workflows":  [
+                      ".github/workflows/desktop-release.yml"
+                  ],
+    "summary":  {
+                    "workflow_count":  1,
+                    "job_count":  1,
+                    "total_steps":  5,
+                    "finding_count":  3,
+                    "risk_score":  88,
+                    "risk_level":  "high",
+                    "critical":  0,
+                    "high":  2,
+                    "medium":  0,
+                    "low":  1,
+                    "by_rule":  {
+                                    "github-actions.permissions-write-all":  1,
+                                    "github-actions.unpinned-action-ref":  2
+                                },
+                    "tools":  [
+                                  {
+                                      "name":  "zizmor",
+                                      "available":  false,
+                                      "version":  null,
+                                      "error":  "Skipped",
+                                      "state":  "skipped"
+                                  },
+                                  {
+                                      "name":  "actionlint",
+                                      "available":  false,
+                                      "version":  null,
+                                      "error":  "Skipped",
+                                      "state":  "skipped"
+                                  }
+                              ],
+                    "duration_seconds":  0.01,
+                    "target":  {
+                                   "importId":  "imp_91c9f0f3fffd",
+                                   "projectName":  "3CX X_TRADER replay",
+                                   "sourceType":  "local",
+                                   "path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo"
+                               },
+                    "target_key":  "import:imp_91c9f0f3fffd",
+                    "ignored":  0,
+                    "ignored_total":  0,
+                    "baseline_exists":  false,
+                    "baseline_total":  0,
+                    "baseline_created_at":  null,
+                    "new":  3,
+                    "fixed":  0,
+                    "trend":  [
+                                  {
+                                      "scan_id":  "cicd-20260614024643",
+                                      "generated_at":  "2026-06-14T02:46:43.053917+00:00",
+                                      "target_key":  "import:imp_91c9f0f3fffd",
+                                      "projectName":  "3CX X_TRADER replay",
+                                      "total":  3,
+                                      "critical":  0,
+                                      "high":  2,
+                                      "medium":  0,
+                                      "low":  1,
+                                      "new":  3,
+                                      "fixed":  0,
+                                      "ignored":  0,
+                                      "tools":  [
+
+                                                ]
+                                  }
+                              ]
+                },
+    "findings":  [
+                     {
+                         "id":  "CI-63BFF724",
+                         "rule_id":  "github-actions.permissions-write-all",
+                         "title":  "GitHub Token æéè¿å®½",
+                         "severity":  "high",
+                         "score":  88,
+                         "workflow":  ".github/workflows/desktop-release.yml",
+                         "job_id":  null,
+                         "job_name":  null,
+                         "step_index":  null,
+                         "step_name":  null,
+                         "line":  7,
+                         "evidence":  "permissions: write-all",
+                         "reason":  "permissions: write-all ä¼ç» GITHUB_TOKEN æäºå\u0085¨é¨åæéï¼æ©å¤§å­æ®æ³é²æå·¥ä½æµå«æåçå½±åé¢ã",
+                         "recommendation":  "æ workflow/job æå°åå£°ææéï¼ä¾å¦ contents: readï¼åå¸ä»»å¡åªæäºå¿\u0085è¦åæéã",
+                         "fingerprint":  "42debe0d18f94577d14acee1591296173cfcac71ad7ebc8c66e0bdc4da31f269",
+                         "scanner":  "SupplyGuard CI/CD",
+                         "confidence":  "medium"
+                     },
+                     {
+                         "id":  "CI-CEACE3B8",
+                         "rule_id":  "github-actions.unpinned-action-ref",
+                         "title":  "Action æªåºå®å°å®æ´ commit SHA",
+                         "severity":  "high",
+                         "score":  75,
+                         "workflow":  ".github/workflows/desktop-release.yml",
+                         "job_id":  "desktop-build",
+                         "job_name":  "desktop-build",
+                         "step_index":  2,
+                         "step_name":  "step 2",
+                         "line":  14,
+                         "evidence":  "uses: vendor/electron-builder@v2",
+                         "reason":  "Action ä½¿ç¨ tag æç­å¼ç¨ï¼çæ¬å¯è¢«ç§»å¨æè¦çï¼æ æ³ä¿è¯æå»ºè¾å\u0085¥ä¸å¯åã",
+                         "recommendation":  "å¨é«å®å\u0085¨æµç¨ä¸­ä½¿ç¨ 40 ä½å®æ´ commit SHAï¼æ®éæµç¨è³å°åºå®å¯ä¿¡ tag å¹¶å¯ç¨åæ´å®¡æ¥ã",
+                         "fingerprint":  "b90341b78343452986702c423129e73218000d45f553110bbfc642a2939fdbfa",
+                         "scanner":  "SupplyGuard CI/CD",
+                         "confidence":  "medium"
+                     },
+                     {
+                         "id":  "CI-0D73DD3B",
+                         "rule_id":  "github-actions.unpinned-action-ref",
+                         "title":  "Action æªåºå®å°å®æ´ commit SHA",
+                         "severity":  "low",
+                         "score":  45,
+                         "workflow":  ".github/workflows/desktop-release.yml",
+                         "job_id":  "desktop-build",
+                         "job_name":  "desktop-build",
+                         "step_index":  1,
+                         "step_name":  "step 1",
+                         "line":  13,
+                         "evidence":  "uses: actions/checkout@v3",
+                         "reason":  "Action ä½¿ç¨ tag æç­å¼ç¨ï¼çæ¬å¯è¢«ç§»å¨æè¦çï¼æ æ³ä¿è¯æå»ºè¾å\u0085¥ä¸å¯åã",
+                         "recommendation":  "å¨é«å®å\u0085¨æµç¨ä¸­ä½¿ç¨ 40 ä½å®æ´ commit SHAï¼æ®éæµç¨è³å°åºå®å¯ä¿¡ tag å¹¶å¯ç¨åæ´å®¡æ¥ã",
+                         "fingerprint":  "6b0279028828f11018c6ccf0a666be2f23658186cf72e0c3df3f065243870e4e",
+                         "scanner":  "SupplyGuard CI/CD",
+                         "confidence":  "medium"
+                     }
+                 ],
+    "scanners":  [
+                     {
+                         "name":  "zizmor",
+                         "available":  false,
+                         "command":  "zizmor",
+                         "version":  null,
+                         "error":  "Skipped",
+                         "state":  "skipped"
+                     },
+                     {
+                         "name":  "actionlint",
+                         "available":  false,
+                         "command":  "actionlint",
+                         "version":  null,
+                         "error":  "Skipped",
+                         "state":  "skipped"
+                     }
+                 ],
+    "sarif":  {
+                  "$schema":  "https://json.schemastore.org/sarif-2.1.0.json",
+                  "version":  "2.1.0",
+                  "runs":  [
+                               {
+                                   "tool":  {
+                                                "driver":  {
+                                                               "name":  "SupplyGuard CI/CD Audit",
+                                                               "informationUri":  "https://zizmor.sh/",
+                                                               "rules":  [
+                                                                             {
+                                                                                 "id":  "github-actions.permissions-write-all",
+                                                                                 "name":  "GitHub Token æéè¿å®½",
+                                                                                 "shortDescription":  {
+                                                                                                          "text":  "GitHub Token æéè¿å®½"
+                                                                                                      },
+                                                                                 "fullDescription":  {
+                                                                                                         "text":  "permissions: write-all ä¼ç» GITHUB_TOKEN æäºå\u0085¨é¨åæéï¼æ©å¤§å­æ®æ³é²æå·¥ä½æµå«æåçå½±åé¢ã"
+                                                                                                     },
+                                                                                 "help":  {
+                                                                                              "text":  "æ workflow/job æå°åå£°ææéï¼ä¾å¦ contents: readï¼åå¸ä»»å¡åªæäºå¿\u0085è¦åæéã"
+                                                                                          },
+                                                                                 "properties":  {
+                                                                                                    "scanner":  "SupplyGuard CI/CD",
+                                                                                                    "severity":  "high"
+                                                                                                }
+                                                                             },
+                                                                             {
+                                                                                 "id":  "github-actions.unpinned-action-ref",
+                                                                                 "name":  "Action æªåºå®å°å®æ´ commit SHA",
+                                                                                 "shortDescription":  {
+                                                                                                          "text":  "Action æªåºå®å°å®æ´ commit SHA"
+                                                                                                      },
+                                                                                 "fullDescription":  {
+                                                                                                         "text":  "Action ä½¿ç¨ tag æç­å¼ç¨ï¼çæ¬å¯è¢«ç§»å¨æè¦çï¼æ æ³ä¿è¯æå»ºè¾å\u0085¥ä¸å¯åã"
+                                                                                                     },
+                                                                                 "help":  {
+                                                                                              "text":  "å¨é«å®å\u0085¨æµç¨ä¸­ä½¿ç¨ 40 ä½å®æ´ commit SHAï¼æ®éæµç¨è³å°åºå®å¯ä¿¡ tag å¹¶å¯ç¨åæ´å®¡æ¥ã"
+                                                                                          },
+                                                                                 "properties":  {
+                                                                                                    "scanner":  "SupplyGuard CI/CD",
+                                                                                                    "severity":  "high"
+                                                                                                }
+                                                                             }
+                                                                         ]
+                                                           }
+                                            },
+                                   "automationDetails":  {
+                                                             "id":  "imp_91c9f0f3fffd"
+                                                         },
+                                   "results":  [
+                                                   {
+                                                       "ruleId":  "github-actions.permissions-write-all",
+                                                       "level":  "error",
+                                                       "message":  {
+                                                                       "text":  "GitHub Token æéè¿å®½: permissions: write-all"
+                                                                   },
+                                                       "locations":  [
+                                                                         {
+                                                                             "physicalLocation":  {
+                                                                                                      "artifactLocation":  {
+                                                                                                                               "uri":  ".github/workflows/desktop-release.yml"
+                                                                                                                           },
+                                                                                                      "region":  {
+                                                                                                                     "startLine":  7
+                                                                                                                 }
+                                                                                                  }
+                                                                         }
+                                                                     ],
+                                                       "partialFingerprints":  {
+                                                                                   "primaryLocationLineHash":  "42debe0d18f94577d14acee1591296173cfcac71ad7ebc8c66e0bdc4da31f269"
+                                                                               },
+                                                       "properties":  {
+                                                                          "scanner":  "SupplyGuard CI/CD",
+                                                                          "confidence":  "medium",
+                                                                          "recommendation":  "æ workflow/job æå°åå£°ææéï¼ä¾å¦ contents: readï¼åå¸ä»»å¡åªæäºå¿\u0085è¦åæéã",
+                                                                          "job_id":  null,
+                                                                          "step_name":  null
+                                                                      }
+                                                   },
+                                                   {
+                                                       "ruleId":  "github-actions.unpinned-action-ref",
+                                                       "level":  "error",
+                                                       "message":  {
+                                                                       "text":  "Action æªåºå®å°å®æ´ commit SHA: uses: vendor/electron-builder@v2"
+                                                                   },
+                                                       "locations":  [
+                                                                         {
+                                                                             "physicalLocation":  {
+                                                                                                      "artifactLocation":  {
+                                                                                                                               "uri":  ".github/workflows/desktop-release.yml"
+                                                                                                                           },
+                                                                                                      "region":  {
+                                                                                                                     "startLine":  14
+                                                                                                                 }
+                                                                                                  }
+                                                                         }
+                                                                     ],
+                                                       "partialFingerprints":  {
+                                                                                   "primaryLocationLineHash":  "b90341b78343452986702c423129e73218000d45f553110bbfc642a2939fdbfa"
+                                                                               },
+                                                       "properties":  {
+                                                                          "scanner":  "SupplyGuard CI/CD",
+                                                                          "confidence":  "medium",
+                                                                          "recommendation":  "å¨é«å®å\u0085¨æµç¨ä¸­ä½¿ç¨ 40 ä½å®æ´ commit SHAï¼æ®éæµç¨è³å°åºå®å¯ä¿¡ tag å¹¶å¯ç¨åæ´å®¡æ¥ã",
+                                                                          "job_id":  "desktop-build",
+                                                                          "step_name":  "step 2"
+                                                                      }
+                                                   },
+                                                   {
+                                                       "ruleId":  "github-actions.unpinned-action-ref",
+                                                       "level":  "note",
+                                                       "message":  {
+                                                                       "text":  "Action æªåºå®å°å®æ´ commit SHA: uses: actions/checkout@v3"
+                                                                   },
+                                                       "locations":  [
+                                                                         {
+                                                                             "physicalLocation":  {
+                                                                                                      "artifactLocation":  {
+                                                                                                                               "uri":  ".github/workflows/desktop-release.yml"
+                                                                                                                           },
+                                                                                                      "region":  {
+                                                                                                                     "startLine":  13
+                                                                                                                 }
+                                                                                                  }
+                                                                         }
+                                                                     ],
+                                                       "partialFingerprints":  {
+                                                                                   "primaryLocationLineHash":  "6b0279028828f11018c6ccf0a666be2f23658186cf72e0c3df3f065243870e4e"
+                                                                               },
+                                                       "properties":  {
+                                                                          "scanner":  "SupplyGuard CI/CD",
+                                                                          "confidence":  "medium",
+                                                                          "recommendation":  "å¨é«å®å\u0085¨æµç¨ä¸­ä½¿ç¨ 40 ä½å®æ´ commit SHAï¼æ®éæµç¨è³å°åºå®å¯ä¿¡ tag å¹¶å¯ç¨åæ´å®¡æ¥ã",
+                                                                          "job_id":  "desktop-build",
+                                                                          "step_name":  "step 1"
+                                                                      }
+                                                   }
+                                               ]
+                               }
+                           ]
+              },
+    "state":  {
+                  "target_key":  "import:imp_91c9f0f3fffd",
+                  "ignored":  [
+
+                              ],
+                  "baseline":  null,
+                  "baselines":  {
+
+                                },
+                  "trend":  [
+                                {
+                                    "scan_id":  "cicd-20260614024643",
+                                    "generated_at":  "2026-06-14T02:46:43.053917+00:00",
+                                    "target_key":  "import:imp_91c9f0f3fffd",
+                                    "projectName":  "3CX X_TRADER replay",
+                                    "total":  3,
+                                    "critical":  0,
+                                    "high":  2,
+                                    "medium":  0,
+                                    "low":  1,
+                                    "new":  3,
+                                    "fixed":  0,
+                                    "ignored":  0,
+                                    "tools":  [
+
+                                              ]
+                                }
+                            ]
+              },
+    "report":  "# CI/CD æå»ºæµç¨é£é©æ¥å\n\nçææ¶é´ï¼2026-06-14 02:46:43 UTC\næ«æç®æ ï¼C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo\n\n## æè¦\n\n- Workflow æ°éï¼1\n- Job æ°éï¼1\n- Step æ°éï¼5\n- é£é©æ°éï¼3\n- ä¸¥éï¼0\n- é«å±ï¼2\n- ä¸­å±ï¼0\n- ä½å±ï¼1\n\n## æ«æå°ç Workflow\n\n- .github/workflows/desktop-release.yml\n\n## æ«æå¨\n\n| å·¥å\u0085· | ç¶æ | çæ¬ | è¿è¡ç¶æ | è¯´æ |\n| --- | --- | --- | --- | --- |\n| zizmor | ä¸å¯ç¨ | - | skipped | Skipped |\n| actionlint | ä¸å¯ç¨ | - | skipped | Skipped |\n\n## é£é©æç»\n\n| æ«æå¨ | Workflow | Job | Step | ç­çº§ | é£é©åå  | è¯æ® | ä¿®å¤å»ºè®® |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| SupplyGuard CI/CD | .github/workflows/desktop-release.yml | - | - | high | permissions: write-all ä¼ç» GITHUB_TOKEN æäºå\u0085¨é¨åæéï¼æ©å¤§å­æ®æ³é²æå·¥ä½æµå«æåçå½±åé¢ã | permissions: write-all (line 7) | æ workflow/job æå°åå£°ææéï¼ä¾å¦ contents: readï¼åå¸ä»»å¡åªæäºå¿\u0085è¦åæéã |\n| SupplyGuard CI/CD | .github/workflows/desktop-release.yml | desktop-build | step 2 | high | Action ä½¿ç¨ tag æç­å¼ç¨ï¼çæ¬å¯è¢«ç§»å¨æè¦çï¼æ æ³ä¿è¯æå»ºè¾å\u0085¥ä¸å¯åã | uses: vendor/electron-builder@v2 (line 14) | å¨é«å®å\u0085¨æµç¨ä¸­ä½¿ç¨ 40 ä½å®æ´ commit SHAï¼æ®éæµç¨è³å°åºå®å¯ä¿¡ tag å¹¶å¯ç¨åæ´å®¡æ¥ã |\n| SupplyGuard CI/CD | .github/workflows/desktop-release.yml | desktop-build | step 1 | low | Action ä½¿ç¨ tag æç­å¼ç¨ï¼çæ¬å¯è¢«ç§»å¨æè¦çï¼æ æ³ä¿è¯æå»ºè¾å\u0085¥ä¸å¯åã | uses: actions/checkout@v3 (line 13) | å¨é«å®å\u0085¨æµç¨ä¸­ä½¿ç¨ 40 ä½å®æ´ commit SHAï¼æ®éæµç¨è³å°åºå®å¯ä¿¡ tag å¹¶å¯ç¨åæ´å®¡æ¥ã |\n\n## æ«ææç¤º\n\n- æ«æå®æã\n",
+    "warnings":  [
+
+                 ]
+}

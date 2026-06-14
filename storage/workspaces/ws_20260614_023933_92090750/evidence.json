@@ -1,0 +1,122 @@
+[
+  {
+    "id": "ev-dependency-0001",
+    "type": "dependency",
+    "source": "dependency_audit",
+    "asset": "axios@1.6.8",
+    "summary": "OSV: GHSA-35jp-ww65-95wh; OSV: GHSA-3g43-6gmg-66jw; OSV: GHSA-3p68-rc4w-qgx5; OSV: GHSA-3w6x-2g7m-8v23; OSV: GHSA-43fc-jf86-j433; OSV: GHSA-445q-vr5w-6q77; OSV: GHSA-4hjh-wcwx-xvwj; OSV: GHSA-5c9x-8gcm-mpgx; OSV: GHSA-62hf-57xw-28j9; OSV: GHSA-6chq-wfr3-2hj9; OSV: GHSA-898c-q2cr-xwhg; OSV: GHSA-8hc4-vh64-cxmj; OSV: GHSA-fvcv-3m26-pcqx; OSV: GHSA-hfxv-24rg-xrqf; OSV: GHSA-j5f8-grm9-p9fc; OSV: GHSA-jr5f-v2jv-69x6; OSV: GHSA-m7pr-hjqh-92cm; OSV: GHSA-p92q-9vqr-4j8v; OSV: GHSA-pf86-5x62-jrwf; OSV: GHSA-pjwm-pj3p-43mv; OSV: GHSA-pmwg-cvhr-8vh7; OSV: GHSA-q8qp-cvcw-x6jj; OSV: GHSA-vf2m-468p-8v99; OSV: GHSA-w9j2-pvgh-6h63; OSV: GHSA-xhjh-pmcv-23jw; OSV: GHSA-xx6v-rp6x-q39c; exact version from lockfile; reachable import detected; reachable call detected; VEX: fixed, under_investigation",
+    "confidence": 100,
+    "findingId": "DEP-6CC4EF6C",
+    "createdAt": "2026-06-14T02:40:18.092623+00:00"
+  },
+  {
+    "id": "ev-dependency-0002",
+    "type": "dependency",
+    "source": "dependency_audit",
+    "asset": "electron@25.9.8",
+    "summary": "install script; OSV: GHSA-3c8v-cfp5-9885; OSV: GHSA-4p4r-m79c-wq3v; OSV: GHSA-532v-xpq5-8h95; OSV: GHSA-5rqw-r77c-jp79; OSV: GHSA-6r2x-8pq8-9489; OSV: GHSA-8337-3p73-46f4; OSV: GHSA-9899-m83m-qhpj; OSV: GHSA-9w97-2464-8783; OSV: GHSA-9wfr-w7mm-pc7f; OSV: GHSA-f37v-82c4-4x64; OSV: GHSA-f3pv-wv63-48x8; OSV: GHSA-jfqx-fxh3-c62j; OSV: GHSA-jjp3-mq3x-295m; OSV: GHSA-mwmh-mq4g-g6gr; OSV: GHSA-r5p7-gp4j-qhrx; OSV: GHSA-vmqv-hx8q-j7mg; OSV: GHSA-xj5x-m3f3-5x3h; OSV: GHSA-xwr5-m59h-vwqr; exact version from lockfile; VEX: not_affected",
+    "confidence": 68,
+    "findingId": "DEP-E6E2EB20",
+    "createdAt": "2026-06-14T02:40:18.092623+00:00"
+  },
+  {
+    "id": "ev-cicd-0001",
+    "type": "cicd",
+    "source": "cicd_audit",
+    "asset": ".github/workflows/desktop-release.yml",
+    "summary": "permissions: write-all",
+    "confidence": "medium",
+    "findingId": "CI-63BFF724",
+    "createdAt": "2026-06-14T02:40:54.788833+00:00"
+  },
+  {
+    "id": "ev-cicd-0002",
+    "type": "cicd",
+    "source": "cicd_audit",
+    "asset": ".github/workflows/desktop-release.yml",
+    "summary": "uses: vendor/electron-builder@v2",
+    "confidence": "medium",
+    "findingId": "CI-CEACE3B8",
+    "createdAt": "2026-06-14T02:40:54.788833+00:00"
+  },
+  {
+    "id": "ev-cicd-0003",
+    "type": "cicd",
+    "source": "cicd_audit",
+    "asset": ".github/workflows/desktop-release.yml",
+    "summary": "uses: actions/checkout@v3",
+    "confidence": "medium",
+    "findingId": "CI-0D73DD3B",
+    "createdAt": "2026-06-14T02:40:54.788833+00:00"
+  },
+  {
+    "id": "ev-artifact-0001",
+    "type": "artifact",
+    "source": "artifact_trust",
+    "asset": "-",
+    "summary": "artifact sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "confidence": 98,
+    "findingId": "ART-B5148858",
+    "createdAt": "2026-06-14T02:40:54.820645+00:00"
+  },
+  {
+    "id": "ev-artifact-0002",
+    "type": "artifact",
+    "source": "artifact_trust",
+    "asset": "-",
+    "summary": "provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19",
+    "confidence": 93,
+    "findingId": "ART-1EAC0ADD",
+    "createdAt": "2026-06-14T02:40:54.820645+00:00"
+  },
+  {
+    "id": "ev-artifact-0003",
+    "type": "artifact",
+    "source": "artifact_trust",
+    "asset": "-",
+    "summary": "self-hosted runner is not allowed by policy: self-hosted",
+    "confidence": 87,
+    "findingId": "ART-CAC4BED9",
+    "createdAt": "2026-06-14T02:40:54.820645+00:00"
+  },
+  {
+    "id": "ev-artifact-0004",
+    "type": "artifact",
+    "source": "artifact_trust",
+    "asset": "-",
+    "summary": "Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)",
+    "confidence": 64,
+    "findingId": "ART-AF974B4D",
+    "createdAt": "2026-06-14T02:40:54.820645+00:00"
+  },
+  {
+    "id": "ev-logs-0001",
+    "type": "logs",
+    "source": "log_audit",
+    "asset": "app",
+    "summary": "{\"time\":\"2026-06-11T11:30:02Z\",\"source\":\"app\",\"host\":\"customer-pc-01\",\"process\":\"3cx-desktop-app\",\"event\":\"...pp beacon egress destination 45.83.64.12 for cdn-update.example.invalid\",\"dst_ip\":\"45.83.64.12\",\"status\":0}",
+    "confidence": 0.94,
+    "findingId": "LOG-2FEF91C2",
+    "createdAt": "2026-06-14T02:41:02.680168+00:00"
+  },
+  {
+    "id": "ev-logs-0002",
+    "type": "logs",
+    "source": "log_audit",
+    "asset": "app",
+    "summary": "{\"time\":\"2026-06-11T11:13:22Z\",\"source\":\"app\",\"host\":\"build-runner-01\",\"event\":\"egress\",\"message\":\"outbound callback destination 45.83.64.11 for build-tools.example.invalid\",\"dst_ip\":\"45.83.64.11\",\"status\":0}",
+    "confidence": 0.88,
+    "findingId": "LOG-EB993334",
+    "createdAt": "2026-06-14T02:41:02.680168+00:00"
+  },
+  {
+    "id": "ev-code-0001",
+    "type": "code",
+    "source": "code_audit",
+    "asset": "-",
+    "summary": "permissions: write-all",
+    "confidence": "medium",
+    "findingId": "CFG-0001",
+    "createdAt": "2026-06-14T02:41:44.817776+00:00"
+  }
+]

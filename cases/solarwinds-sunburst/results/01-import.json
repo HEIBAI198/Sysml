@@ -1,0 +1,57 @@
+{
+    "importId":  "imp_79f51dc69134",
+    "status":  "ready",
+    "projectName":  "SolarWinds SUNBURST replay",
+    "sourceType":  "local",
+    "sourceRef":  {
+                      "path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\solarwinds-sunburst\\sample-repo"
+                  },
+    "sourcePath":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\solarwinds-sunburst\\sample-repo",
+    "createdAt":  "2026-06-12T03:07:31.641632+00:00",
+    "updatedAt":  "2026-06-12T03:07:31.641632+00:00",
+    "summary":  {
+                    "projectName":  "SolarWinds SUNBURST replay",
+                    "sourceType":  "local",
+                    "sourceRef":  {
+                                      "path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\solarwinds-sunburst\\sample-repo"
+                                  },
+                    "fileStats":  {
+                                      "total":  11,
+                                      "scannable":  7,
+                                      "ignored":  4,
+                                      "binary":  0
+                                  },
+                    "languages":  [
+                                      {
+                                          "name":  "JSON",
+                                          "percent":  63.4,
+                                          "files":  2,
+                                          "bytes":  1611
+                                      },
+                                      {
+                                          "name":  "YAML",
+                                          "percent":  19.9,
+                                          "files":  1,
+                                          "bytes":  505
+                                      },
+                                      {
+                                          "name":  "JavaScript",
+                                          "percent":  16.8,
+                                          "files":  3,
+                                          "bytes":  427
+                                      }
+                                  ],
+                    "dependencyFiles":  [
+                                            "package-lock.json",
+                                            "package.json",
+                                            "requirements.txt"
+                                        ],
+                    "ciFiles":  [
+                                    ".github/workflows/release.yml"
+                                ],
+                    "warnings":  [
+                                     "Local path imports are server-side reads; browsers cannot safely grant arbitrary filesystem access."
+                                 ],
+                    "scanScope":  "."
+                }
+}

@@ -1,0 +1,164 @@
+{
+  "scan_id": "logs-20260613174258",
+  "generated_at": "2026-06-13T17:42:58.902844+00:00",
+  "files": [
+    {
+      "filename": "build-runner.jsonl",
+      "source": "app",
+      "size_bytes": 587,
+      "total_lines": 3,
+      "parsed_lines": 3,
+      "skipped_lines": 0
+    },
+    {
+      "filename": "customer-endpoint.jsonl",
+      "source": "app",
+      "size_bytes": 428,
+      "total_lines": 2,
+      "parsed_lines": 2,
+      "skipped_lines": 0
+    }
+  ],
+  "summary": {
+    "file_count": 2,
+    "total_lines": 5,
+    "total_events": 5,
+    "parsed_events": 5,
+    "skipped_lines": 0,
+    "finding_count": 2,
+    "risk_score": 93,
+    "risk_level": "critical",
+    "critical": 1,
+    "high": 1,
+    "medium": 0,
+    "low": 0,
+    "by_rule": {
+      "runtime.suspicious-egress-ip": 2
+    },
+    "by_source": {
+      "app": 4,
+      "web": 1
+    },
+    "rule_count": 6,
+    "duration_seconds": 0.02
+  },
+  "events": [
+    {
+      "time": "2026-06-11 11:10:11",
+      "source": "app",
+      "log_type": "app",
+      "filename": "build-runner.jsonl",
+      "line_number": 1,
+      "src_ip": null,
+      "dst_ip": null,
+      "user": null,
+      "method": null,
+      "path": null,
+      "status": 0,
+      "message": "build runner loaded unsigned x_trader_codec.dll during simulated replay",
+      "raw": "{\"time\":\"2026-06-11T11:10:11Z\",\"source\":\"app\",\"host\":\"build-runner-01\",\"event\":\"unsigned_build_tool_loaded\",\"message\":\"build runner loaded unsigned x_trader_codec.dll during simulated replay\",\"status\":0}"
+    },
+    {
+      "time": "2026-06-11 11:12:44",
+      "source": "app",
+      "log_type": "app",
+      "filename": "build-runner.jsonl",
+      "line_number": 2,
+      "src_ip": null,
+      "dst_ip": null,
+      "user": null,
+      "method": null,
+      "path": null,
+      "status": 0,
+      "message": "3cx-desktop-app.tar.gz created with digest mismatch",
+      "raw": "{\"time\":\"2026-06-11T11:12:44Z\",\"source\":\"app\",\"host\":\"build-runner-01\",\"event\":\"artifact_created\",\"message\":\"3cx-desktop-app.tar.gz created with digest mismatch\",\"status\":0}"
+    },
+    {
+      "time": "2026-06-11 11:13:22",
+      "source": "app",
+      "log_type": "app",
+      "filename": "build-runner.jsonl",
+      "line_number": 3,
+      "src_ip": null,
+      "dst_ip": "45.83.64.11",
+      "user": null,
+      "method": null,
+      "path": null,
+      "status": 0,
+      "message": "outbound callback destination 45.83.64.11 for build-tools.example.invalid",
+      "raw": "{\"time\":\"2026-06-11T11:13:22Z\",\"source\":\"app\",\"host\":\"build-runner-01\",\"event\":\"egress\",\"message\":\"outbound callback destination 45.83.64.11 for build-tools.example.invalid\",\"dst_ip\":\"45.83.64.11\",\"status\":0}"
+    },
+    {
+      "time": "2026-06-11 11:30:02",
+      "source": "app",
+      "log_type": "app",
+      "filename": "customer-endpoint.jsonl",
+      "line_number": 1,
+      "src_ip": null,
+      "dst_ip": "45.83.64.12",
+      "user": null,
+      "method": null,
+      "path": null,
+      "status": 0,
+      "message": "desktop app beacon egress destination 45.83.64.12 for cdn-update.example.invalid",
+      "raw": "{\"time\":\"2026-06-11T11:30:02Z\",\"source\":\"app\",\"host\":\"customer-pc-01\",\"process\":\"3cx-desktop-app\",\"event\":\"egress\",\"message\":\"desktop app beacon egress destination 45.83.64.12 for cdn-update.example.invalid\",\"dst_ip\":\"45.83.64.12\",\"status\":0}"
+    },
+    {
+      "time": "2026-06-11 11:31:08",
+      "source": "web",
+      "log_type": "web",
+      "filename": "customer-endpoint.jsonl",
+      "line_number": 2,
+      "src_ip": "10.30.4.19",
+      "dst_ip": null,
+      "user": null,
+      "method": "GET",
+      "path": "/desktop/update/check",
+      "status": 200,
+      "message": "desktop update check after simulated release",
+      "raw": "{\"time\":\"2026-06-11T11:31:08Z\",\"source\":\"web\",\"method\":\"GET\",\"path\":\"/desktop/update/check\",\"status\":200,\"src_ip\":\"10.30.4.19\",\"message\":\"desktop update check after simulated release\"}"
+    }
+  ],
+  "findings": [
+    {
+      "id": "LOG-2FEF91C2",
+      "rule_id": "runtime.suspicious-egress-ip",
+      "title": "Suspicious External Egress IP",
+      "severity": "critical",
+      "score": 92,
+      "time": "2026-06-11 11:30:02",
+      "source": "app",
+      "event": "app -> 45.83.64.12",
+      "signal": "异常外联 IP",
+      "confidence": 0.94,
+      "evidence": "{\"time\":\"2026-06-11T11:30:02Z\",\"source\":\"app\",\"host\":\"customer-pc-01\",\"process\":\"3cx-desktop-app\",\"event\":\"...pp beacon egress destination 45.83.64.12 for cdn-update.example.invalid\",\"dst_ip\":\"45.83.64.12\",\"status\":0}",
+      "src_ip": null,
+      "dst_ip": "45.83.64.12",
+      "user": null,
+      "path": null,
+      "count": null,
+      "fingerprint": "522323b0fe9e140a76ce5a89a803cfef37c35908bac8f3e0a98893b7f73b3b56"
+    },
+    {
+      "id": "LOG-EB993334",
+      "rule_id": "runtime.suspicious-egress-ip",
+      "title": "Suspicious External Egress IP",
+      "severity": "high",
+      "score": 84,
+      "time": "2026-06-11 11:13:22",
+      "source": "app",
+      "event": "app -> 45.83.64.11",
+      "signal": "异常外联 IP",
+      "confidence": 0.88,
+      "evidence": "{\"time\":\"2026-06-11T11:13:22Z\",\"source\":\"app\",\"host\":\"build-runner-01\",\"event\":\"egress\",\"message\":\"outbound callback destination 45.83.64.11 for build-tools.example.invalid\",\"dst_ip\":\"45.83.64.11\",\"status\":0}",
+      "src_ip": null,
+      "dst_ip": "45.83.64.11",
+      "user": null,
+      "path": null,
+      "count": null,
+      "fingerprint": "429650f7a08e3009b3fa509f362e5d2ec38c1204377118c85d65b6153a87fc92"
+    }
+  ],
+  "report": "# 运行期日志风险识别报告\n\n生成时间：2026-06-13 17:42:58 UTC\n\n## 摘要\n\n- 日志文件：2\n- 解析事件：5\n- 跳过行数：0\n- 风险事件：2\n- 风险评分：93 / 100\n- 风险等级：critical\n\n## 日志来源\n\n| 文件 | 来源 | 总行数 | 已解析 | 跳过 |\n| --- | --- | ---: | ---: | ---: |\n| build-runner.jsonl | app | 3 | 3 | 0 |\n| customer-endpoint.jsonl | app | 2 | 2 | 0 |\n\n## 风险事件\n\n| 编号 | 等级 | 异常时间 | 日志来源 | 风险事件 | 置信度 | 证据 |\n| --- | --- | --- | --- | --- | ---: | --- |\n| LOG-2FEF91C2 | critical | 2026-06-11 11:30:02 | app | 异常外联 IP | 94% | app -> 45.83.64.12 |\n| LOG-EB993334 | high | 2026-06-11 11:13:22 | app | 异常外联 IP | 88% | app -> 45.83.64.11 |\n\n## 扫描提示\n\n- 扫描完成。\n",
+  "warnings": []
+}

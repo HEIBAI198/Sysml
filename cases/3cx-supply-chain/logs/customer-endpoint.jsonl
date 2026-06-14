@@ -1,0 +1,2 @@
+{"time":"2026-06-11T11:30:02Z","source":"app","host":"customer-pc-01","process":"3cx-desktop-app","event":"egress","message":"desktop app beacon egress destination 45.83.64.12 for cdn-update.example.invalid","dst_ip":"45.83.64.12","status":0}
+{"time":"2026-06-11T11:31:08Z","source":"web","method":"GET","path":"/desktop/update/check","status":200,"src_ip":"10.30.4.19","message":"desktop update check after simulated release"}

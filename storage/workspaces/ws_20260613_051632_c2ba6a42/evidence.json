@@ -1,0 +1,72 @@
+[
+  {
+    "id": "ev-cicd-0001",
+    "type": "cicd",
+    "source": "cicd_audit",
+    "asset": ".github/workflows/desktop-release.yml",
+    "summary": "permissions: write-all",
+    "confidence": "medium",
+    "findingId": "CI-63BFF724",
+    "createdAt": "2026-06-13T16:14:42.285099+00:00"
+  },
+  {
+    "id": "ev-cicd-0002",
+    "type": "cicd",
+    "source": "cicd_audit",
+    "asset": ".github/workflows/desktop-release.yml",
+    "summary": "actions/checkout@v3",
+    "confidence": "high",
+    "findingId": "CI-9D9F44B4",
+    "createdAt": "2026-06-13T16:14:42.285099+00:00"
+  },
+  {
+    "id": "ev-cicd-0003",
+    "type": "cicd",
+    "source": "cicd_audit",
+    "asset": ".github/workflows/desktop-release.yml",
+    "summary": "uses: vendor/electron-builder@v2",
+    "confidence": "medium",
+    "findingId": "CI-CEACE3B8",
+    "createdAt": "2026-06-13T16:14:42.285099+00:00"
+  },
+  {
+    "id": "ev-cicd-0004",
+    "type": "cicd",
+    "source": "cicd_audit",
+    "asset": ".github/workflows/desktop-release.yml",
+    "summary": "vendor/electron-builder@v2",
+    "confidence": "high",
+    "findingId": "CI-15B49247",
+    "createdAt": "2026-06-13T16:14:42.285099+00:00"
+  },
+  {
+    "id": "ev-cicd-0005",
+    "type": "cicd",
+    "source": "cicd_audit",
+    "asset": ".github/workflows/desktop-release.yml",
+    "summary": "uses: actions/checkout@v3",
+    "confidence": "low",
+    "findingId": "CI-54AF2090",
+    "createdAt": "2026-06-13T16:14:42.285099+00:00"
+  },
+  {
+    "id": "ev-cicd-0006",
+    "type": "cicd",
+    "source": "cicd_audit",
+    "asset": ".github/workflows/desktop-release.yml",
+    "summary": "uses: actions/checkout@v3",
+    "confidence": "medium",
+    "findingId": "CI-0D73DD3B",
+    "createdAt": "2026-06-13T16:14:42.285099+00:00"
+  },
+  {
+    "id": "ev-artifact-0001",
+    "type": "artifact",
+    "source": "artifact_trust",
+    "asset": "-",
+    "summary": "attestation age 264.33 hours exceeds policy max_age_hours=24",
+    "confidence": 70,
+    "findingId": "ART-A91C8E97",
+    "createdAt": "2026-06-13T16:20:44.917260+00:00"
+  }
+]

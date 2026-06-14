@@ -1,0 +1,513 @@
+{
+  "scan_id": "artifact-trust-20260613175103",
+  "generated_at": "2026-06-13T17:51:03.605535+00:00",
+  "artifact": "3cx-desktop-app.tar.gz",
+  "artifact_path": "C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\artifacts\\3cx-desktop-app.tar.gz",
+  "attestation_path": "C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\artifacts\\3cx-desktop-app.intoto.jsonl",
+  "digest": "sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789",
+  "trustScore": 16,
+  "trust_score": 16,
+  "level": "critical",
+  "checks": [
+    {
+      "name": "artifact_digest_matches_subject",
+      "status": "fail",
+      "evidence": "artifact sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "severity": "critical",
+      "score": 98
+    },
+    {
+      "name": "provenance_predicate_type_slsa",
+      "status": "pass",
+      "evidence": "https://slsa.dev/provenance/v1",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "source_repository_allowed",
+      "status": "pass",
+      "evidence": "https://github.com/3cx/desktop-app",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "commit_matches_expected",
+      "status": "fail",
+      "evidence": "provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19",
+      "severity": "critical",
+      "score": 93
+    },
+    {
+      "name": "workflow_allowed",
+      "status": "pass",
+      "evidence": ".github/workflows/desktop-release.yml",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "builder_trusted",
+      "status": "pass",
+      "evidence": "https://github.com/actions/runner/self-hosted",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "runner_environment_trusted",
+      "status": "fail",
+      "evidence": "self-hosted runner is not allowed by policy: self-hosted",
+      "severity": "high",
+      "score": 87
+    },
+    {
+      "name": "attestation_max_age",
+      "status": "pass",
+      "evidence": "attestation age is 55.85 hours",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "artifact_hash_baseline",
+      "status": "skipped",
+      "evidence": "No historical hash baseline configured.",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "signature_verified",
+      "status": "warn",
+      "evidence": "Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)",
+      "severity": "medium",
+      "score": 64
+    }
+  ],
+  "findings": [
+    {
+      "id": "ART-81EC74BB",
+      "title": "产物 digest 与 attestation subject 不一致或缺失",
+      "severity": "critical",
+      "score": 98,
+      "evidence": "artifact sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "recommendation": "阻断发布，重新获取产物与 provenance，确认 subject digest 指向当前产物。",
+      "check": "artifact_digest_matches_subject",
+      "fingerprint": "81ec74bb7bb519fcdd71af0c43e806277f58260be6dd58fff1175dc47d3ee5f1"
+    },
+    {
+      "id": "ART-1EAC0ADD",
+      "title": "产物来源 commit 不符合预期",
+      "severity": "critical",
+      "score": 93,
+      "evidence": "provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19",
+      "recommendation": "按 .supplyguard/trust-policy.yml 复核策略并重新生成可信 provenance。",
+      "check": "commit_matches_expected",
+      "fingerprint": "1eac0addfec865342064270bb34280c427ab4d5305a90a4220c4ee7042a902a5"
+    },
+    {
+      "id": "ART-CAC4BED9",
+      "title": "runner 环境不符合策略",
+      "severity": "high",
+      "score": 87,
+      "evidence": "self-hosted runner is not allowed by policy: self-hosted",
+      "recommendation": "按 .supplyguard/trust-policy.yml 复核策略并重新生成可信 provenance。",
+      "check": "runner_environment_trusted",
+      "fingerprint": "cac4bed9a998404a869daae8baefd297d43ee62c6f732108f4c8c588ea144339"
+    },
+    {
+      "id": "ART-5F0B98B3",
+      "title": "产物签名验签未通过",
+      "severity": "medium",
+      "score": 64,
+      "evidence": "Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)",
+      "recommendation": "安装并配置 gh/cosign 验签，或在发布门禁中强制执行 GitHub artifact attestation verify。",
+      "check": "signature_verified",
+      "fingerprint": "5f0b98b3714d4a341e2eca70aea4164dc734e418c3422ac74f10932a0819a974"
+    }
+  ],
+  "provenance": {
+    "subject_name": "3cx-desktop-app.tar.gz",
+    "subject_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "predicateType": "https://slsa.dev/provenance/v1",
+    "predicate_type": "https://slsa.dev/provenance/v1",
+    "builder_id": "https://github.com/actions/runner/self-hosted",
+    "build_type": "https://github.com/actions/runner/github-hosted",
+    "source_repo": "https://github.com/3cx/desktop-app",
+    "commit": "2222222222222222222222222222222222222222",
+    "workflow": ".github/workflows/desktop-release.yml",
+    "ref": "refs/heads/main",
+    "runner_environment": "self-hosted",
+    "invocation_id": "github-actions/desktop-release-20260611",
+    "created_at": "2026-06-11T10:00:00Z",
+    "subject": [
+      {
+        "name": "3cx-desktop-app.tar.gz",
+        "digest": {
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      }
+    ],
+    "external_parameters": {
+      "workflow": {
+        "repository": "https://github.com/3cx/desktop-app",
+        "ref": "refs/heads/main",
+        "path": ".github/workflows/desktop-release.yml"
+      },
+      "event_name": "push"
+    },
+    "has_envelope": false,
+    "envelope_signature_count": 0
+  },
+  "policy": {
+    "policy_artifact": "3cx-desktop-app.tar.gz",
+    "expected_repo": "https://github.com/3cx/desktop-app",
+    "expected_commit": "8f42c19",
+    "allowed_branches": [
+      "refs/heads/main"
+    ],
+    "allowed_workflows": [
+      ".github/workflows/desktop-release.yml"
+    ],
+    "trusted_builders": [
+      "https://github.com/actions/runner"
+    ],
+    "require_signature": false,
+    "require_provenance": true,
+    "allow_self_hosted_runner": false,
+    "max_age_hours": 8760,
+    "subject_name": null,
+    "expected_digest": "",
+    "hash_baselines": []
+  },
+  "tools": [
+    {
+      "name": "gh",
+      "available": true,
+      "command": "gh attestation verify",
+      "state": "failed",
+      "version": "gh version 2.93.0 (2026-05-27)",
+      "error": "Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)"
+    },
+    {
+      "name": "cosign",
+      "available": true,
+      "command": "cosign",
+      "state": "ok",
+      "version": "v3.0.6",
+      "error": null
+    }
+  ],
+  "graphEvidence": {
+    "nodes": [
+      {
+        "id": "artifact",
+        "type": "BuildArtifact",
+        "label": "3cx-desktop-app.tar.gz",
+        "digest": "sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789"
+      },
+      {
+        "id": "attestation",
+        "type": "Attestation",
+        "label": "3cx-desktop-app.tar.gz"
+      },
+      {
+        "id": "builder",
+        "type": "TrustedBuilder",
+        "label": "https://github.com/actions/runner/self-hosted"
+      },
+      {
+        "id": "workflow",
+        "type": "Workflow",
+        "label": ".github/workflows/desktop-release.yml"
+      },
+      {
+        "id": "commit",
+        "type": "SourceCommit",
+        "label": "2222222222222222222222222222222222222222"
+      },
+      {
+        "id": "ART-81EC74BB",
+        "type": "TrustFinding",
+        "label": "产物 digest 与 attestation subject 不一致或缺失",
+        "severity": "critical"
+      },
+      {
+        "id": "ART-1EAC0ADD",
+        "type": "TrustFinding",
+        "label": "产物来源 commit 不符合预期",
+        "severity": "critical"
+      },
+      {
+        "id": "ART-CAC4BED9",
+        "type": "TrustFinding",
+        "label": "runner 环境不符合策略",
+        "severity": "high"
+      },
+      {
+        "id": "ART-5F0B98B3",
+        "type": "TrustFinding",
+        "label": "产物签名验签未通过",
+        "severity": "medium"
+      }
+    ],
+    "edges": [
+      {
+        "source": "artifact",
+        "target": "attestation",
+        "type": "ARTIFACT_ATTESTED_BY"
+      },
+      {
+        "source": "attestation",
+        "target": "commit",
+        "type": "ATTESTATION_CLAIMS_SOURCE"
+      },
+      {
+        "source": "attestation",
+        "target": "builder",
+        "type": "ATTESTATION_CLAIMS_BUILDER"
+      },
+      {
+        "source": "workflow",
+        "target": "artifact",
+        "type": "WORKFLOW_PRODUCES_ARTIFACT"
+      },
+      {
+        "source": "ART-81EC74BB",
+        "target": "artifact",
+        "type": "TRUST_FINDING_AFFECTS_ARTIFACT"
+      },
+      {
+        "source": "ART-1EAC0ADD",
+        "target": "artifact",
+        "type": "TRUST_FINDING_AFFECTS_ARTIFACT"
+      },
+      {
+        "source": "ART-CAC4BED9",
+        "target": "artifact",
+        "type": "TRUST_FINDING_AFFECTS_ARTIFACT"
+      },
+      {
+        "source": "ART-5F0B98B3",
+        "target": "artifact",
+        "type": "TRUST_FINDING_AFFECTS_ARTIFACT"
+      }
+    ],
+    "checks": [
+      {
+        "name": "artifact_digest_matches_subject",
+        "status": "fail",
+        "evidence": "artifact sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "name": "provenance_predicate_type_slsa",
+        "status": "pass",
+        "evidence": "https://slsa.dev/provenance/v1"
+      },
+      {
+        "name": "source_repository_allowed",
+        "status": "pass",
+        "evidence": "https://github.com/3cx/desktop-app"
+      },
+      {
+        "name": "commit_matches_expected",
+        "status": "fail",
+        "evidence": "provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19"
+      },
+      {
+        "name": "workflow_allowed",
+        "status": "pass",
+        "evidence": ".github/workflows/desktop-release.yml"
+      },
+      {
+        "name": "builder_trusted",
+        "status": "pass",
+        "evidence": "https://github.com/actions/runner/self-hosted"
+      },
+      {
+        "name": "runner_environment_trusted",
+        "status": "fail",
+        "evidence": "self-hosted runner is not allowed by policy: self-hosted"
+      },
+      {
+        "name": "attestation_max_age",
+        "status": "pass",
+        "evidence": "attestation age is 55.85 hours"
+      },
+      {
+        "name": "artifact_hash_baseline",
+        "status": "skipped",
+        "evidence": "No historical hash baseline configured."
+      },
+      {
+        "name": "signature_verified",
+        "status": "warn",
+        "evidence": "Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)"
+      }
+    ]
+  },
+  "graph_evidence": {
+    "nodes": [
+      {
+        "id": "artifact",
+        "type": "BuildArtifact",
+        "label": "3cx-desktop-app.tar.gz",
+        "digest": "sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789"
+      },
+      {
+        "id": "attestation",
+        "type": "Attestation",
+        "label": "3cx-desktop-app.tar.gz"
+      },
+      {
+        "id": "builder",
+        "type": "TrustedBuilder",
+        "label": "https://github.com/actions/runner/self-hosted"
+      },
+      {
+        "id": "workflow",
+        "type": "Workflow",
+        "label": ".github/workflows/desktop-release.yml"
+      },
+      {
+        "id": "commit",
+        "type": "SourceCommit",
+        "label": "2222222222222222222222222222222222222222"
+      },
+      {
+        "id": "ART-81EC74BB",
+        "type": "TrustFinding",
+        "label": "产物 digest 与 attestation subject 不一致或缺失",
+        "severity": "critical"
+      },
+      {
+        "id": "ART-1EAC0ADD",
+        "type": "TrustFinding",
+        "label": "产物来源 commit 不符合预期",
+        "severity": "critical"
+      },
+      {
+        "id": "ART-CAC4BED9",
+        "type": "TrustFinding",
+        "label": "runner 环境不符合策略",
+        "severity": "high"
+      },
+      {
+        "id": "ART-5F0B98B3",
+        "type": "TrustFinding",
+        "label": "产物签名验签未通过",
+        "severity": "medium"
+      }
+    ],
+    "edges": [
+      {
+        "source": "artifact",
+        "target": "attestation",
+        "type": "ARTIFACT_ATTESTED_BY"
+      },
+      {
+        "source": "attestation",
+        "target": "commit",
+        "type": "ATTESTATION_CLAIMS_SOURCE"
+      },
+      {
+        "source": "attestation",
+        "target": "builder",
+        "type": "ATTESTATION_CLAIMS_BUILDER"
+      },
+      {
+        "source": "workflow",
+        "target": "artifact",
+        "type": "WORKFLOW_PRODUCES_ARTIFACT"
+      },
+      {
+        "source": "ART-81EC74BB",
+        "target": "artifact",
+        "type": "TRUST_FINDING_AFFECTS_ARTIFACT"
+      },
+      {
+        "source": "ART-1EAC0ADD",
+        "target": "artifact",
+        "type": "TRUST_FINDING_AFFECTS_ARTIFACT"
+      },
+      {
+        "source": "ART-CAC4BED9",
+        "target": "artifact",
+        "type": "TRUST_FINDING_AFFECTS_ARTIFACT"
+      },
+      {
+        "source": "ART-5F0B98B3",
+        "target": "artifact",
+        "type": "TRUST_FINDING_AFFECTS_ARTIFACT"
+      }
+    ],
+    "checks": [
+      {
+        "name": "artifact_digest_matches_subject",
+        "status": "fail",
+        "evidence": "artifact sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "name": "provenance_predicate_type_slsa",
+        "status": "pass",
+        "evidence": "https://slsa.dev/provenance/v1"
+      },
+      {
+        "name": "source_repository_allowed",
+        "status": "pass",
+        "evidence": "https://github.com/3cx/desktop-app"
+      },
+      {
+        "name": "commit_matches_expected",
+        "status": "fail",
+        "evidence": "provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19"
+      },
+      {
+        "name": "workflow_allowed",
+        "status": "pass",
+        "evidence": ".github/workflows/desktop-release.yml"
+      },
+      {
+        "name": "builder_trusted",
+        "status": "pass",
+        "evidence": "https://github.com/actions/runner/self-hosted"
+      },
+      {
+        "name": "runner_environment_trusted",
+        "status": "fail",
+        "evidence": "self-hosted runner is not allowed by policy: self-hosted"
+      },
+      {
+        "name": "attestation_max_age",
+        "status": "pass",
+        "evidence": "attestation age is 55.85 hours"
+      },
+      {
+        "name": "artifact_hash_baseline",
+        "status": "skipped",
+        "evidence": "No historical hash baseline configured."
+      },
+      {
+        "name": "signature_verified",
+        "status": "warn",
+        "evidence": "Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)"
+      }
+    ]
+  },
+  "summary": {
+    "check_count": 10,
+    "finding_count": 4,
+    "trust_score": 16,
+    "level": "critical",
+    "risk_score": 98,
+    "risk_level": "critical",
+    "passed": 5,
+    "failed": 3,
+    "warnings": 1,
+    "missing": 0,
+    "skipped": 1,
+    "critical": 2,
+    "high": 1,
+    "medium": 1,
+    "low": 0,
+    "duration_seconds": 6.7
+  },
+  "report": "# 产物可信验证报告\n\n生成时间：2026-06-13 17:51:10 UTC\n\n## 摘要\n\n- 产物：3cx-desktop-app.tar.gz\n- 产物路径：C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\artifacts\\3cx-desktop-app.tar.gz\n- Attestation：C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\artifacts\\3cx-desktop-app.intoto.jsonl\n- SHA256：sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789\n- 可信评分：16 / 100\n- 可信等级：critical\n- 来源仓库：https://github.com/3cx/desktop-app\n- Commit / Ref：2222222222222222222222222222222222222222\n- Workflow：.github/workflows/desktop-release.yml\n- Builder：https://github.com/actions/runner/self-hosted\n\n## 策略\n\n- expected_repo：https://github.com/3cx/desktop-app\n- allowed_branches：refs/heads/main\n- allowed_workflows：.github/workflows/desktop-release.yml\n- trusted_builders：https://github.com/actions/runner\n- require_signature：False\n- require_provenance：True\n- allow_self_hosted_runner：False\n- max_age_hours：8760\n\n## 检查项\n\n| 检查 | 状态 | 等级 | 证据 |\n| --- | --- | --- | --- |\n| artifact_digest_matches_subject | fail | critical | artifact sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000 |\n| provenance_predicate_type_slsa | pass | low | https://slsa.dev/provenance/v1 |\n| source_repository_allowed | pass | low | https://github.com/3cx/desktop-app |\n| commit_matches_expected | fail | critical | provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19 |\n| workflow_allowed | pass | low | .github/workflows/desktop-release.yml |\n| builder_trusted | pass | low | https://github.com/actions/runner/self-hosted |\n| runner_environment_trusted | fail | high | self-hosted runner is not allowed by policy: self-hosted |\n| attestation_max_age | pass | low | attestation age is 55.85 hours |\n| artifact_hash_baseline | skipped | low | No historical hash baseline configured. |\n| signature_verified | warn | medium | Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1) |\n\n## 风险发现\n\n| 编号 | 等级 | 评分 | 标题 | 证据 |\n| --- | --- | ---: | --- | --- |\n| ART-81EC74BB | critical | 98 | 产物 digest 与 attestation subject 不一致或缺失 | artifact sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000 |\n| ART-1EAC0ADD | critical | 93 | 产物来源 commit 不符合预期 | provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19 |\n| ART-CAC4BED9 | high | 87 | runner 环境不符合策略 | self-hosted runner is not allowed by policy: self-hosted |\n| ART-5F0B98B3 | medium | 64 | 产物签名验签未通过 | Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1) |\n\n## 验签工具\n\n| 工具 | 可用 | 状态 | 版本 | 说明 |\n| --- | --- | --- | --- | --- |\n| gh | yes | failed | gh version 2.93.0 (2026-05-27) | Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:94a2682a8494929d9ec79ba9f849aae0163d2c5a43e3c15a2195675e78b66789?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1) |\n| cosign | yes | ok | v3.0.6 | - |\n\n## 参考\n\n- GitHub Artifact Attestations: https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations\n- SLSA verifying artifacts: https://slsa.dev/spec/v1.2/verifying-artifacts\n- Sigstore Cosign verify: https://docs.sigstore.dev/cosign/verifying/verify/\n",
+  "warnings": []
+}

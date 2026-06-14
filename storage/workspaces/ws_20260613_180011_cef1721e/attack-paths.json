@@ -1,0 +1,1025 @@
+[
+  {
+    "id": "attack-path:a947692be64f3cdf",
+    "title": "证据可串成供应链投毒到运行期异常的攻击路径",
+    "category": "supply-chain-compromise",
+    "severity": "critical",
+    "score": 100,
+    "description": "高危依赖、CI/CD 构建关系、产物部署和运行期异常日志位于同一条可达路径上。",
+    "conclusion": "能串成一次高度可信的真实攻击路径：入口、构建、产物、运行期行为连续可达，综合置信度 85%。",
+    "verdict": "likely-real-attack-path",
+    "confidence": 0.85,
+    "entry_node_id": "asset:3c5ec0c5c0a307ad",
+    "target_node_id": "asset:6940e7f3ae428100",
+    "node_ids": [
+      "asset:3c5ec0c5c0a307ad",
+      "asset:1cb9102423119adc",
+      "asset:f7ea228717b562d9",
+      "asset:49bde6ab181e231b",
+      "asset:f0977b1d825b4e58",
+      "asset:6940e7f3ae428100",
+      "attack:supply-chain-compromise"
+    ],
+    "edge_ids": [
+      "edge:e79d662e6dd16e9a",
+      "edge:e55d48dc7ad2ca64",
+      "edge:89f9b34e3e5f4957",
+      "edge:10cc5f02ad2d2715",
+      "edge:8a23456d3955640a"
+    ],
+    "evidence_ids": [
+      "evidence:b83018514727f741",
+      "evidence:1911354b1cce6b21",
+      "evidence:3a5e778d9843fa3b",
+      "evidence:b4f09207bf84ee69",
+      "evidence:21f8cec129bee8db",
+      "evidence:d1fe9b06da0df6e5",
+      "evidence:fd4032ee7d30cb7d",
+      "evidence:df370477be369242",
+      "evidence:1c5260ef6eab769a",
+      "evidence:d9d9207e0385a837",
+      "evidence:4425c343b6de9c04",
+      "evidence:082991a99cfab51f",
+      "evidence:748aac64fe1b1918",
+      "evidence:2ae062b40f80c407",
+      "evidence:6c1abc8c4492d7e6",
+      "evidence:bdcb9ad8081f7970",
+      "evidence:bd84c370e399ba6d",
+      "evidence:0e937efb6134aa3b"
+    ],
+    "recommendation": "隔离高危依赖，使用干净 runner 重新构建，校验产物哈希，并排查运行期外联。",
+    "path_steps": [
+      {
+        "index": 1,
+        "source": "cases/3cx-supply-chain/sample-repo/.github/workflows/desktop-release.yml",
+        "source_type": "CodeFile",
+        "target": "npm:axios@1.6.8",
+        "target_type": "DependencyPackage",
+        "relationship": "声明依赖入口",
+        "edge_type": "DECLARES_DEPENDENCY",
+        "confidence": 0.62,
+        "why_abusable": "If the package is malicious or vulnerable, it can be selected during dependency resolution.",
+        "trust_basis": "Weak unless lockfile and registry policy pin the package source.",
+        "model": "GUAC",
+        "evidence_ids": [
+          "evidence:b83018514727f741",
+          "evidence:1911354b1cce6b21"
+        ]
+      },
+      {
+        "index": 2,
+        "source": "npm:axios@1.6.8",
+        "source_type": "DependencyPackage",
+        "target": "运行期证据关联",
+        "target_type": "CIStep",
+        "relationship": "可进入构建",
+        "edge_type": "DEPENDENCY_REACHES_BUILD",
+        "confidence": 0.72,
+        "why_abusable": "A poisoned dependency can run install-time behavior or influence generated artifacts.",
+        "trust_basis": "Not trusted without provenance tying materials to the produced artifact.",
+        "model": "GUAC",
+        "evidence_ids": [
+          "evidence:1911354b1cce6b21"
+        ]
+      },
+      {
+        "index": 3,
+        "source": "运行期证据关联",
+        "source_type": "CIStep",
+        "target": "3cx-desktop-app.tar.gz",
+        "target_type": "BuildArtifact",
+        "relationship": "生成产物",
+        "edge_type": "STEP_PRODUCES_ARTIFACT",
+        "confidence": 0.78,
+        "why_abusable": "A compromised step or builder can produce a modified artifact.",
+        "trust_basis": "Needs provenance/attestation with subject digest, builder identity, and materials.",
+        "model": "SLSA/in-toto"
+      },
+      {
+        "index": 4,
+        "source": "3cx-desktop-app.tar.gz",
+        "source_type": "BuildArtifact",
+        "target": "3CX X_TRADER replay runtime",
+        "target_type": "RuntimeService",
+        "relationship": "deployed as",
+        "edge_type": "ARTIFACT_DEPLOYED_AS_SERVICE",
+        "confidence": 0.82,
+        "why_abusable": "Workspace runtime metadata links the verified artifact to the deployed service.",
+        "trust_basis": "SLSA/in-toto",
+        "model": "Runtime deployment",
+        "evidence_ids": [
+          "evidence:3a5e778d9843fa3b",
+          "evidence:b4f09207bf84ee69",
+          "evidence:21f8cec129bee8db",
+          "evidence:d1fe9b06da0df6e5",
+          "evidence:fd4032ee7d30cb7d",
+          "evidence:df370477be369242",
+          "evidence:1c5260ef6eab769a",
+          "evidence:d9d9207e0385a837",
+          "evidence:4425c343b6de9c04",
+          "evidence:082991a99cfab51f",
+          "evidence:748aac64fe1b1918",
+          "evidence:2ae062b40f80c407",
+          "evidence:6c1abc8c4492d7e6",
+          "evidence:bdcb9ad8081f7970",
+          "evidence:bd84c370e399ba6d"
+        ]
+      },
+      {
+        "index": 5,
+        "source": "3CX X_TRADER replay runtime",
+        "source_type": "RuntimeService",
+        "target": "45.83.64.12",
+        "target_type": "LogEvent",
+        "relationship": "产生日志",
+        "edge_type": "SERVICE_EMITS_LOG",
+        "confidence": 0.84,
+        "why_abusable": "Runtime logs show whether the build-time risk manifested after deployment.",
+        "trust_basis": "Stronger when timestamps align with deployment and multiple log sources agree.",
+        "model": "Runtime evidence",
+        "evidence_ids": [
+          "evidence:0e937efb6134aa3b"
+        ]
+      },
+      {
+        "index": 6,
+        "source": "45.83.64.12",
+        "source_type": "LogEvent",
+        "target": "供应链投毒阶段",
+        "target_type": "AttackStage",
+        "relationship": "关联",
+        "confidence": 0.5,
+        "trust_basis": "NormalizedLogEvent"
+      }
+    ],
+    "evidence_summary": [
+      {
+        "id": "evidence:b83018514727f741",
+        "kind": "static-analysis-result",
+        "title": "Ensure top-level permissions are not set to write-all",
+        "detail": "permissions: write-all",
+        "source": "code_audit",
+        "source_model": "SARIF",
+        "time": "2026-06-13 18:00"
+      },
+      {
+        "id": "evidence:1911354b1cce6b21",
+        "kind": "sbom-component-risk",
+        "title": "npm:axios@1.6.8",
+        "detail": "OSV: GHSA-35jp-ww65-95wh; OSV: GHSA-3g43-6gmg-66jw; OSV: GHSA-3p68-rc4w-qgx5; OSV: GHSA-3w6x-2g7m-8v23; OSV: GHSA-43fc-jf86-j433; OSV: GHSA-445q-vr5w-6q77; OSV: GHSA-4hjh-wcwx-x...",
+        "source": "dependency_audit",
+        "source_model": "CycloneDX",
+        "time": "2026-06-13 18:00"
+      },
+      {
+        "id": "evidence:3a5e778d9843fa3b",
+        "kind": "artifact-provenance",
+        "title": "Artifact provenance attestation",
+        "detail": "3cx-desktop-app.tar.gz sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34; repo=https://github.com/3cx/desktop-app; commit=222222222222222222222222222222222...",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.88
+      },
+      {
+        "id": "evidence:b4f09207bf84ee69",
+        "kind": "artifact-trust-check",
+        "title": "artifact_digest_matches_subject",
+        "detail": "fail: artifact sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34 != attestation subject sha256:000000000000000000000000000000000000000000000000000000000000...",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:21f8cec129bee8db",
+        "kind": "artifact-trust-check",
+        "title": "artifact_hash_baseline",
+        "detail": "skipped: No historical hash baseline configured.",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:d1fe9b06da0df6e5",
+        "kind": "artifact-trust-check",
+        "title": "attestation_max_age",
+        "detail": "pass: attestation age is 56.02 hours",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:fd4032ee7d30cb7d",
+        "kind": "artifact-trust-check",
+        "title": "builder_trusted",
+        "detail": "pass: https://github.com/actions/runner/self-hosted",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:df370477be369242",
+        "kind": "artifact-trust-check",
+        "title": "commit_matches_expected",
+        "detail": "fail: provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:1c5260ef6eab769a",
+        "kind": "artifact-trust-check",
+        "title": "provenance_predicate_type_slsa",
+        "detail": "pass: https://slsa.dev/provenance/v1",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:d9d9207e0385a837",
+        "kind": "artifact-trust-check",
+        "title": "runner_environment_trusted",
+        "detail": "fail: self-hosted runner is not allowed by policy: self-hosted",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:4425c343b6de9c04",
+        "kind": "artifact-trust-check",
+        "title": "signature_verified",
+        "detail": "warn: Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34?per_page=30&p...",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:082991a99cfab51f",
+        "kind": "artifact-trust-check",
+        "title": "source_repository_allowed",
+        "detail": "pass: https://github.com/3cx/desktop-app",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      }
+    ],
+    "trust_chain": [
+      {
+        "model": "GUAC",
+        "claim": "软件树中存在可达依赖节点",
+        "subject": "npm:axios@1.6.8",
+        "status": "observed",
+        "basis": "CycloneDX"
+      },
+      {
+        "model": "in-toto",
+        "claim": "构建步骤将 material 转换为 product",
+        "subject": "运行期证据关联",
+        "status": "needs-attestation",
+        "basis": "workflow evidence"
+      },
+      {
+        "model": "SLSA",
+        "claim": "产物需要 subject digest、builder identity 和 materials provenance",
+        "subject": "3cx-desktop-app.tar.gz",
+        "status": "gap",
+        "basis": "Build artifact digest=sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34, trust_score=16."
+      },
+      {
+        "model": "Runtime evidence",
+        "claim": "运行期行为证明风险可能已经触发",
+        "subject": "45.83.64.12",
+        "status": "observed",
+        "basis": "NormalizedLogEvent"
+      }
+    ],
+    "checks": [],
+    "gaps": [],
+    "choke_points": [
+      {
+        "node_id": "asset:1cb9102423119adc",
+        "label": "npm:axios@1.6.8",
+        "action": "固定私有源、锁定版本并清理缓存包。"
+      },
+      {
+        "node_id": "asset:f7ea228717b562d9",
+        "label": "运行期证据关联",
+        "action": "收敛权限、固定 Action 到 commit SHA，并使用干净 runner。"
+      },
+      {
+        "node_id": "asset:49bde6ab181e231b",
+        "label": "3cx-desktop-app.tar.gz",
+        "action": "重新构建并校验产物哈希/provenance。"
+      },
+      {
+        "node_id": "asset:f0977b1d825b4e58",
+        "label": "3CX X_TRADER replay runtime",
+        "action": "回滚或隔离服务实例，保留日志和镜像证据。"
+      },
+      {
+        "node_id": "asset:6940e7f3ae428100",
+        "label": "45.83.64.12",
+        "action": "封禁相关来源/目的地址并扩大同时间窗排查。"
+      }
+    ],
+    "mappings": [
+      {
+        "framework": "MITRE ATT&CK",
+        "technique": "T1195",
+        "name": "Supply Chain Compromise"
+      }
+    ],
+    "references": [
+      "GUAC",
+      "SLSA",
+      "in-toto",
+      "BloodHound CE",
+      "MITRE ATT&CK STIX"
+    ]
+  },
+  {
+    "id": "attack-path:41d9d0974c05dab9",
+    "title": "证据可串成构建链路完整性受损路径",
+    "category": "build-integrity-risk",
+    "severity": "high",
+    "score": 95,
+    "description": "CI/CD 风险通过 SLSA/in-toto 的 step -> product 关系影响产物可信度，并继续到运行资产。",
+    "conclusion": "能串成构建完整性风险路径，但还需要 provenance/attestation 才能证明产物确被篡改，综合置信度 68%。",
+    "verdict": "provenance-risk-path",
+    "confidence": 0.68,
+    "entry_node_id": "asset:33ff0644a4c50844",
+    "target_node_id": "asset:f0977b1d825b4e58",
+    "node_ids": [
+      "asset:33ff0644a4c50844",
+      "asset:49bde6ab181e231b",
+      "asset:f0977b1d825b4e58",
+      "attack:build-system-compromise"
+    ],
+    "edge_ids": [
+      "edge:10cc5f02ad2d2715"
+    ],
+    "evidence_ids": [
+      "evidence:3a5e778d9843fa3b",
+      "evidence:b4f09207bf84ee69",
+      "evidence:21f8cec129bee8db",
+      "evidence:d1fe9b06da0df6e5",
+      "evidence:fd4032ee7d30cb7d",
+      "evidence:df370477be369242",
+      "evidence:1c5260ef6eab769a",
+      "evidence:d9d9207e0385a837",
+      "evidence:4425c343b6de9c04",
+      "evidence:082991a99cfab51f",
+      "evidence:748aac64fe1b1918",
+      "evidence:2ae062b40f80c407",
+      "evidence:6c1abc8c4492d7e6",
+      "evidence:bdcb9ad8081f7970",
+      "evidence:bd84c370e399ba6d"
+    ],
+    "recommendation": "收敛 workflow 权限，第三方 Action 固定到 commit SHA，并为产物增加 provenance/attestation。",
+    "path_steps": [
+      {
+        "index": 1,
+        "source": ".github/workflows/desktop-release.yml",
+        "source_type": "CIStep",
+        "target": "3cx-desktop-app.tar.gz",
+        "target_type": "BuildArtifact",
+        "relationship": "关联",
+        "confidence": 0.5,
+        "trust_basis": "WorkspaceSummary"
+      },
+      {
+        "index": 2,
+        "source": "3cx-desktop-app.tar.gz",
+        "source_type": "BuildArtifact",
+        "target": "3CX X_TRADER replay runtime",
+        "target_type": "RuntimeService",
+        "relationship": "deployed as",
+        "edge_type": "ARTIFACT_DEPLOYED_AS_SERVICE",
+        "confidence": 0.82,
+        "why_abusable": "Workspace runtime metadata links the verified artifact to the deployed service.",
+        "trust_basis": "SLSA/in-toto",
+        "model": "Runtime deployment",
+        "evidence_ids": [
+          "evidence:3a5e778d9843fa3b",
+          "evidence:b4f09207bf84ee69",
+          "evidence:21f8cec129bee8db",
+          "evidence:d1fe9b06da0df6e5",
+          "evidence:fd4032ee7d30cb7d",
+          "evidence:df370477be369242",
+          "evidence:1c5260ef6eab769a",
+          "evidence:d9d9207e0385a837",
+          "evidence:4425c343b6de9c04",
+          "evidence:082991a99cfab51f",
+          "evidence:748aac64fe1b1918",
+          "evidence:2ae062b40f80c407",
+          "evidence:6c1abc8c4492d7e6",
+          "evidence:bdcb9ad8081f7970",
+          "evidence:bd84c370e399ba6d"
+        ]
+      },
+      {
+        "index": 3,
+        "source": "3CX X_TRADER replay runtime",
+        "source_type": "RuntimeService",
+        "target": "构建链路风险阶段",
+        "target_type": "AttackStage",
+        "relationship": "关联",
+        "confidence": 0.5,
+        "trust_basis": "Runtime"
+      }
+    ],
+    "evidence_summary": [
+      {
+        "id": "evidence:3a5e778d9843fa3b",
+        "kind": "artifact-provenance",
+        "title": "Artifact provenance attestation",
+        "detail": "3cx-desktop-app.tar.gz sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34; repo=https://github.com/3cx/desktop-app; commit=222222222222222222222222222222222...",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.88
+      },
+      {
+        "id": "evidence:b4f09207bf84ee69",
+        "kind": "artifact-trust-check",
+        "title": "artifact_digest_matches_subject",
+        "detail": "fail: artifact sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34 != attestation subject sha256:000000000000000000000000000000000000000000000000000000000000...",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:21f8cec129bee8db",
+        "kind": "artifact-trust-check",
+        "title": "artifact_hash_baseline",
+        "detail": "skipped: No historical hash baseline configured.",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:d1fe9b06da0df6e5",
+        "kind": "artifact-trust-check",
+        "title": "attestation_max_age",
+        "detail": "pass: attestation age is 56.02 hours",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:fd4032ee7d30cb7d",
+        "kind": "artifact-trust-check",
+        "title": "builder_trusted",
+        "detail": "pass: https://github.com/actions/runner/self-hosted",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:df370477be369242",
+        "kind": "artifact-trust-check",
+        "title": "commit_matches_expected",
+        "detail": "fail: provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:1c5260ef6eab769a",
+        "kind": "artifact-trust-check",
+        "title": "provenance_predicate_type_slsa",
+        "detail": "pass: https://slsa.dev/provenance/v1",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:d9d9207e0385a837",
+        "kind": "artifact-trust-check",
+        "title": "runner_environment_trusted",
+        "detail": "fail: self-hosted runner is not allowed by policy: self-hosted",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:4425c343b6de9c04",
+        "kind": "artifact-trust-check",
+        "title": "signature_verified",
+        "detail": "warn: Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34?per_page=30&p...",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:082991a99cfab51f",
+        "kind": "artifact-trust-check",
+        "title": "source_repository_allowed",
+        "detail": "pass: https://github.com/3cx/desktop-app",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:748aac64fe1b1918",
+        "kind": "artifact-trust-check",
+        "title": "workflow_allowed",
+        "detail": "pass: .github/workflows/desktop-release.yml",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:2ae062b40f80c407",
+        "kind": "artifact-trust-finding",
+        "title": "runner 环境不符合策略",
+        "detail": "self-hosted runner is not allowed by policy: self-hosted",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01"
+      }
+    ],
+    "trust_chain": [
+      {
+        "model": "in-toto",
+        "claim": "构建步骤将 material 转换为 product",
+        "subject": ".github/workflows/desktop-release.yml",
+        "status": "needs-attestation",
+        "basis": "workflow evidence"
+      },
+      {
+        "model": "SLSA",
+        "claim": "产物需要 subject digest、builder identity 和 materials provenance",
+        "subject": "3cx-desktop-app.tar.gz",
+        "status": "gap",
+        "basis": "Build artifact digest=sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34, trust_score=16."
+      }
+    ],
+    "checks": [],
+    "gaps": [
+      "路径关系可达，但部分边是启发式关联；建议补充时间线、产物哈希或来源 IP 证据。"
+    ],
+    "choke_points": [
+      {
+        "node_id": "asset:33ff0644a4c50844",
+        "label": ".github/workflows/desktop-release.yml",
+        "action": "收敛权限、固定 Action 到 commit SHA，并使用干净 runner。"
+      },
+      {
+        "node_id": "asset:49bde6ab181e231b",
+        "label": "3cx-desktop-app.tar.gz",
+        "action": "重新构建并校验产物哈希/provenance。"
+      },
+      {
+        "node_id": "asset:f0977b1d825b4e58",
+        "label": "3CX X_TRADER replay runtime",
+        "action": "回滚或隔离服务实例，保留日志和镜像证据。"
+      }
+    ],
+    "mappings": [
+      {
+        "framework": "SLSA",
+        "name": "Build provenance and integrity"
+      }
+    ],
+    "references": [
+      "SLSA",
+      "in-toto",
+      "GUAC",
+      "BloodHound CE"
+    ]
+  },
+  {
+    "id": "attack-path:1207c5e4c67741e9",
+    "title": "产物可信链路验证路径",
+    "category": "artifact-trust",
+    "severity": "critical",
+    "score": 16,
+    "description": "commit、workflow、builder、artifact 与 provenance attestation 已被串成发布前/部署前可信验证链。",
+    "conclusion": "产物 3cx-desktop-app.tar.gz 的可信链存在阻断项；需要复核 commit 2222222222222222222222222222222222222222 -> workflow -> https://github.com/actions/runner/self-hosted -> artifact -> attestation 的 digest、签名和策略匹配结果。",
+    "verdict": "provenance-risk-path",
+    "confidence": 0.5,
+    "entry_node_id": "asset:46ee2f84fa6112bb",
+    "target_node_id": "asset:49bde6ab181e231b",
+    "node_ids": [
+      "asset:46ee2f84fa6112bb",
+      "",
+      "asset:6f62a61a72e0d7d6",
+      "asset:49bde6ab181e231b",
+      "asset:a24f4df79f74a5e9",
+      "finding-node:59dffa0de579ce37",
+      "attack:build-system-compromise"
+    ],
+    "edge_ids": [
+      "edge:11c51a904ba06e93",
+      "edge:50610961dd04ac1d",
+      "edge:1eb3f7023d60bb3f"
+    ],
+    "evidence_ids": [
+      "evidence:3a5e778d9843fa3b",
+      "evidence:b4f09207bf84ee69",
+      "evidence:21f8cec129bee8db",
+      "evidence:d1fe9b06da0df6e5",
+      "evidence:fd4032ee7d30cb7d",
+      "evidence:df370477be369242",
+      "evidence:1c5260ef6eab769a",
+      "evidence:d9d9207e0385a837",
+      "evidence:4425c343b6de9c04",
+      "evidence:082991a99cfab51f",
+      "evidence:748aac64fe1b1918",
+      "evidence:2ae062b40f80c407",
+      "evidence:6c1abc8c4492d7e6",
+      "evidence:bdcb9ad8081f7970",
+      "evidence:bd84c370e399ba6d"
+    ],
+    "recommendation": "将该产物可信验证结果作为发布门禁；digest、签名、builder、workflow 或来源任一失败时阻断发布。",
+    "path_steps": [
+      {
+        "index": 1,
+        "source": "commit 2222222222222222222222222222222222222222",
+        "source_type": "SourceCommit",
+        "target": "https://github.com/actions/runner/self-hosted",
+        "target_type": "TrustedBuilder",
+        "relationship": "关联",
+        "confidence": 0.5,
+        "trust_basis": "SLSA/in-toto"
+      },
+      {
+        "index": 2,
+        "source": "https://github.com/actions/runner/self-hosted",
+        "source_type": "TrustedBuilder",
+        "target": "3cx-desktop-app.tar.gz",
+        "target_type": "BuildArtifact",
+        "relationship": "produces artifact",
+        "edge_type": "BUILDER_PRODUCES_ARTIFACT",
+        "confidence": 0.88,
+        "why_abusable": "Trusted builder identity is the execution root that produced the artifact subject digest.",
+        "trust_basis": "Artifact digest must match the attested subject produced by this builder.",
+        "model": "SLSA provenance",
+        "evidence_ids": [
+          "evidence:3a5e778d9843fa3b",
+          "evidence:b4f09207bf84ee69",
+          "evidence:21f8cec129bee8db",
+          "evidence:d1fe9b06da0df6e5",
+          "evidence:fd4032ee7d30cb7d",
+          "evidence:df370477be369242",
+          "evidence:1c5260ef6eab769a",
+          "evidence:d9d9207e0385a837",
+          "evidence:4425c343b6de9c04",
+          "evidence:082991a99cfab51f",
+          "evidence:748aac64fe1b1918",
+          "evidence:2ae062b40f80c407",
+          "evidence:6c1abc8c4492d7e6",
+          "evidence:bdcb9ad8081f7970",
+          "evidence:bd84c370e399ba6d"
+        ]
+      },
+      {
+        "index": 3,
+        "source": "3cx-desktop-app.tar.gz",
+        "source_type": "BuildArtifact",
+        "target": "3cx-desktop-app.tar.gz",
+        "target_type": "Attestation",
+        "relationship": "attested by",
+        "edge_type": "ARTIFACT_ATTESTED_BY",
+        "confidence": 0.92,
+        "why_abusable": "Artifact trust scan parsed a provenance attestation for this artifact digest.",
+        "trust_basis": "SLSA/in-toto",
+        "model": "SLSA/in-toto",
+        "evidence_ids": [
+          "evidence:3a5e778d9843fa3b",
+          "evidence:b4f09207bf84ee69",
+          "evidence:21f8cec129bee8db",
+          "evidence:d1fe9b06da0df6e5",
+          "evidence:fd4032ee7d30cb7d",
+          "evidence:df370477be369242",
+          "evidence:1c5260ef6eab769a",
+          "evidence:d9d9207e0385a837",
+          "evidence:4425c343b6de9c04",
+          "evidence:082991a99cfab51f",
+          "evidence:748aac64fe1b1918",
+          "evidence:2ae062b40f80c407",
+          "evidence:6c1abc8c4492d7e6",
+          "evidence:bdcb9ad8081f7970",
+          "evidence:bd84c370e399ba6d"
+        ]
+      },
+      {
+        "index": 4,
+        "source": "3cx-desktop-app.tar.gz",
+        "source_type": "Attestation",
+        "target": "产物 digest 与 attestation subject 不一致或缺失",
+        "target_type": "Finding",
+        "relationship": "blocks proof",
+        "edge_type": "TRUST_FINDING_AFFECTS_ATTESTATION",
+        "confidence": 0.9,
+        "why_abusable": "Artifact trust finding blocks or weakens the provenance proof chain.",
+        "trust_basis": "SLSA/in-toto",
+        "model": "SLSA/in-toto policy",
+        "evidence_ids": [
+          "evidence:6c1abc8c4492d7e6"
+        ]
+      },
+      {
+        "index": 5,
+        "source": "产物 digest 与 attestation subject 不一致或缺失",
+        "source_type": "Finding",
+        "target": "构建链路风险阶段",
+        "target_type": "AttackStage",
+        "relationship": "关联",
+        "confidence": 0.5,
+        "trust_basis": "SLSA/in-toto"
+      }
+    ],
+    "evidence_summary": [
+      {
+        "id": "evidence:3a5e778d9843fa3b",
+        "kind": "artifact-provenance",
+        "title": "Artifact provenance attestation",
+        "detail": "3cx-desktop-app.tar.gz sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34; repo=https://github.com/3cx/desktop-app; commit=222222222222222222222222222222222...",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.88
+      },
+      {
+        "id": "evidence:b4f09207bf84ee69",
+        "kind": "artifact-trust-check",
+        "title": "artifact_digest_matches_subject",
+        "detail": "fail: artifact sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34 != attestation subject sha256:000000000000000000000000000000000000000000000000000000000000...",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:21f8cec129bee8db",
+        "kind": "artifact-trust-check",
+        "title": "artifact_hash_baseline",
+        "detail": "skipped: No historical hash baseline configured.",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:d1fe9b06da0df6e5",
+        "kind": "artifact-trust-check",
+        "title": "attestation_max_age",
+        "detail": "pass: attestation age is 56.02 hours",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:fd4032ee7d30cb7d",
+        "kind": "artifact-trust-check",
+        "title": "builder_trusted",
+        "detail": "pass: https://github.com/actions/runner/self-hosted",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:df370477be369242",
+        "kind": "artifact-trust-check",
+        "title": "commit_matches_expected",
+        "detail": "fail: provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:1c5260ef6eab769a",
+        "kind": "artifact-trust-check",
+        "title": "provenance_predicate_type_slsa",
+        "detail": "pass: https://slsa.dev/provenance/v1",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:d9d9207e0385a837",
+        "kind": "artifact-trust-check",
+        "title": "runner_environment_trusted",
+        "detail": "fail: self-hosted runner is not allowed by policy: self-hosted",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:4425c343b6de9c04",
+        "kind": "artifact-trust-check",
+        "title": "signature_verified",
+        "detail": "warn: Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34?per_page=30&p...",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.76
+      },
+      {
+        "id": "evidence:082991a99cfab51f",
+        "kind": "artifact-trust-check",
+        "title": "source_repository_allowed",
+        "detail": "pass: https://github.com/3cx/desktop-app",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:748aac64fe1b1918",
+        "kind": "artifact-trust-check",
+        "title": "workflow_allowed",
+        "detail": "pass: .github/workflows/desktop-release.yml",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01",
+        "confidence": 0.9
+      },
+      {
+        "id": "evidence:2ae062b40f80c407",
+        "kind": "artifact-trust-finding",
+        "title": "runner 环境不符合策略",
+        "detail": "self-hosted runner is not allowed by policy: self-hosted",
+        "source": "artifact_trust",
+        "source_model": "SLSA/in-toto",
+        "time": "2026-06-13 18:01"
+      }
+    ],
+    "trust_chain": [
+      {
+        "model": "SLSA materials",
+        "claim": "source repository and commit/ref are claimed by provenance",
+        "subject": "commit 2222222222222222222222222222222222222222",
+        "status": "observed",
+        "basis": "Source repository commit/ref claimed by provenance and checked against policy."
+      },
+      {
+        "node_id": "asset:6f62a61a72e0d7d6",
+        "label": "https://github.com/actions/runner/self-hosted",
+        "action": "将 builder.id 纳入可信 builder 策略，未知 builder 产物一律重新构建。"
+      },
+      {
+        "model": "SLSA",
+        "claim": "产物需要 subject digest、builder identity 和 materials provenance",
+        "subject": "3cx-desktop-app.tar.gz",
+        "status": "gap",
+        "basis": "Build artifact digest=sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34, trust_score=16."
+      },
+      {
+        "node_id": "asset:a24f4df79f74a5e9",
+        "label": "3cx-desktop-app.tar.gz",
+        "action": "使用 gh/cosign 验证 envelope 签名，并确认 subject digest 与当前产物一致。"
+      }
+    ],
+    "checks": [
+      {
+        "id": "artifact_digest_matches_subject",
+        "name": "artifact_digest_matches_subject",
+        "label": "Digest",
+        "status": "fail",
+        "value": "失败",
+        "evidence": "artifact sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "severity": "critical",
+        "score": 98
+      },
+      {
+        "id": "source_repository_allowed",
+        "name": "source_repository_allowed",
+        "label": "Repo",
+        "status": "pass",
+        "value": "匹配",
+        "evidence": "https://github.com/3cx/desktop-app",
+        "severity": "low",
+        "score": 0
+      },
+      {
+        "id": "commit_matches_expected",
+        "name": "commit_matches_expected",
+        "label": "Commit",
+        "status": "fail",
+        "value": "失败",
+        "evidence": "provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19",
+        "severity": "critical",
+        "score": 93
+      },
+      {
+        "id": "workflow_allowed",
+        "name": "workflow_allowed",
+        "label": "Workflow",
+        "status": "pass",
+        "value": "允许",
+        "evidence": ".github/workflows/desktop-release.yml",
+        "severity": "low",
+        "score": 0
+      },
+      {
+        "id": "builder_trusted",
+        "name": "builder_trusted",
+        "label": "Builder",
+        "status": "pass",
+        "value": "可信",
+        "evidence": "https://github.com/actions/runner/self-hosted",
+        "severity": "low",
+        "score": 0
+      },
+      {
+        "id": "runner_environment_trusted",
+        "name": "runner_environment_trusted",
+        "label": "Runner",
+        "status": "fail",
+        "value": "失败",
+        "evidence": "self-hosted runner is not allowed by policy: self-hosted",
+        "severity": "high",
+        "score": 87
+      },
+      {
+        "id": "provenance_predicate_type_slsa",
+        "name": "provenance_predicate_type_slsa",
+        "label": "Predicate",
+        "status": "pass",
+        "value": "SLSA",
+        "evidence": "https://slsa.dev/provenance/v1",
+        "severity": "low",
+        "score": 0
+      },
+      {
+        "id": "attestation_max_age",
+        "name": "attestation_max_age",
+        "label": "Attestation",
+        "status": "pass",
+        "value": "新鲜",
+        "evidence": "attestation age is 56.02 hours",
+        "severity": "low",
+        "score": 0
+      },
+      {
+        "id": "artifact_hash_baseline",
+        "name": "artifact_hash_baseline",
+        "label": "Hash baseline",
+        "status": "skipped",
+        "value": "未配置基线",
+        "evidence": "No historical hash baseline configured.",
+        "severity": "low",
+        "score": 0
+      },
+      {
+        "id": "signature_verified",
+        "name": "signature_verified",
+        "label": "Signature",
+        "status": "warn",
+        "value": "需复核",
+        "evidence": "Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:a2480f03f582a49021332345dcbf3781544098f69042daf792cbbb6a60b4fd34?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)",
+        "severity": "medium",
+        "score": 64
+      }
+    ],
+    "trust_score": 16,
+    "gaps": [],
+    "choke_points": [
+      {
+        "node_id": "asset:49bde6ab181e231b",
+        "label": "3cx-desktop-app.tar.gz",
+        "action": "重新构建并校验产物哈希/provenance。"
+      }
+    ],
+    "mappings": [
+      {
+        "framework": "SLSA",
+        "name": "Verify artifact provenance"
+      }
+    ],
+    "references": [
+      "SLSA",
+      "in-toto",
+      "Sigstore Cosign",
+      "GitHub Artifact Attestations",
+      "GUAC"
+    ]
+  }
+]

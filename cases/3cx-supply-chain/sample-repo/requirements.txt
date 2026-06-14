@@ -1,0 +1,4 @@
+requests==2.31.0
+pyyaml==6.0.1
+x-trader-build-agent==4.7.1
+

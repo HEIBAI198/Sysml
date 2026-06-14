@@ -1,0 +1,214 @@
+{
+    "scan_id":  "audit-20260614024533",
+    "generated_at":  "2026-06-14T02:45:33.899496+00:00",
+    "target_path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo",
+    "target":  {
+                   "importId":  "imp_91c9f0f3fffd",
+                   "projectName":  "3CX X_TRADER replay",
+                   "sourceType":  "local",
+                   "path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo"
+               },
+    "summary":  {
+                    "total":  1,
+                    "critical":  0,
+                    "high":  0,
+                    "medium":  0,
+                    "low":  1,
+                    "by_category":  {
+                                        "Docker/CI/IaC é\u0085ç½®é£é©":  1
+                                    },
+                    "tools":  [
+                                  {
+                                      "name":  "Semgrep CE",
+                                      "available":  true,
+                                      "version":  null,
+                                      "error":  null,
+                                      "state":  "ok"
+                                  },
+                                  {
+                                      "name":  "Gitleaks",
+                                      "available":  true,
+                                      "version":  "8.30.1",
+                                      "error":  null,
+                                      "state":  "ok"
+                                  },
+                                  {
+                                      "name":  "Bandit",
+                                      "available":  true,
+                                      "version":  "bandit 1.9.4",
+                                      "error":  "No Python source files found",
+                                      "state":  "skipped"
+                                  },
+                                  {
+                                      "name":  "Checkov",
+                                      "available":  true,
+                                      "version":  null,
+                                      "error":  null,
+                                      "state":  "ok"
+                                  }
+                              ],
+                    "target":  {
+                                   "importId":  "imp_91c9f0f3fffd",
+                                   "projectName":  "3CX X_TRADER replay",
+                                   "sourceType":  "local",
+                                   "path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo"
+                               },
+                    "duration_seconds":  32.67,
+                    "timeout_seconds":  90,
+                    "target_key":  "import:imp_91c9f0f3fffd",
+                    "ignored":  0,
+                    "ignored_total":  0,
+                    "baseline_exists":  false,
+                    "baseline_total":  0,
+                    "baseline_created_at":  null,
+                    "new":  1,
+                    "fixed":  0,
+                    "trend":  [
+                                  {
+                                      "scan_id":  "audit-20260614024533",
+                                      "generated_at":  "2026-06-14T02:45:33.899496+00:00",
+                                      "target_key":  "import:imp_91c9f0f3fffd",
+                                      "projectName":  "3CX X_TRADER replay",
+                                      "total":  1,
+                                      "critical":  0,
+                                      "high":  0,
+                                      "medium":  0,
+                                      "low":  1,
+                                      "new":  1,
+                                      "fixed":  0,
+                                      "ignored":  0,
+                                      "tools":  [
+                                                    "Semgrep CE",
+                                                    "Gitleaks",
+                                                    "Bandit",
+                                                    "Checkov"
+                                                ]
+                                  }
+                              ]
+                },
+    "findings":  [
+                     {
+                         "id":  "CFG-0001",
+                         "rule_id":  "CKV2_GHA_1",
+                         "title":  "Ensure top-level permissions are not set to write-all",
+                         "category":  "Docker/CI/IaC é\u0085ç½®é£é©",
+                         "severity":  "low",
+                         "score":  38,
+                         "risk_file":  "cases/3cx-supply-chain/sample-repo/.github/workflows/desktop-release.yml",
+                         "line":  7,
+                         "end_line":  8,
+                         "evidence":  "permissions: write-all",
+                         "recommendation":  "æ Checkov ç­ç¥ä¿®å¤é\u0085ç½®é¡¹ï¼Ensure top-level permissions are not set to write-allãä¼å\u0085ä½¿ç¨æå°æéãå®å\u0085¨é»è®¤å¼ãåºå®çæ¬åæ¾å¼å åºé\u0085ç½®ã",
+                         "scanner":  "checkov",
+                         "confidence":  "medium",
+                         "cwe":  null,
+                         "fingerprint":  "de53fe8bfb861f2b732a34e8"
+                     }
+                 ],
+    "scanners":  [
+                     {
+                         "name":  "Semgrep CE",
+                         "available":  true,
+                         "command":  "C:\\Users\\86189\\anaconda3\\Scripts\\semgrep.EXE",
+                         "version":  null,
+                         "error":  null,
+                         "state":  "ok"
+                     },
+                     {
+                         "name":  "Gitleaks",
+                         "available":  true,
+                         "command":  "C:\\Users\\86189\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gitleaks.Gitleaks_Microsoft.Winget.Source_8wekyb3d8bbwe\\gitleaks.EXE",
+                         "version":  "8.30.1",
+                         "error":  null,
+                         "state":  "ok"
+                     },
+                     {
+                         "name":  "Bandit",
+                         "available":  true,
+                         "command":  "C:\\Users\\86189\\Desktop\\sysml2\\.venv\\Scripts\\bandit.exe",
+                         "version":  "bandit 1.9.4",
+                         "error":  "No Python source files found",
+                         "state":  "skipped"
+                     },
+                     {
+                         "name":  "Checkov",
+                         "available":  true,
+                         "command":  "C:\\Users\\86189\\Desktop\\sysml2\\.venv\\Scripts\\checkov.cmd",
+                         "version":  null,
+                         "error":  null,
+                         "state":  "ok"
+                     }
+                 ],
+    "errors":  [
+
+               ],
+    "report":  "# ä»£ç å®å\u0085¨å®¡è®¡æ¥å\n\nçææ¶é´ï¼2026-06-14 02:46:06 UTC\næ«æç®æ ï¼C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo\n\n## æè¦\n\n- é£é©æ»æ°ï¼1\n- ä¸¥éï¼0\n- é«å±ï¼0\n- ä¸­å±ï¼0\n- ä½å±ï¼1\n\n## æ«æå¨\n\n| å·¥å\u0085· | ç¶æ | çæ¬ | è¯´æ |\n| --- | --- | --- | --- |\n| Semgrep CE | å¯ç¨ | - | - |\n| Gitleaks | å¯ç¨ | 8.30.1 | - |\n| Bandit | å¯ç¨ | bandit 1.9.4 | No Python source files found |\n| Checkov | å¯ç¨ | - | - |\n\n## é£é©æç»\n\n| ç¼å· | ç­çº§ | ç±»å | ä½ç½® | è¯æ® |\n| --- | --- | --- | --- | --- |\n| CFG-0001 | low | Docker/CI/IaC é\u0085ç½®é£é© | cases/3cx-supply-chain/sample-repo/.github/workflows/desktop-release.yml:7 | permissions: write-all |\n\n## ä¿®å¤å»ºè®®\n\n- **cases/3cx-supply-chain/sample-repo/.github/workflows/desktop-release.yml:7**ï¼æ Checkov ç­ç¥ä¿®å¤é\u0085ç½®é¡¹ï¼Ensure top-level permissions are not set to write-allãä¼å\u0085ä½¿ç¨æå°æéãå®å\u0085¨é»è®¤å¼ãåºå®çæ¬åæ¾å¼å åºé\u0085ç½®ã\n\n## æ«ææç¤º\n\n- æ«æå®æã\n",
+    "sarif":  {
+                  "$schema":  "https://json.schemastore.org/sarif-2.1.0.json",
+                  "version":  "2.1.0",
+                  "runs":  [
+                               {
+                                   "tool":  {
+                                                "driver":  {
+                                                               "name":  "SupplyGuard Code Audit",
+                                                               "informationUri":  "https://github.com/semgrep/semgrep",
+                                                               "rules":  [
+                                                                             {
+                                                                                 "id":  "CKV2_GHA_1",
+                                                                                 "name":  "Docker/CI/IaC é\u0085ç½®é£é©",
+                                                                                 "shortDescription":  {
+                                                                                                          "text":  "Ensure top-level permissions are not set to write-all"
+                                                                                                      },
+                                                                                 "fullDescription":  {
+                                                                                                         "text":  "æ Checkov ç­ç¥ä¿®å¤é\u0085ç½®é¡¹ï¼Ensure top-level permissions are not set to write-allãä¼å\u0085ä½¿ç¨æå°æéãå®å\u0085¨é»è®¤å¼ãåºå®çæ¬åæ¾å¼å åºé\u0085ç½®ã"
+                                                                                                     },
+                                                                                 "help":  {
+                                                                                              "text":  "æ Checkov ç­ç¥ä¿®å¤é\u0085ç½®é¡¹ï¼Ensure top-level permissions are not set to write-allãä¼å\u0085ä½¿ç¨æå°æéãå®å\u0085¨é»è®¤å¼ãåºå®çæ¬åæ¾å¼å åºé\u0085ç½®ã"
+                                                                                          },
+                                                                                 "properties":  {
+                                                                                                    "category":  "Docker/CI/IaC é\u0085ç½®é£é©",
+                                                                                                    "scanner":  "checkov",
+                                                                                                    "severity":  "low"
+                                                                                                }
+                                                                             }
+                                                                         ]
+                                                           }
+                                            },
+                                   "automationDetails":  {
+                                                             "id":  "imp_91c9f0f3fffd"
+                                                         },
+                                   "results":  [
+                                                   {
+                                                       "ruleId":  "CKV2_GHA_1",
+                                                       "level":  "note",
+                                                       "message":  {
+                                                                       "text":  "Ensure top-level permissions are not set to write-all: permissions: write-all"
+                                                                   },
+                                                       "locations":  [
+                                                                         {
+                                                                             "physicalLocation":  {
+                                                                                                      "artifactLocation":  {
+                                                                                                                               "uri":  "cases/3cx-supply-chain/sample-repo/.github/workflows/desktop-release.yml"
+                                                                                                                           },
+                                                                                                      "region":  {
+                                                                                                                     "startLine":  7,
+                                                                                                                     "endLine":  8
+                                                                                                                 }
+                                                                                                  }
+                                                                         }
+                                                                     ],
+                                                       "partialFingerprints":  {
+                                                                                   "primaryLocationLineHash":  "de53fe8bfb861f2b732a34e8"
+                                                                               },
+                                                       "properties":  {
+                                                                          "category":  "Docker/CI/IaC é\u0085ç½®é£é©",
+                                                                          "scanner":  "checkov",
+                                                                          "confidence":  "medium",
+                                                                          "recommendation":  "æ Checkov ç­ç¥ä¿®å¤é\u0085ç½®é¡¹ï¼Ensure top-level permissions are not set to write-allãä¼å\u0085ä½¿ç¨æå°æéãå®å\u0085¨é»è®¤å¼ãåºå®çæ¬åæ¾å¼å åºé\u0085ç½®ã"
+                                                                      }
+                                                   }
+                                               ]
+                               }
+                           ]
+              }
+}

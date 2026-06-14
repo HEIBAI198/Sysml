@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedProjectPreflightRouteImport } from './routes/_authenticated/project-preflight'
 import { Route as AuthenticatedProjectImportRouteImport } from './routes/_authenticated/project-import'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as errors500RouteImport } from './routes/(errors)/500'
@@ -27,6 +28,12 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProjectPreflightRoute =
+  AuthenticatedProjectPreflightRouteImport.update({
+    id: '/project-preflight',
+    path: '/project-preflight',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProjectImportRoute =
   AuthenticatedProjectImportRouteImport.update({
     id: '/project-import',
@@ -67,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/project-import': typeof AuthenticatedProjectImportRoute
+  '/project-preflight': typeof AuthenticatedProjectPreflightRoute
 }
 export interface FileRoutesByTo {
   '/401': typeof errors401Route
@@ -75,6 +83,7 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/project-import': typeof AuthenticatedProjectImportRoute
+  '/project-preflight': typeof AuthenticatedProjectPreflightRoute
   '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
@@ -86,6 +95,7 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/project-import': typeof AuthenticatedProjectImportRoute
+  '/_authenticated/project-preflight': typeof AuthenticatedProjectPreflightRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
@@ -98,8 +108,17 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/project-import'
+    | '/project-preflight'
   fileRoutesByTo: FileRoutesByTo
-  to: '/401' | '/403' | '/404' | '/500' | '/503' | '/project-import' | '/'
+  to:
+    | '/401'
+    | '/403'
+    | '/404'
+    | '/500'
+    | '/503'
+    | '/project-import'
+    | '/project-preflight'
+    | '/'
   id:
     | '__root__'
     | '/_authenticated'
@@ -109,6 +128,7 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/project-import'
+    | '/_authenticated/project-preflight'
     | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
@@ -135,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/project-preflight': {
+      id: '/_authenticated/project-preflight'
+      path: '/project-preflight'
+      fullPath: '/project-preflight'
+      preLoaderRoute: typeof AuthenticatedProjectPreflightRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/project-import': {
@@ -184,11 +211,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedProjectImportRoute: typeof AuthenticatedProjectImportRoute
+  AuthenticatedProjectPreflightRoute: typeof AuthenticatedProjectPreflightRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProjectImportRoute: AuthenticatedProjectImportRoute,
+  AuthenticatedProjectPreflightRoute: AuthenticatedProjectPreflightRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 

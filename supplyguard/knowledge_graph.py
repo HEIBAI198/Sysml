@@ -1267,30 +1267,101 @@ def build_summary(
 
 
 def choose_graph_assets(assets: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    selected: list[dict[str, Any]] = []
-    for asset in sorted(assets, key=lambda item: (-int(item.get("risk_score") or 0), str(item.get("type") or ""))):
+    allowed_types = {
+        "DependencyPackage",
+        "CodeFile",
+        "CIStep",
+        "CIWorkflow",
+        "BuildArtifact",
+        "Attestation",
+        "TrustedBuilder",
+        "Workflow",
+        "SourceCommit",
+        "LogEvent",
+        "AudioEvidence",
+        "VisualEvidence",
+        "MultimodalEvidence",
+        "MultimodalFinding",
+        "RecognizedEntity",
+        "EvidenceChain",
+    }
+    type_limits = {
+        "CIWorkflow": 4,
+        "CIStep": 14,
+        "BuildArtifact": 4,
+        "Attestation": 4,
+        "TrustedBuilder": 4,
+        "Workflow": 4,
+        "SourceCommit": 4,
+        "LogEvent": 12,
+        "DependencyPackage": 28,
+        "CodeFile": 8,
+        "AudioEvidence": 6,
+        "VisualEvidence": 12,
+        "MultimodalEvidence": 8,
+        "MultimodalFinding": 12,
+        "RecognizedEntity": 18,
+        "EvidenceChain": 4,
+    }
+    priority_types = [
+        "CIWorkflow",
+        "CIStep",
+        "BuildArtifact",
+        "Attestation",
+        "TrustedBuilder",
+        "Workflow",
+        "SourceCommit",
+        "LogEvent",
+        "DependencyPackage",
+        "CodeFile",
+        "AudioEvidence",
+        "VisualEvidence",
+        "MultimodalEvidence",
+        "MultimodalFinding",
+        "RecognizedEntity",
+        "EvidenceChain",
+    ]
+    buckets: dict[str, list[dict[str, Any]]] = {asset_type: [] for asset_type in priority_types}
+    for asset in assets:
         asset_type = str(asset.get("type") or "")
-        if asset_type in {
-            "DependencyPackage",
-            "CodeFile",
-            "CIStep",
-            "CIWorkflow",
-            "BuildArtifact",
-            "Attestation",
-            "TrustedBuilder",
-            "Workflow",
-            "SourceCommit",
-            "LogEvent",
-            "AudioEvidence",
-            "VisualEvidence",
-            "MultimodalEvidence",
-            "MultimodalFinding",
-            "RecognizedEntity",
-            "EvidenceChain",
-        }:
+        if asset_type in allowed_types:
+            buckets.setdefault(asset_type, []).append(asset)
+
+    selected: list[dict[str, Any]] = []
+    selected_ids: set[str] = set()
+    for asset_type in priority_types:
+        bucket = sorted(
+            buckets.get(asset_type, []),
+            key=lambda item: (-int(item.get("risk_score") or 0), str(item.get("label") or "")),
+        )
+        for asset in bucket[: type_limits.get(asset_type, 6)]:
+            asset_id = str(asset.get("id") or "")
+            if asset_id and asset_id in selected_ids:
+                continue
             selected.append(asset)
-        if len(selected) >= 40:
-            break
+            if asset_id:
+                selected_ids.add(asset_id)
+
+    # 保证 CI/CD、产物、日志和来源证明等路径关键节点后，
+    # 再按风险补充其余资产，同时控制图谱总体规模。
+    max_assets = 120
+    if len(selected) < max_assets:
+        leftovers = sorted(
+            [
+                asset
+                for asset in assets
+                if str(asset.get("type") or "") in allowed_types
+                and str(asset.get("id") or "") not in selected_ids
+            ],
+            key=lambda item: (-int(item.get("risk_score") or 0), str(item.get("type") or ""), str(item.get("label") or "")),
+        )
+        for asset in leftovers:
+            if len(selected) >= max_assets:
+                break
+            selected.append(asset)
+            asset_id = str(asset.get("id") or "")
+            if asset_id:
+                selected_ids.add(asset_id)
     return selected
 
 

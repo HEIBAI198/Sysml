@@ -1,0 +1,14 @@
+{
+    "scanId":  "scan_83d3bc177ef2",
+    "importId":  "imp_91c9f0f3fffd",
+    "projectName":  "3CX X_TRADER replay",
+    "status":  "queued",
+    "scope":  ".",
+    "engines":  [
+                    "code-audit",
+                    "dependency-preflight",
+                    "ci-preflight"
+                ],
+    "createdAt":  "2026-06-14T02:45:33.668309+00:00",
+    "message":  "Scan job queued. Scanner workers can attach Trivy, OSV-Scanner, Gitleaks, or custom engines here."
+}

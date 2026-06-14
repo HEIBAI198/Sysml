@@ -1,0 +1,18 @@
+{
+  "name": "orion-update-sim",
+  "version": "2020.12.0-replay",
+  "private": true,
+  "description": "Safe SolarWinds/SUNBURST supply-chain replay fixture.",
+  "scripts": {
+    "build": "node scripts/build-update.js",
+    "postinstall": "node scripts/simulated-postinstall.js"
+  },
+  "dependencies": {
+    "orion-build-utils": "9.9.9",
+    "express": "4.18.2"
+  },
+  "devDependencies": {
+    "third-party-release-helper": "1.4.0"
+  }
+}
+

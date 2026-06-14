@@ -1,0 +1,322 @@
+{
+  "scan_id": "cicd-20260613174249",
+  "generated_at": "2026-06-13T17:42:49.154395+00:00",
+  "target_path": "C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo",
+  "target": {
+    "importId": "imp_139516c34562",
+    "projectName": "3CX X_TRADER replay",
+    "sourceType": "local",
+    "path": "C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo"
+  },
+  "workflows": [
+    ".github/workflows/desktop-release.yml"
+  ],
+  "summary": {
+    "workflow_count": 1,
+    "job_count": 1,
+    "total_steps": 5,
+    "finding_count": 3,
+    "risk_score": 88,
+    "risk_level": "high",
+    "critical": 0,
+    "high": 2,
+    "medium": 0,
+    "low": 1,
+    "by_rule": {
+      "github-actions.permissions-write-all": 1,
+      "github-actions.unpinned-action-ref": 2
+    },
+    "tools": [
+      {
+        "name": "zizmor",
+        "available": false,
+        "version": null,
+        "error": "Skipped",
+        "state": "skipped"
+      },
+      {
+        "name": "actionlint",
+        "available": false,
+        "version": null,
+        "error": "Skipped",
+        "state": "skipped"
+      }
+    ],
+    "duration_seconds": 0.02,
+    "target": {
+      "importId": "imp_139516c34562",
+      "projectName": "3CX X_TRADER replay",
+      "sourceType": "local",
+      "path": "C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo"
+    },
+    "target_key": "import:imp_139516c34562",
+    "ignored": 0,
+    "ignored_total": 0,
+    "baseline_exists": false,
+    "baseline_total": 0,
+    "baseline_created_at": null,
+    "new": 3,
+    "fixed": 0,
+    "trend": [
+      {
+        "scan_id": "cicd-20260613174249",
+        "generated_at": "2026-06-13T17:42:49.154395+00:00",
+        "target_key": "import:imp_139516c34562",
+        "projectName": "3CX X_TRADER replay",
+        "total": 3,
+        "critical": 0,
+        "high": 2,
+        "medium": 0,
+        "low": 1,
+        "new": 3,
+        "fixed": 0,
+        "ignored": 0,
+        "tools": []
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "CI-63BFF724",
+      "rule_id": "github-actions.permissions-write-all",
+      "title": "GitHub Token 权限过宽",
+      "severity": "high",
+      "score": 88,
+      "workflow": ".github/workflows/desktop-release.yml",
+      "job_id": null,
+      "job_name": null,
+      "step_index": null,
+      "step_name": null,
+      "line": 7,
+      "evidence": "permissions: write-all",
+      "reason": "permissions: write-all 会给 GITHUB_TOKEN 授予全部写权限，扩大凭据泄露或工作流劫持后的影响面。",
+      "recommendation": "按 workflow/job 最小化声明权限，例如 contents: read；发布任务只授予必要写权限。",
+      "fingerprint": "42debe0d18f94577d14acee1591296173cfcac71ad7ebc8c66e0bdc4da31f269",
+      "scanner": "SupplyGuard CI/CD",
+      "confidence": "medium"
+    },
+    {
+      "id": "CI-CEACE3B8",
+      "rule_id": "github-actions.unpinned-action-ref",
+      "title": "Action 未固定到完整 commit SHA",
+      "severity": "high",
+      "score": 75,
+      "workflow": ".github/workflows/desktop-release.yml",
+      "job_id": "desktop-build",
+      "job_name": "desktop-build",
+      "step_index": 2,
+      "step_name": "step 2",
+      "line": 14,
+      "evidence": "uses: vendor/electron-builder@v2",
+      "reason": "Action 使用 tag 或短引用，版本可被移动或覆盖，无法保证构建输入不可变。",
+      "recommendation": "在高安全流程中使用 40 位完整 commit SHA；普通流程至少固定可信 tag 并启用变更审查。",
+      "fingerprint": "b90341b78343452986702c423129e73218000d45f553110bbfc642a2939fdbfa",
+      "scanner": "SupplyGuard CI/CD",
+      "confidence": "medium"
+    },
+    {
+      "id": "CI-0D73DD3B",
+      "rule_id": "github-actions.unpinned-action-ref",
+      "title": "Action 未固定到完整 commit SHA",
+      "severity": "low",
+      "score": 45,
+      "workflow": ".github/workflows/desktop-release.yml",
+      "job_id": "desktop-build",
+      "job_name": "desktop-build",
+      "step_index": 1,
+      "step_name": "step 1",
+      "line": 13,
+      "evidence": "uses: actions/checkout@v3",
+      "reason": "Action 使用 tag 或短引用，版本可被移动或覆盖，无法保证构建输入不可变。",
+      "recommendation": "在高安全流程中使用 40 位完整 commit SHA；普通流程至少固定可信 tag 并启用变更审查。",
+      "fingerprint": "6b0279028828f11018c6ccf0a666be2f23658186cf72e0c3df3f065243870e4e",
+      "scanner": "SupplyGuard CI/CD",
+      "confidence": "medium"
+    }
+  ],
+  "scanners": [
+    {
+      "name": "zizmor",
+      "available": false,
+      "command": "zizmor",
+      "version": null,
+      "error": "Skipped",
+      "state": "skipped"
+    },
+    {
+      "name": "actionlint",
+      "available": false,
+      "command": "actionlint",
+      "version": null,
+      "error": "Skipped",
+      "state": "skipped"
+    }
+  ],
+  "sarif": {
+    "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+    "version": "2.1.0",
+    "runs": [
+      {
+        "tool": {
+          "driver": {
+            "name": "SupplyGuard CI/CD Audit",
+            "informationUri": "https://zizmor.sh/",
+            "rules": [
+              {
+                "id": "github-actions.permissions-write-all",
+                "name": "GitHub Token 权限过宽",
+                "shortDescription": {
+                  "text": "GitHub Token 权限过宽"
+                },
+                "fullDescription": {
+                  "text": "permissions: write-all 会给 GITHUB_TOKEN 授予全部写权限，扩大凭据泄露或工作流劫持后的影响面。"
+                },
+                "help": {
+                  "text": "按 workflow/job 最小化声明权限，例如 contents: read；发布任务只授予必要写权限。"
+                },
+                "properties": {
+                  "scanner": "SupplyGuard CI/CD",
+                  "severity": "high"
+                }
+              },
+              {
+                "id": "github-actions.unpinned-action-ref",
+                "name": "Action 未固定到完整 commit SHA",
+                "shortDescription": {
+                  "text": "Action 未固定到完整 commit SHA"
+                },
+                "fullDescription": {
+                  "text": "Action 使用 tag 或短引用，版本可被移动或覆盖，无法保证构建输入不可变。"
+                },
+                "help": {
+                  "text": "在高安全流程中使用 40 位完整 commit SHA；普通流程至少固定可信 tag 并启用变更审查。"
+                },
+                "properties": {
+                  "scanner": "SupplyGuard CI/CD",
+                  "severity": "high"
+                }
+              }
+            ]
+          }
+        },
+        "automationDetails": {
+          "id": "imp_139516c34562"
+        },
+        "results": [
+          {
+            "ruleId": "github-actions.permissions-write-all",
+            "level": "error",
+            "message": {
+              "text": "GitHub Token 权限过宽: permissions: write-all"
+            },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": ".github/workflows/desktop-release.yml"
+                  },
+                  "region": {
+                    "startLine": 7
+                  }
+                }
+              }
+            ],
+            "partialFingerprints": {
+              "primaryLocationLineHash": "42debe0d18f94577d14acee1591296173cfcac71ad7ebc8c66e0bdc4da31f269"
+            },
+            "properties": {
+              "scanner": "SupplyGuard CI/CD",
+              "confidence": "medium",
+              "recommendation": "按 workflow/job 最小化声明权限，例如 contents: read；发布任务只授予必要写权限。",
+              "job_id": null,
+              "step_name": null
+            }
+          },
+          {
+            "ruleId": "github-actions.unpinned-action-ref",
+            "level": "error",
+            "message": {
+              "text": "Action 未固定到完整 commit SHA: uses: vendor/electron-builder@v2"
+            },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": ".github/workflows/desktop-release.yml"
+                  },
+                  "region": {
+                    "startLine": 14
+                  }
+                }
+              }
+            ],
+            "partialFingerprints": {
+              "primaryLocationLineHash": "b90341b78343452986702c423129e73218000d45f553110bbfc642a2939fdbfa"
+            },
+            "properties": {
+              "scanner": "SupplyGuard CI/CD",
+              "confidence": "medium",
+              "recommendation": "在高安全流程中使用 40 位完整 commit SHA；普通流程至少固定可信 tag 并启用变更审查。",
+              "job_id": "desktop-build",
+              "step_name": "step 2"
+            }
+          },
+          {
+            "ruleId": "github-actions.unpinned-action-ref",
+            "level": "note",
+            "message": {
+              "text": "Action 未固定到完整 commit SHA: uses: actions/checkout@v3"
+            },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": ".github/workflows/desktop-release.yml"
+                  },
+                  "region": {
+                    "startLine": 13
+                  }
+                }
+              }
+            ],
+            "partialFingerprints": {
+              "primaryLocationLineHash": "6b0279028828f11018c6ccf0a666be2f23658186cf72e0c3df3f065243870e4e"
+            },
+            "properties": {
+              "scanner": "SupplyGuard CI/CD",
+              "confidence": "medium",
+              "recommendation": "在高安全流程中使用 40 位完整 commit SHA；普通流程至少固定可信 tag 并启用变更审查。",
+              "job_id": "desktop-build",
+              "step_name": "step 1"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "state": {
+    "target_key": "import:imp_139516c34562",
+    "ignored": [],
+    "baseline": null,
+    "baselines": {},
+    "trend": [
+      {
+        "scan_id": "cicd-20260613174249",
+        "generated_at": "2026-06-13T17:42:49.154395+00:00",
+        "target_key": "import:imp_139516c34562",
+        "projectName": "3CX X_TRADER replay",
+        "total": 3,
+        "critical": 0,
+        "high": 2,
+        "medium": 0,
+        "low": 1,
+        "new": 3,
+        "fixed": 0,
+        "ignored": 0,
+        "tools": []
+      }
+    ]
+  },
+  "report": "# CI/CD 构建流程风险报告\n\n生成时间：2026-06-13 17:42:49 UTC\n扫描目标：C:\\Users\\86189\\Desktop\\sysml2\\cases\\3cx-supply-chain\\sample-repo\n\n## 摘要\n\n- Workflow 数量：1\n- Job 数量：1\n- Step 数量：5\n- 风险数量：3\n- 严重：0\n- 高危：2\n- 中危：0\n- 低危：1\n\n## 扫描到的 Workflow\n\n- .github/workflows/desktop-release.yml\n\n## 扫描器\n\n| 工具 | 状态 | 版本 | 运行状态 | 说明 |\n| --- | --- | --- | --- | --- |\n| zizmor | 不可用 | - | skipped | Skipped |\n| actionlint | 不可用 | - | skipped | Skipped |\n\n## 风险明细\n\n| 扫描器 | Workflow | Job | Step | 等级 | 风险原因 | 证据 | 修复建议 |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| SupplyGuard CI/CD | .github/workflows/desktop-release.yml | - | - | high | permissions: write-all 会给 GITHUB_TOKEN 授予全部写权限，扩大凭据泄露或工作流劫持后的影响面。 | permissions: write-all (line 7) | 按 workflow/job 最小化声明权限，例如 contents: read；发布任务只授予必要写权限。 |\n| SupplyGuard CI/CD | .github/workflows/desktop-release.yml | desktop-build | step 2 | high | Action 使用 tag 或短引用，版本可被移动或覆盖，无法保证构建输入不可变。 | uses: vendor/electron-builder@v2 (line 14) | 在高安全流程中使用 40 位完整 commit SHA；普通流程至少固定可信 tag 并启用变更审查。 |\n| SupplyGuard CI/CD | .github/workflows/desktop-release.yml | desktop-build | step 1 | low | Action 使用 tag 或短引用，版本可被移动或覆盖，无法保证构建输入不可变。 | uses: actions/checkout@v3 (line 13) | 在高安全流程中使用 40 位完整 commit SHA；普通流程至少固定可信 tag 并启用变更审查。 |\n\n## 扫描提示\n\n- 扫描完成。\n",
+  "warnings": []
+}

@@ -1,0 +1,14 @@
+{
+    "scanId":  "scan_9e327df0176b",
+    "importId":  "imp_79f51dc69134",
+    "projectName":  "SolarWinds SUNBURST replay",
+    "status":  "queued",
+    "scope":  ".",
+    "engines":  [
+                    "code-audit",
+                    "dependency-preflight",
+                    "ci-preflight"
+                ],
+    "createdAt":  "2026-06-12T03:07:31.668620+00:00",
+    "message":  "Scan job queued. Scanner workers can attach Trivy, OSV-Scanner, Gitleaks, or custom engines here."
+}

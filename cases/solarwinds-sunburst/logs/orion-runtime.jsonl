@@ -1,0 +1,3 @@
+{"time":"2026-06-11T10:01:20Z","source":"app","service":"orion-update-service.prod","event":"update_package_loaded","message":"orion-update.tar.gz loaded during simulated replay window","path":"/updates/orion","status":200}
+{"time":"2026-06-11T10:03:44Z","source":"app","service":"orion-update-service.prod","event":"egress","message":"beacon egress callback destination 45.83.64.10 for updates.example.invalid","dst_ip":"45.83.64.10","status":0}
+{"time":"2026-06-11T10:04:12Z","source":"web","method":"GET","path":"/admin/export","status":200,"src_ip":"10.10.4.23","message":"sensitive export path accessed after update package load"}

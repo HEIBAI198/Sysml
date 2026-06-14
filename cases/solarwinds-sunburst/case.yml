@@ -1,0 +1,42 @@
+case_id: solarwinds-sunburst
+case_name: SolarWinds / SUNBURST defensive replay
+contest_topic: APT 供应链攻击检测与溯源系统
+scenario: apt_supply_chain_build_update_compromise
+public_references:
+  - title: CISA SolarWinds Supply Chain Compromise
+    url: https://www.cisa.gov/news-events/alerts/2021/01/07/supply-chain-compromise
+  - title: MITRE ATT&CK SolarWinds Campaign C0024
+    url: https://attack.mitre.org/campaigns/C0024/
+  - title: MITRE ATT&CK T1195 Supply Chain Compromise
+    url: https://attack.mitre.org/techniques/T1195/
+safety_boundary:
+  malware: none
+  payloads: harmless placeholders only
+  network: example.invalid domains and documentation IPs only
+expected_stages:
+  - component_version_anomaly
+  - dependency_confusion
+  - build_chain_contamination
+  - artifact_provenance_mismatch
+  - runtime_egress_confirmation
+ground_truth:
+  polluted_stage: build_update_pipeline
+  entry_signal: suspicious internal package resolved from public registry
+  affected_assets:
+    - orion-update.tar.gz
+    - orion-update-service.prod
+    - release.yml
+expected_findings:
+  dependency:
+    - npm package orion-build-utils has install script signal
+  cicd:
+    - permissions write-all
+    - third-party action not pinned to commit SHA
+    - remote script pipe
+  artifact_trust:
+    - artifact digest differs from attestation subject
+    - source repository/workflow policy mismatch
+  logs:
+    - suspicious external egress
+    - update package loaded during incident window
+

@@ -28,7 +28,7 @@ export function AppTitle() {
               <span className='truncate font-bold'>
                 SupplyGuard KG
               </span>
-              <span className='truncate text-xs'>LLM Security Platform</span>
+              <span className='truncate text-xs'>APT Supply Chain Trace</span>
             </Link>
             <ToggleSidebar />
           </div>

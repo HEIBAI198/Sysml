@@ -5,12 +5,16 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import UTC, datetime
 import hashlib
+import io
 import json
+from pathlib import Path
+from threading import Lock, Thread
 from typing import Any
 from urllib.parse import quote
+import zipfile
 
 import httpx
-from fastapi import APIRouter, File, Form, HTTPException, Query, Request, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, Query, Request, Response, UploadFile
 from pydantic import BaseModel, Field
 
 from ..code_audit import (
@@ -55,6 +59,7 @@ from ..artifact_trust import (
     save_upload_file,
     serialize_artifact_trust,
 )
+from ..agent_backend import AgentRunRequest, new_agent_run_id, run_agent_backend
 from ..dependency_audit import (
     DependencyAuditRequest,
     DependencyAuditResult,
@@ -86,6 +91,16 @@ from ..multimodal_audit import (
 )
 from ..knowledge_graph import build_knowledge_graph, build_unified_facts
 from ..llm_assistant import ask_deepseek_security_assistant
+from ..project_imports import ImportErrorDetail, load_import
+from ..workspaces import (
+    create_workspace,
+    latest_workspace_id,
+    load_latest_workspace,
+    load_workspace,
+    markdown_to_html,
+    save_workspace_snapshot,
+    write_evidence_package,
+)
 
 
 router = APIRouter(prefix="/api/security", tags=["Security Platform"])
@@ -95,6 +110,10 @@ LAST_CICD_AUDIT: CICDAuditResult | None = None
 LAST_LOG_AUDIT: LogAuditResult | None = None
 LAST_ARTIFACT_TRUST: ArtifactTrustResult | None = None
 LAST_MULTIMODAL_AUDIT: MultimodalAuditResult | None = None
+LAST_AGENT_RUN: dict[str, Any] | None = None
+LAST_AGENT_JOB_ID: str | None = None
+AGENT_JOBS: dict[str, dict[str, Any]] = {}
+AGENT_JOB_LOCK = Lock()
 
 
 class AssistantQuestion(BaseModel):
@@ -123,6 +142,31 @@ class MultimodalTextAnalyzeRequest(BaseModel):
     confidence: float = Field(default=0.9, ge=0, le=1)
     engine: str = Field(default="manual-asr-ocr-text", max_length=120)
     language: str | None = Field(default="zh-CN", max_length=40)
+
+
+class WorkspaceCreateRequest(BaseModel):
+    import_id: str | None = Field(default=None, alias="importId")
+    preset: str | None = Field(default=None, max_length=80)
+    name: str | None = Field(default=None, max_length=200)
+
+
+class ScanSuiteRequest(BaseModel):
+    import_id: str | None = Field(default=None, alias="importId")
+    artifact_path: str | None = Field(default=None, alias="artifactPath")
+    attestation_path: str | None = Field(default=None, alias="attestationPath")
+    expected_repo: str | None = Field(default=None, alias="expectedRepo")
+    expected_commit: str | None = Field(default=None, alias="expectedCommit")
+    allowed_workflows: list[str] | None = Field(default=None, alias="allowedWorkflows")
+    allowed_builders: list[str] | None = Field(default=None, alias="allowedBuilders")
+    allow_self_hosted_runner: bool = Field(default=False, alias="allowSelfHostedRunner")
+    require_signature: bool = Field(default=False, alias="requireSignature")
+    log_paths: list[str] = Field(default_factory=list, alias="logPaths")
+    include_code_audit: bool = Field(default=True, alias="includeCodeAudit")
+    include_dependency_audit: bool = Field(default=True, alias="includeDependencyAudit")
+    include_cicd_audit: bool = Field(default=True, alias="includeCicdAudit")
+    include_artifact_trust: bool = Field(default=True, alias="includeArtifactTrust")
+    include_log_audit: bool = Field(default=True, alias="includeLogAudit")
+    timeout_seconds: int = Field(default=180, alias="timeoutSeconds", ge=10, le=600)
 
 
 SECURITY_WORKSPACE: dict[str, Any] = {
@@ -940,15 +984,24 @@ def short_text(value: Any, limit: int) -> str:
     return f"{text[: max(20, limit - 3)]}..."
 
 
-def build_workspace_payload() -> dict[str, Any]:
+def build_workspace_payload(
+    *,
+    include_global_multimodal: bool = True,
+    workspace_override: dict[str, Any] | None = None,
+    import_record: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     payload = deepcopy(SECURITY_WORKSPACE)
+    if workspace_override:
+        payload.setdefault("workspace", {}).update(deepcopy(workspace_override))
+    if import_record:
+        payload["import"] = deepcopy(import_record)
     payload["generated_at"] = datetime.now(UTC).isoformat()
     payload["code_audit"] = serialize_code_audit(LAST_CODE_AUDIT)
     payload["dependency_audit"] = serialize_dependency_audit(LAST_DEPENDENCY_AUDIT)
     payload["cicd_audit"] = serialize_cicd_audit(LAST_CICD_AUDIT)
     payload["artifact_trust"] = serialize_artifact_trust(LAST_ARTIFACT_TRUST)
     payload["log_audit"] = serialize_log_audit(LAST_LOG_AUDIT)
-    payload["multimodal_audit"] = latest_multimodal_payload()
+    payload["multimodal_audit"] = latest_multimodal_payload() if include_global_multimodal else None
 
     if LAST_CODE_AUDIT is not None:
         app_findings = [finding for finding in payload["findings"] if finding.get("module") != "代码审计"]
@@ -1113,7 +1166,9 @@ def build_workspace_payload() -> dict[str, Any]:
         )
         augment_assistant_with_multimodal(payload)
 
-    realtime_logs = realtime_log_events(limit=200)
+    realtime_logs = {"events": [], "findings": [], "summary": {"event_count": 0, "finding_count": 0}}
+    if LAST_LOG_AUDIT is None:
+        realtime_logs = realtime_log_events(limit=200)
     realtime_summary = realtime_logs.get("summary") if isinstance(realtime_logs.get("summary"), dict) else {}
     if int(realtime_summary.get("event_count") or 0) > 0:
         realtime_workspace_logs = realtime_log_payload_to_workspace_logs(realtime_logs)
@@ -1165,8 +1220,117 @@ def build_workspace_payload() -> dict[str, Any]:
         int(payload["summary"].get("attack_paths") or 0),
         int(payload["graph"].get("summary", {}).get("attack_path_count") or 0),
     )
+    if is_imported_workspace_payload(payload):
+        payload["assistant"] = build_imported_workspace_assistant(payload)
     payload["report"] = build_security_report_from_payload(payload)
     return payload
+
+
+def is_imported_workspace_payload(payload: dict[str, Any]) -> bool:
+    workspace = payload.get("workspace") if isinstance(payload.get("workspace"), dict) else {}
+    return bool(payload.get("import") or workspace.get("importId"))
+
+
+def build_imported_workspace_assistant(payload: dict[str, Any]) -> dict[str, Any]:
+    workspace = payload.get("workspace") if isinstance(payload.get("workspace"), dict) else {}
+    project_name = str(workspace.get("name") or payload.get("import", {}).get("projectName") or "当前项目")
+    dependencies = sorted(
+        [item for item in payload.get("dependencies", []) if isinstance(item, dict)],
+        key=lambda item: int(item.get("risk") or 0),
+        reverse=True,
+    )
+    top_dependency = dependencies[0] if dependencies else {}
+    logs = [item for item in payload.get("logs", []) if isinstance(item, dict)]
+    runtime_hint = next(
+        (
+            str(item.get("dstIp") or item.get("dst_ip") or item.get("event") or item.get("signal"))
+            for item in logs
+            if item.get("dstIp") or item.get("dst_ip") or item.get("event") or item.get("signal")
+        ),
+        "暂无运行期日志命中",
+    )
+    path = primary_attack_path(payload)
+    path_title = str(path.get("title") or "供应链风险路径") if path else "供应链风险路径"
+    recommendation = str(path.get("recommendation") or "先隔离高风险依赖和可疑构建产物，再补齐 provenance、日志和代码可达性证据。") if path else "先隔离高风险依赖和可疑构建产物，再补齐 provenance、日志和代码可达性证据。"
+    dependency_name = str(top_dependency.get("name") or "高风险依赖")
+    dependency_risk = int(top_dependency.get("risk") or 0)
+    return {
+        "default_question": f"{project_name} 这条供应链风险链路应该优先修哪里？",
+        "answer": (
+            f"建议先处理 {project_name} 的最高风险链路“{path_title}”。"
+            f"当前依赖侧首要对象是 {dependency_name}，风险分 {dependency_risk}；"
+            f"运行期证据指向 {runtime_hint}。处置建议：{recommendation}"
+        ),
+        "retrieval": stable_unique_text(
+            [
+                f"Project: {project_name}",
+                f"SBOM: {dependency_name} risk={dependency_risk}",
+                f"Runtime: {runtime_hint}",
+                f"Repository: {workspace.get('repository') or '-'}",
+            ]
+        ),
+        "next_actions": [
+            "先冻结或替换受影响依赖，并重新生成 SBOM 与 VEX。",
+            "复核代码 import、入口路径和运行期日志，确认 affected 与待判研项。",
+            "使用干净 runner 重新构建产物，校验 digest、builder、workflow 和 provenance。",
+            "把已证实路径加入攻击链图谱，并在报告中标出证据缺口和处置优先级。",
+        ],
+    }
+
+
+async def workspace_id_from_request(request: Request) -> str | None:
+    query_value = request.query_params.get("workspaceId") or request.query_params.get("workspace_id")
+    if query_value:
+        return query_value
+    content_type = request.headers.get("content-type", "")
+    if "application/json" not in content_type:
+        return None
+    try:
+        body = await request.json()
+    except Exception:  # noqa: BLE001 - 非 JSON 或空请求体时不影响旧接口。
+        return None
+    if isinstance(body, dict):
+        value = body.get("workspaceId") or body.get("workspace_id")
+        return str(value) if value else None
+    return None
+
+
+def persist_current_workspace(workspace_id: str | None = None, *, module_key: str | None = None, module_payload: Any = None) -> dict[str, Any]:
+    existing: dict[str, Any] = {}
+    if workspace_id:
+        try:
+            existing = load_workspace(workspace_id)
+        except (FileNotFoundError, ValueError):
+            existing = {}
+    existing_workspace = existing.get("workspace") if isinstance(existing.get("workspace"), dict) else {}
+    imported_workspace = bool(existing.get("import") or existing_workspace.get("importId"))
+    existing_import = existing.get("import") if isinstance(existing.get("import"), dict) else None
+    payload = build_workspace_payload(
+        include_global_multimodal=(not imported_workspace or module_key == "multimodal_audit"),
+        workspace_override=existing_workspace,
+        import_record=existing_import,
+    )
+    if workspace_id:
+        existing_workspace = existing.get("workspace") if isinstance(existing.get("workspace"), dict) else {}
+        if existing_workspace:
+            payload["workspace"] = deepcopy(existing_workspace)
+        if isinstance(existing.get("import"), dict):
+            payload["import"] = deepcopy(existing["import"])
+        payload["workspaceId"] = workspace_id
+        payload["workspace_id"] = workspace_id
+    return save_workspace_snapshot(payload, workspace_id=workspace_id, module_key=module_key, module_payload=module_payload)
+
+
+def workspace_or_current(workspace_id: str | None = None) -> dict[str, Any]:
+    if workspace_id:
+        try:
+            return load_workspace(workspace_id)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail="工作空间不存在") from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+    latest = load_latest_workspace()
+    return latest or persist_current_workspace(latest_workspace_id())
 
 
 def is_supply_chain_workspace_finding(finding: dict[str, Any]) -> bool:
@@ -1861,24 +2025,452 @@ def cicd_audit_to_pipeline(result: CICDAuditResult) -> list[dict[str, Any]]:
     return pipeline
 
 
+@router.post("/workspaces")
+@router.post("/workspaces/")
+async def security_workspace_create(payload: WorkspaceCreateRequest) -> dict[str, Any]:
+    import_record: dict[str, Any] | None = None
+    if payload.import_id:
+        try:
+            import_record = load_import(payload.import_id)
+        except ImportErrorDetail as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+    workspace_override = workspace_override_from_import_record(import_record, preset=payload.preset, name=payload.name)
+    return create_workspace(
+        base_payload=build_workspace_payload(
+            include_global_multimodal=import_record is None,
+            workspace_override=workspace_override,
+            import_record=import_record,
+        ),
+        import_record=import_record,
+        preset=payload.preset,
+        name=payload.name,
+    )
+
+
+def workspace_override_from_import_record(
+    import_record: dict[str, Any] | None,
+    *,
+    preset: str | None = None,
+    name: str | None = None,
+) -> dict[str, Any]:
+    if not import_record:
+        return {}
+    source_ref = import_record.get("sourceRef") if isinstance(import_record.get("sourceRef"), dict) else {}
+    source = import_record.get("source") if isinstance(import_record.get("source"), dict) else {}
+    source_path = (
+        source.get("url")
+        or source_ref.get("url")
+        or source_ref.get("path")
+        or import_record.get("sourcePath")
+        or import_record.get("path")
+    )
+    override = {
+        "importId": import_record.get("importId"),
+        "name": name or import_record.get("projectName"),
+        "preset": preset,
+        "sourceType": import_record.get("sourceType"),
+        "source": source_ref or source or {"path": source_path},
+        "repository": source_path,
+        "build": f"{name or import_record.get('projectName') or 'workspace'} build",
+        "runtime": f"{name or import_record.get('projectName') or 'workspace'} runtime",
+    }
+    return {key: value for key, value in override.items() if value not in (None, "")}
+
+
+@router.get("/workspaces/latest")
+@router.get("/workspaces/latest/")
+async def security_workspace_latest() -> dict[str, Any]:
+    return workspace_or_current()
+
+
+@router.get("/workspaces/{workspace_id}")
+@router.get("/workspaces/{workspace_id}/")
+async def security_workspace_by_id(workspace_id: str) -> dict[str, Any]:
+    return workspace_or_current(workspace_id)
+
+
 @router.get("/workspace")
 async def security_workspace() -> dict[str, Any]:
-    return build_workspace_payload()
+    return workspace_or_current()
 
 
 @router.get("/report")
 async def security_report() -> dict[str, str]:
-    return {"format": "markdown", "content": build_workspace_payload()["report"]}
+    workspace = workspace_or_current()
+    return {"format": "markdown", "content": workspace.get("report") or ""}
+
+
+@router.get("/workspaces/{workspace_id}/report")
+@router.get("/workspaces/{workspace_id}/report/")
+async def security_workspace_report(workspace_id: str, format: str = Query(default="markdown", pattern="^(markdown|html)$")) -> dict[str, str]:
+    workspace = workspace_or_current(workspace_id)
+    if format == "html":
+        content = workspace.get("report_html") or markdown_to_html(workspace.get("report") or "")
+    else:
+        content = workspace.get("report") or ""
+    return {"format": format, "content": content}
+
+
+@router.get("/workspaces/{workspace_id}/evidence-package")
+@router.get("/workspaces/{workspace_id}/evidence-package/")
+async def security_workspace_evidence_package(workspace_id: str) -> Response:
+    package_path = Path("storage") / "workspaces" / workspace_id / f"{workspace_id}-evidence-package.zip"
+    try:
+        write_evidence_package(workspace_id, package_path)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="工作空间不存在") from exc
+    return Response(
+        content=package_path.read_bytes(),
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{workspace_id}-evidence-package.zip"'},
+    )
+
+
+@router.post("/workspaces/{workspace_id}/scan-suite")
+@router.post("/workspaces/{workspace_id}/scan-suite/")
+async def security_workspace_scan_suite(workspace_id: str, payload: ScanSuiteRequest) -> dict[str, Any]:
+    """按比赛演示主线执行一轮供应链溯源扫描。"""
+
+    global LAST_CODE_AUDIT
+    global LAST_DEPENDENCY_AUDIT
+    global LAST_CICD_AUDIT
+    global LAST_ARTIFACT_TRUST
+    global LAST_LOG_AUDIT
+
+    errors: list[dict[str, str]] = []
+    import_id = payload.import_id
+    if import_id is None:
+        existing = workspace_or_current(workspace_id)
+        import_id = existing.get("workspace", {}).get("importId") or existing.get("import", {}).get("importId")
+
+    if payload.include_code_audit:
+        try:
+            LAST_CODE_AUDIT = run_code_audit(
+                CodeAuditRequest(importId=import_id, timeoutSeconds=payload.timeout_seconds),
+                timeout_seconds=payload.timeout_seconds,
+            )
+        except Exception as exc:  # noqa: BLE001 - 一键溯源需要保留 partial 结果。
+            errors.append({"module": "code_audit", "message": str(exc)})
+
+    if payload.include_dependency_audit:
+        try:
+            LAST_DEPENDENCY_AUDIT = run_dependency_audit(
+                DependencyAuditRequest(importId=import_id, includeOsv=True, includeCdxgen=False, includeCyclonedxPy=False)
+            )
+        except Exception as exc:  # noqa: BLE001
+            errors.append({"module": "dependency_audit", "message": str(exc)})
+
+    if payload.include_cicd_audit:
+        try:
+            LAST_CICD_AUDIT = run_cicd_audit(CICDAuditRequest(importId=import_id, includeZizmor=False, includeActionlint=False))
+        except Exception as exc:  # noqa: BLE001
+            errors.append({"module": "cicd_audit", "message": str(exc)})
+
+    if payload.include_artifact_trust and payload.artifact_path and payload.attestation_path:
+        try:
+            LAST_ARTIFACT_TRUST = run_artifact_trust_scan(
+                ArtifactTrustRequest(
+                    artifactPath=payload.artifact_path,
+                    attestationPath=payload.attestation_path,
+                    expectedRepo=payload.expected_repo,
+                    expectedCommit=payload.expected_commit,
+                    allowedWorkflows=payload.allowed_workflows,
+                    allowedBuilders=payload.allowed_builders,
+                    allowSelfHostedRunner=payload.allow_self_hosted_runner,
+                    requireSignature=payload.require_signature,
+                    requireProvenance=True,
+                    maxAgeHours=8760,
+                )
+            )
+        except Exception as exc:  # noqa: BLE001
+            errors.append({"module": "artifact_trust", "message": str(exc)})
+
+    if payload.include_log_audit and payload.log_paths:
+        try:
+            log_inputs = []
+            for path_text in payload.log_paths:
+                path = Path(path_text)
+                if not path.is_absolute():
+                    path = Path.cwd() / path
+                log_inputs.append(LogFileInput(filename=path.name, content=path.read_bytes(), source="auto"))
+            LAST_LOG_AUDIT = run_log_audit(log_inputs)
+        except Exception as exc:  # noqa: BLE001
+            errors.append({"module": "log_audit", "message": str(exc)})
+
+    workspace = persist_current_workspace(
+        workspace_id,
+        module_key="scan_suite",
+        module_payload={
+            "completedAt": datetime.now(UTC).isoformat(),
+            "errors": errors,
+            "partial": bool(errors),
+        },
+    )
+    workspace["scanSuite"] = {"status": "partial" if errors else "completed", "errors": errors}
+    save_workspace_snapshot(workspace, workspace_id=workspace_id, module_key="scan_suite", module_payload=workspace["scanSuite"])
+    return workspace
+
+
+def store_agent_job(run_id: str, payload: dict[str, Any]) -> None:
+    with AGENT_JOB_LOCK:
+        AGENT_JOBS[run_id] = deepcopy(payload)
+
+
+def load_agent_job(run_id: str) -> dict[str, Any] | None:
+    with AGENT_JOB_LOCK:
+        job = AGENT_JOBS.get(run_id)
+        return deepcopy(job) if job is not None else None
+
+
+def latest_agent_job_payload() -> dict[str, Any] | None:
+    with AGENT_JOB_LOCK:
+        if LAST_AGENT_JOB_ID and LAST_AGENT_JOB_ID in AGENT_JOBS:
+            return deepcopy(AGENT_JOBS[LAST_AGENT_JOB_ID])
+        return None
+
+
+def empty_agent_job_payload() -> dict[str, Any]:
+    return {
+        "runId": None,
+        "status": "idle",
+        "steps": [],
+        "events": [],
+        "summary": {
+            "stepCount": 0,
+            "success": 0,
+            "skipped": 0,
+            "failed": 0,
+            "evidenceGapCount": 0,
+            "riskScore": 0,
+            "riskLevel": "low",
+        },
+        "evidenceGaps": [],
+        "nextActions": [],
+        "narrative": {
+            "summary": "尚未执行 Agent 调查。",
+            "timeline": [],
+            "verdict": "等待执行",
+            "confidence": 0,
+            "keyEvidence": [],
+            "defenseBrief": "",
+        },
+    }
+
+
+def apply_agent_results(bundle: Any, workspace_id: str | None = None) -> dict[str, Any]:
+    global LAST_CODE_AUDIT
+    global LAST_DEPENDENCY_AUDIT
+    global LAST_CICD_AUDIT
+    global LAST_ARTIFACT_TRUST
+    global LAST_LOG_AUDIT
+    global LAST_AGENT_RUN
+
+    if bundle.results.code_audit is not None:
+        LAST_CODE_AUDIT = bundle.results.code_audit
+    if bundle.results.dependency_audit is not None:
+        LAST_DEPENDENCY_AUDIT = bundle.results.dependency_audit
+    if bundle.results.cicd_audit is not None:
+        LAST_CICD_AUDIT = bundle.results.cicd_audit
+    if bundle.results.artifact_trust is not None:
+        LAST_ARTIFACT_TRUST = bundle.results.artifact_trust
+    if bundle.results.log_audit is not None:
+        LAST_LOG_AUDIT = bundle.results.log_audit
+
+    workspace = build_workspace_payload()
+    result = {
+        **bundle.payload,
+        "workspace": workspace,
+        "report": workspace.get("report") or "",
+    }
+    if workspace_id:
+        result["workspaceId"] = workspace_id
+        result["workspace"] = save_workspace_snapshot(
+            workspace,
+            workspace_id=workspace_id,
+            module_key="agent",
+            module_payload=bundle.payload,
+        )
+    LAST_AGENT_RUN = result
+    return result
+
+
+def run_agent_job_thread(run_id: str, payload: AgentRunRequest, workspace_id: str | None = None) -> None:
+    def progress(snapshot: dict[str, Any]) -> None:
+        if workspace_id:
+            snapshot["workspaceId"] = workspace_id
+        store_agent_job(run_id, snapshot)
+
+    try:
+        bundle = run_agent_backend(payload, run_id=run_id, progress=progress)
+        result = apply_agent_results(bundle, workspace_id=workspace_id)
+        store_agent_job(run_id, result)
+    except Exception as exc:  # noqa: BLE001 - 任务接口需要把异常收敛成可查询状态。
+        current = load_agent_job(run_id) or empty_agent_job_payload()
+        current.update(
+            {
+                "runId": run_id,
+                "status": "failed",
+                "error": str(exc),
+                "events": [
+                    *(current.get("events") or []),
+                    {
+                        "id": f"evt-{len(current.get('events') or []) + 1:04d}",
+                        "stepId": "agent",
+                        "kind": "job_failed",
+                        "level": "error",
+                        "message": f"Agent 任务异常终止：{exc}",
+                        "createdAt": datetime.now(UTC).isoformat(),
+                    },
+                ],
+            }
+        )
+        store_agent_job(run_id, current)
+
+
+@router.post("/agent/jobs")
+@router.post("/agent/jobs/")
+async def security_agent_create_job(payload: AgentRunRequest, request: Request) -> dict[str, Any]:
+    """创建一个可轮询的 Agent 调查任务。"""
+
+    global LAST_AGENT_JOB_ID
+    workspace_id = await workspace_id_from_request(request)
+    run_id = new_agent_run_id()
+    LAST_AGENT_JOB_ID = run_id
+    job = {
+        **empty_agent_job_payload(),
+        "runId": run_id,
+        "workspaceId": workspace_id,
+        "status": "queued",
+        "startedAt": datetime.now(UTC).isoformat(),
+        "input": payload.model_dump(by_alias=True),
+        "events": [
+            {
+                "id": "evt-0001",
+                "stepId": "agent",
+                "kind": "job_queued",
+                "level": "info",
+                "message": "Agent 任务已进入队列，准备开始供应链溯源调查。",
+                "createdAt": datetime.now(UTC).isoformat(),
+            }
+        ],
+    }
+    store_agent_job(run_id, job)
+    worker = Thread(target=run_agent_job_thread, args=(run_id, payload, workspace_id), daemon=True)
+    worker.start()
+    return job
+
+
+@router.get("/agent/jobs/latest")
+@router.get("/agent/jobs/latest/")
+async def security_agent_latest_job() -> dict[str, Any]:
+    return latest_agent_job_payload() or empty_agent_job_payload()
+
+
+@router.get("/agent/jobs/{run_id}")
+@router.get("/agent/jobs/{run_id}/")
+async def security_agent_job(run_id: str) -> dict[str, Any]:
+    job = load_agent_job(run_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Agent 任务不存在")
+    return job
+
+
+@router.get("/agent/jobs/{run_id}/evidence-package")
+@router.get("/agent/jobs/{run_id}/evidence-package/")
+async def security_agent_evidence_package(run_id: str) -> Response:
+    job = load_agent_job(run_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Agent 任务不存在")
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, mode="w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("agent-run.json", json.dumps(job, ensure_ascii=False, indent=2, default=str))
+        archive.writestr("evidence-gaps.json", json.dumps(job.get("evidenceGaps") or [], ensure_ascii=False, indent=2, default=str))
+        archive.writestr("narrative.md", render_agent_narrative_markdown(job))
+        archive.writestr("report.md", job.get("report") or build_workspace_payload().get("report") or "")
+        workspace = job.get("workspace") if isinstance(job.get("workspace"), dict) else build_workspace_payload()
+        archive.writestr("workspace.json", json.dumps(workspace, ensure_ascii=False, indent=2, default=str))
+    buffer.seek(0)
+    return Response(
+        content=buffer.getvalue(),
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{run_id}-evidence-package.zip"'},
+    )
+
+
+def render_agent_narrative_markdown(job: dict[str, Any]) -> str:
+    narrative = job.get("narrative") if isinstance(job.get("narrative"), dict) else {}
+    timeline = narrative.get("timeline") if isinstance(narrative.get("timeline"), list) else []
+    key_evidence = narrative.get("keyEvidence") if isinstance(narrative.get("keyEvidence"), list) else []
+    return "\n".join(
+        [
+            "# Agent 调查叙事",
+            "",
+            f"- 任务：{job.get('runId') or '-'}",
+            f"- 状态：{job.get('status') or '-'}",
+            f"- 判断：{narrative.get('verdict') or '-'}",
+            f"- 可信度：{narrative.get('confidence') or 0}%",
+            "",
+            "## 一句话结论",
+            str(narrative.get("summary") or "暂无调查结论。"),
+            "",
+            "## 调查时间线",
+            *(f"{index}. {item}" for index, item in enumerate(timeline, start=1)),
+            "",
+            "## 关键证据",
+            *(f"- {item}" for item in key_evidence),
+            "",
+            "## 答辩讲解",
+            str(narrative.get("defenseBrief") or ""),
+        ]
+    )
+
+
+@router.post("/agent/run")
+@router.post("/agent/run/")
+async def security_agent_run(payload: AgentRunRequest, request: Request) -> dict[str, Any]:
+    """同步执行 Agent 编排，并把成功结果写回当前工作台。"""
+
+    workspace_id = await workspace_id_from_request(request)
+    bundle = run_agent_backend(payload)
+    return apply_agent_results(bundle, workspace_id=workspace_id)
+
+
+@router.get("/agent/latest")
+@router.get("/agent/latest/")
+async def security_agent_latest() -> dict[str, Any]:
+    if LAST_AGENT_RUN is None:
+        return {
+            "runId": None,
+            "status": "idle",
+            "steps": [],
+            "summary": {
+                "stepCount": 0,
+                "success": 0,
+                "skipped": 0,
+                "failed": 0,
+                "evidenceGapCount": 0,
+                "riskScore": 0,
+                "riskLevel": "low",
+            },
+            "evidenceGaps": [],
+            "nextActions": [],
+        }
+    return LAST_AGENT_RUN
 
 
 @router.post("/code-audit/scan")
-async def code_audit_scan(payload: CodeAuditRequest) -> dict[str, Any]:
+async def code_audit_scan(payload: CodeAuditRequest, request: Request) -> dict[str, Any]:
     global LAST_CODE_AUDIT
+    workspace_id = await workspace_id_from_request(request)
     try:
         LAST_CODE_AUDIT = run_code_audit(payload, timeout_seconds=DEFAULT_SCAN_TIMEOUT_SECONDS)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return serialize_code_audit(LAST_CODE_AUDIT) or {}
+    result = serialize_code_audit(LAST_CODE_AUDIT) or {}
+    if workspace_id:
+        persist_current_workspace(workspace_id, module_key="code_audit", module_payload=result)
+    return result
 
 
 @router.get("/code-audit/latest")
@@ -1911,13 +2503,17 @@ async def code_audit_sarif() -> dict[str, Any]:
 
 
 @router.post("/dependencies/scan")
-async def dependency_audit_scan(payload: DependencyAuditRequest | None = None) -> dict[str, Any]:
+async def dependency_audit_scan(request: Request, payload: DependencyAuditRequest | None = None) -> dict[str, Any]:
     global LAST_DEPENDENCY_AUDIT
+    workspace_id = await workspace_id_from_request(request)
     try:
         LAST_DEPENDENCY_AUDIT = run_dependency_audit(payload or DependencyAuditRequest())
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return serialize_dependency_audit(LAST_DEPENDENCY_AUDIT) or {}
+    result = serialize_dependency_audit(LAST_DEPENDENCY_AUDIT) or {}
+    if workspace_id:
+        persist_current_workspace(workspace_id, module_key="dependency_audit", module_payload=result)
+    return result
 
 
 @router.get("/dependencies/latest")
@@ -1948,20 +2544,26 @@ async def dependency_audit_report() -> dict[str, str]:
 
 @router.post("/cicd/scan")
 @router.post("/cicd/scan/")
-async def cicd_audit_scan(payload: CICDAuditRequest | None = None) -> dict[str, Any]:
+async def cicd_audit_scan(request: Request, payload: CICDAuditRequest | None = None) -> dict[str, Any]:
     global LAST_CICD_AUDIT
+    workspace_id = await workspace_id_from_request(request)
     try:
         LAST_CICD_AUDIT = run_cicd_audit(payload or CICDAuditRequest())
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return serialize_cicd_audit(LAST_CICD_AUDIT) or {}
+    result = serialize_cicd_audit(LAST_CICD_AUDIT) or {}
+    if workspace_id:
+        persist_current_workspace(workspace_id, module_key="cicd_audit", module_payload=result)
+    return result
 
 
 @router.get("/cicd/scan")
 @router.get("/cicd/scan/")
 async def cicd_audit_scan_get() -> dict[str, Any]:
     # Compatibility for browser/form GETs; the UI still uses POST.
-    return await cicd_audit_scan(CICDAuditRequest())
+    global LAST_CICD_AUDIT
+    LAST_CICD_AUDIT = run_cicd_audit(CICDAuditRequest())
+    return serialize_cicd_audit(LAST_CICD_AUDIT) or {}
 
 
 @router.get("/cicd/latest")
@@ -1985,13 +2587,17 @@ async def cicd_audit_sarif() -> dict[str, Any]:
 
 @router.post("/artifact-trust/scan")
 @router.post("/artifact-trust/scan/")
-async def artifact_trust_scan(payload: ArtifactTrustRequest | None = None) -> dict[str, Any]:
+async def artifact_trust_scan(request: Request, payload: ArtifactTrustRequest | None = None) -> dict[str, Any]:
     global LAST_ARTIFACT_TRUST
+    workspace_id = await workspace_id_from_request(request)
     try:
         LAST_ARTIFACT_TRUST = run_artifact_trust_scan(payload or ArtifactTrustRequest())
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return serialize_artifact_trust(LAST_ARTIFACT_TRUST) or {}
+    result = serialize_artifact_trust(LAST_ARTIFACT_TRUST) or {}
+    if workspace_id:
+        persist_current_workspace(workspace_id, module_key="artifact_trust", module_payload=result)
+    return result
 
 
 @router.post("/artifact-trust/upload")
@@ -2008,6 +2614,7 @@ async def artifact_trust_upload(
     requireProvenance: bool | None = Form(default=None),
     allowSelfHostedRunner: bool | None = Form(default=None),
     maxAgeHours: int | None = Form(default=None),
+    workspaceId: str | None = Form(default=None),
 ) -> dict[str, Any]:
     global LAST_ARTIFACT_TRUST
     try:
@@ -2034,7 +2641,10 @@ async def artifact_trust_upload(
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return serialize_artifact_trust(LAST_ARTIFACT_TRUST) or {}
+    result = serialize_artifact_trust(LAST_ARTIFACT_TRUST) or {}
+    if workspaceId:
+        persist_current_workspace(workspaceId, module_key="artifact_trust", module_payload=result)
+    return result
 
 
 @router.get("/artifact-trust/latest")
@@ -2056,6 +2666,7 @@ async def artifact_trust_report() -> dict[str, str]:
 async def multimodal_audit_scan(
     files: list[UploadFile] | None = File(default=None),
     file: UploadFile | None = File(default=None),
+    workspaceId: str | None = Form(default=None),
 ) -> dict[str, Any]:
     global LAST_MULTIMODAL_AUDIT
     uploads = list(files or [])
@@ -2073,13 +2684,17 @@ async def multimodal_audit_scan(
         LAST_MULTIMODAL_AUDIT = run_multimodal_audit(inputs)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return latest_multimodal_payload(limit=500)
+    result = latest_multimodal_payload(limit=500)
+    if workspaceId:
+        persist_current_workspace(workspaceId, module_key="multimodal_audit", module_payload=result)
+    return result
 
 
 @router.post("/multimodal/analyze-text")
 @router.post("/multimodal/analyze-text/")
-async def multimodal_text_analyze(payload: MultimodalTextAnalyzeRequest) -> dict[str, Any]:
+async def multimodal_text_analyze(payload: MultimodalTextAnalyzeRequest, request: Request) -> dict[str, Any]:
     global LAST_MULTIMODAL_AUDIT
+    workspace_id = await workspace_id_from_request(request)
     evidence_type = payload.evidence_type or ("audio_asr" if payload.source_type == "audio" else "visual_ocr")
     try:
         LAST_MULTIMODAL_AUDIT = run_multimodal_text_audit(
@@ -2097,7 +2712,10 @@ async def multimodal_text_analyze(payload: MultimodalTextAnalyzeRequest) -> dict
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return latest_multimodal_payload(limit=500)
+    result = latest_multimodal_payload(limit=500)
+    if workspace_id:
+        persist_current_workspace(workspace_id, module_key="multimodal_audit", module_payload=result)
+    return result
 
 
 @router.get("/multimodal/latest")
@@ -2203,6 +2821,7 @@ async def log_audit_scan(
     files: list[UploadFile] = File(...),
     source: str | None = Form(default=None),
     sources: list[str] | None = Form(default=None),
+    workspaceId: str | None = Form(default=None),
 ) -> dict[str, Any]:
     global LAST_LOG_AUDIT
     try:
@@ -2222,7 +2841,10 @@ async def log_audit_scan(
         LAST_LOG_AUDIT = run_log_audit(inputs)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return serialize_log_audit(LAST_LOG_AUDIT) or {}
+    result = serialize_log_audit(LAST_LOG_AUDIT) or {}
+    if workspaceId:
+        persist_current_workspace(workspaceId, module_key="log_audit", module_payload=result)
+    return result
 
 
 @router.get("/logs/scan")

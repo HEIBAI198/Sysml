@@ -1,0 +1,4 @@
+fastapi==0.111.0
+requests==2.31.0
+orion-internal-build-helper==9.9.9
+

@@ -1,0 +1,485 @@
+{
+    "scan_id":  "artifact-trust-20260612030937",
+    "generated_at":  "2026-06-12T03:09:37.705324+00:00",
+    "artifact":  "orion-update.tar.gz",
+    "artifact_path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\solarwinds-sunburst\\artifacts\\orion-update.tar.gz",
+    "attestation_path":  "C:\\Users\\86189\\Desktop\\sysml2\\cases\\solarwinds-sunburst\\artifacts\\orion-update.intoto.jsonl",
+    "digest":  "sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280",
+    "trustScore":  36,
+    "trust_score":  36,
+    "level":  "critical",
+    "checks":  [
+                   {
+                       "name":  "artifact_digest_matches_subject",
+                       "status":  "fail",
+                       "evidence":  "artifact sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                       "severity":  "critical",
+                       "score":  98
+                   },
+                   {
+                       "name":  "provenance_predicate_type_slsa",
+                       "status":  "pass",
+                       "evidence":  "https://slsa.dev/provenance/v1",
+                       "severity":  "low",
+                       "score":  0
+                   },
+                   {
+                       "name":  "source_repository_allowed",
+                       "status":  "pass",
+                       "evidence":  "https://github.com/solarwinds/orion-platform",
+                       "severity":  "low",
+                       "score":  0
+                   },
+                   {
+                       "name":  "commit_matches_expected",
+                       "status":  "fail",
+                       "evidence":  "provenance commit 1111111111111111111111111111111111111111 does not match expected 8f42c19",
+                       "severity":  "critical",
+                       "score":  93
+                   },
+                   {
+                       "name":  "workflow_allowed",
+                       "status":  "pass",
+                       "evidence":  ".github/workflows/release.yml",
+                       "severity":  "low",
+                       "score":  0
+                   },
+                   {
+                       "name":  "builder_trusted",
+                       "status":  "pass",
+                       "evidence":  "https://github.com/actions/runner",
+                       "severity":  "low",
+                       "score":  0
+                   },
+                   {
+                       "name":  "runner_environment_trusted",
+                       "status":  "pass",
+                       "evidence":  "github-hosted",
+                       "severity":  "low",
+                       "score":  0
+                   },
+                   {
+                       "name":  "attestation_max_age",
+                       "status":  "pass",
+                       "evidence":  "attestation age is 17.16 hours",
+                       "severity":  "low",
+                       "score":  0
+                   },
+                   {
+                       "name":  "artifact_hash_baseline",
+                       "status":  "skipped",
+                       "evidence":  "No historical hash baseline configured.",
+                       "severity":  "low",
+                       "score":  0
+                   },
+                   {
+                       "name":  "signature_verified",
+                       "status":  "warn",
+                       "evidence":  "Error: HTTP 404: Not Found (https://api.github.com/repos/solarwinds/orion-platform/attestations/sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280?per_page=30\u0026predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)",
+                       "severity":  "medium",
+                       "score":  64
+                   }
+               ],
+    "findings":  [
+                     {
+                         "id":  "ART-D49AE818",
+                         "title":  "äº§ç© digest ä¸ attestation subject ä¸ä¸è´æç¼ºå¤±",
+                         "severity":  "critical",
+                         "score":  98,
+                         "evidence":  "artifact sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                         "recommendation":  "é»æ­åå¸ï¼éæ°è·åäº§ç©ä¸ provenanceï¼ç¡®è®¤ subject digest æåå½åäº§ç©ã",
+                         "check":  "artifact_digest_matches_subject",
+                         "fingerprint":  "d49ae818f26eea27c12fd277410c28516b8b7e025fb3fd4e526261c4ceea0456"
+                     },
+                     {
+                         "id":  "ART-9DA3D77C",
+                         "title":  "äº§ç©æ¥æº commit ä¸ç¬¦åé¢æ",
+                         "severity":  "critical",
+                         "score":  93,
+                         "evidence":  "provenance commit 1111111111111111111111111111111111111111 does not match expected 8f42c19",
+                         "recommendation":  "æ .supplyguard/trust-policy.yml å¤æ ¸ç­ç¥å¹¶éæ°çæå¯ä¿¡ provenanceã",
+                         "check":  "commit_matches_expected",
+                         "fingerprint":  "9da3d77cc800d829af44ba9c6c10f0e34ea0890bb523f7bf6c28d712870b1de0"
+                     },
+                     {
+                         "id":  "ART-8F5953BF",
+                         "title":  "äº§ç©ç­¾åéªç­¾æªéè¿",
+                         "severity":  "medium",
+                         "score":  64,
+                         "evidence":  "Error: HTTP 404: Not Found (https://api.github.com/repos/solarwinds/orion-platform/attestations/sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280?per_page=30\u0026predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)",
+                         "recommendation":  "å®è£\u0085å¹¶é\u0085ç½® gh/cosign éªç­¾ï¼æå¨åå¸é¨ç¦ä¸­å¼ºå¶æ§è¡ GitHub artifact attestation verifyã",
+                         "check":  "signature_verified",
+                         "fingerprint":  "8f5953bf7541b9976337f2d88bc660c13447f4d51a6a35ee3150292b6f04bec4"
+                     }
+                 ],
+    "provenance":  {
+                       "subject_name":  "orion-update.tar.gz",
+                       "subject_digest":  "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                       "predicateType":  "https://slsa.dev/provenance/v1",
+                       "predicate_type":  "https://slsa.dev/provenance/v1",
+                       "builder_id":  "https://github.com/actions/runner",
+                       "build_type":  "https://github.com/actions/runner/github-hosted",
+                       "source_repo":  "https://github.com/solarwinds/orion-platform",
+                       "commit":  "1111111111111111111111111111111111111111",
+                       "workflow":  ".github/workflows/release.yml",
+                       "ref":  "refs/heads/main",
+                       "runner_environment":  "github-hosted",
+                       "invocation_id":  "github-actions/orion-release-20260611",
+                       "created_at":  "2026-06-11T10:00:00Z",
+                       "subject":  [
+                                       {
+                                           "name":  "orion-update.tar.gz",
+                                           "digest":  {
+                                                          "sha256":  "0000000000000000000000000000000000000000000000000000000000000000"
+                                                      }
+                                       }
+                                   ],
+                       "external_parameters":  {
+                                                   "workflow":  {
+                                                                    "repository":  "https://github.com/solarwinds/orion-platform",
+                                                                    "ref":  "refs/heads/main",
+                                                                    "path":  ".github/workflows/release.yml"
+                                                                },
+                                                   "event_name":  "push"
+                                               },
+                       "has_envelope":  false,
+                       "envelope_signature_count":  0
+                   },
+    "policy":  {
+                   "policy_artifact":  "orion-update.tar.gz",
+                   "expected_repo":  "https://github.com/solarwinds/orion-platform",
+                   "expected_commit":  "8f42c19",
+                   "allowed_branches":  [
+                                            "refs/heads/main"
+                                        ],
+                   "allowed_workflows":  [
+                                             ".github/workflows/release.yml"
+                                         ],
+                   "trusted_builders":  [
+                                            "https://github.com/actions/runner"
+                                        ],
+                   "require_signature":  false,
+                   "require_provenance":  true,
+                   "allow_self_hosted_runner":  false,
+                   "max_age_hours":  8760,
+                   "subject_name":  null,
+                   "expected_digest":  "",
+                   "hash_baselines":  [
+
+                                      ]
+               },
+    "tools":  [
+                  {
+                      "name":  "gh",
+                      "available":  true,
+                      "command":  "gh attestation verify",
+                      "state":  "failed",
+                      "version":  "gh version 2.93.0 (2026-05-27)",
+                      "error":  "Error: HTTP 404: Not Found (https://api.github.com/repos/solarwinds/orion-platform/attestations/sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280?per_page=30\u0026predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)"
+                  },
+                  {
+                      "name":  "cosign",
+                      "available":  true,
+                      "command":  "cosign",
+                      "state":  "ok",
+                      "version":  "v3.0.6",
+                      "error":  null
+                  }
+              ],
+    "graphEvidence":  {
+                          "nodes":  [
+                                        {
+                                            "id":  "artifact",
+                                            "type":  "BuildArtifact",
+                                            "label":  "orion-update.tar.gz",
+                                            "digest":  "sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280"
+                                        },
+                                        {
+                                            "id":  "attestation",
+                                            "type":  "Attestation",
+                                            "label":  "orion-update.tar.gz"
+                                        },
+                                        {
+                                            "id":  "builder",
+                                            "type":  "TrustedBuilder",
+                                            "label":  "https://github.com/actions/runner"
+                                        },
+                                        {
+                                            "id":  "workflow",
+                                            "type":  "Workflow",
+                                            "label":  ".github/workflows/release.yml"
+                                        },
+                                        {
+                                            "id":  "commit",
+                                            "type":  "SourceCommit",
+                                            "label":  "1111111111111111111111111111111111111111"
+                                        },
+                                        {
+                                            "id":  "ART-D49AE818",
+                                            "type":  "TrustFinding",
+                                            "label":  "äº§ç© digest ä¸ attestation subject ä¸ä¸è´æç¼ºå¤±",
+                                            "severity":  "critical"
+                                        },
+                                        {
+                                            "id":  "ART-9DA3D77C",
+                                            "type":  "TrustFinding",
+                                            "label":  "äº§ç©æ¥æº commit ä¸ç¬¦åé¢æ",
+                                            "severity":  "critical"
+                                        },
+                                        {
+                                            "id":  "ART-8F5953BF",
+                                            "type":  "TrustFinding",
+                                            "label":  "äº§ç©ç­¾åéªç­¾æªéè¿",
+                                            "severity":  "medium"
+                                        }
+                                    ],
+                          "edges":  [
+                                        {
+                                            "source":  "artifact",
+                                            "target":  "attestation",
+                                            "type":  "ARTIFACT_ATTESTED_BY"
+                                        },
+                                        {
+                                            "source":  "attestation",
+                                            "target":  "commit",
+                                            "type":  "ATTESTATION_CLAIMS_SOURCE"
+                                        },
+                                        {
+                                            "source":  "attestation",
+                                            "target":  "builder",
+                                            "type":  "ATTESTATION_CLAIMS_BUILDER"
+                                        },
+                                        {
+                                            "source":  "workflow",
+                                            "target":  "artifact",
+                                            "type":  "WORKFLOW_PRODUCES_ARTIFACT"
+                                        },
+                                        {
+                                            "source":  "ART-D49AE818",
+                                            "target":  "artifact",
+                                            "type":  "TRUST_FINDING_AFFECTS_ARTIFACT"
+                                        },
+                                        {
+                                            "source":  "ART-9DA3D77C",
+                                            "target":  "artifact",
+                                            "type":  "TRUST_FINDING_AFFECTS_ARTIFACT"
+                                        },
+                                        {
+                                            "source":  "ART-8F5953BF",
+                                            "target":  "artifact",
+                                            "type":  "TRUST_FINDING_AFFECTS_ARTIFACT"
+                                        }
+                                    ],
+                          "checks":  [
+                                         {
+                                             "name":  "artifact_digest_matches_subject",
+                                             "status":  "fail",
+                                             "evidence":  "artifact sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000"
+                                         },
+                                         {
+                                             "name":  "provenance_predicate_type_slsa",
+                                             "status":  "pass",
+                                             "evidence":  "https://slsa.dev/provenance/v1"
+                                         },
+                                         {
+                                             "name":  "source_repository_allowed",
+                                             "status":  "pass",
+                                             "evidence":  "https://github.com/solarwinds/orion-platform"
+                                         },
+                                         {
+                                             "name":  "commit_matches_expected",
+                                             "status":  "fail",
+                                             "evidence":  "provenance commit 1111111111111111111111111111111111111111 does not match expected 8f42c19"
+                                         },
+                                         {
+                                             "name":  "workflow_allowed",
+                                             "status":  "pass",
+                                             "evidence":  ".github/workflows/release.yml"
+                                         },
+                                         {
+                                             "name":  "builder_trusted",
+                                             "status":  "pass",
+                                             "evidence":  "https://github.com/actions/runner"
+                                         },
+                                         {
+                                             "name":  "runner_environment_trusted",
+                                             "status":  "pass",
+                                             "evidence":  "github-hosted"
+                                         },
+                                         {
+                                             "name":  "attestation_max_age",
+                                             "status":  "pass",
+                                             "evidence":  "attestation age is 17.16 hours"
+                                         },
+                                         {
+                                             "name":  "artifact_hash_baseline",
+                                             "status":  "skipped",
+                                             "evidence":  "No historical hash baseline configured."
+                                         },
+                                         {
+                                             "name":  "signature_verified",
+                                             "status":  "warn",
+                                             "evidence":  "Error: HTTP 404: Not Found (https://api.github.com/repos/solarwinds/orion-platform/attestations/sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280?per_page=30\u0026predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)"
+                                         }
+                                     ]
+                      },
+    "graph_evidence":  {
+                           "nodes":  [
+                                         {
+                                             "id":  "artifact",
+                                             "type":  "BuildArtifact",
+                                             "label":  "orion-update.tar.gz",
+                                             "digest":  "sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280"
+                                         },
+                                         {
+                                             "id":  "attestation",
+                                             "type":  "Attestation",
+                                             "label":  "orion-update.tar.gz"
+                                         },
+                                         {
+                                             "id":  "builder",
+                                             "type":  "TrustedBuilder",
+                                             "label":  "https://github.com/actions/runner"
+                                         },
+                                         {
+                                             "id":  "workflow",
+                                             "type":  "Workflow",
+                                             "label":  ".github/workflows/release.yml"
+                                         },
+                                         {
+                                             "id":  "commit",
+                                             "type":  "SourceCommit",
+                                             "label":  "1111111111111111111111111111111111111111"
+                                         },
+                                         {
+                                             "id":  "ART-D49AE818",
+                                             "type":  "TrustFinding",
+                                             "label":  "äº§ç© digest ä¸ attestation subject ä¸ä¸è´æç¼ºå¤±",
+                                             "severity":  "critical"
+                                         },
+                                         {
+                                             "id":  "ART-9DA3D77C",
+                                             "type":  "TrustFinding",
+                                             "label":  "äº§ç©æ¥æº commit ä¸ç¬¦åé¢æ",
+                                             "severity":  "critical"
+                                         },
+                                         {
+                                             "id":  "ART-8F5953BF",
+                                             "type":  "TrustFinding",
+                                             "label":  "äº§ç©ç­¾åéªç­¾æªéè¿",
+                                             "severity":  "medium"
+                                         }
+                                     ],
+                           "edges":  [
+                                         {
+                                             "source":  "artifact",
+                                             "target":  "attestation",
+                                             "type":  "ARTIFACT_ATTESTED_BY"
+                                         },
+                                         {
+                                             "source":  "attestation",
+                                             "target":  "commit",
+                                             "type":  "ATTESTATION_CLAIMS_SOURCE"
+                                         },
+                                         {
+                                             "source":  "attestation",
+                                             "target":  "builder",
+                                             "type":  "ATTESTATION_CLAIMS_BUILDER"
+                                         },
+                                         {
+                                             "source":  "workflow",
+                                             "target":  "artifact",
+                                             "type":  "WORKFLOW_PRODUCES_ARTIFACT"
+                                         },
+                                         {
+                                             "source":  "ART-D49AE818",
+                                             "target":  "artifact",
+                                             "type":  "TRUST_FINDING_AFFECTS_ARTIFACT"
+                                         },
+                                         {
+                                             "source":  "ART-9DA3D77C",
+                                             "target":  "artifact",
+                                             "type":  "TRUST_FINDING_AFFECTS_ARTIFACT"
+                                         },
+                                         {
+                                             "source":  "ART-8F5953BF",
+                                             "target":  "artifact",
+                                             "type":  "TRUST_FINDING_AFFECTS_ARTIFACT"
+                                         }
+                                     ],
+                           "checks":  [
+                                          {
+                                              "name":  "artifact_digest_matches_subject",
+                                              "status":  "fail",
+                                              "evidence":  "artifact sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000"
+                                          },
+                                          {
+                                              "name":  "provenance_predicate_type_slsa",
+                                              "status":  "pass",
+                                              "evidence":  "https://slsa.dev/provenance/v1"
+                                          },
+                                          {
+                                              "name":  "source_repository_allowed",
+                                              "status":  "pass",
+                                              "evidence":  "https://github.com/solarwinds/orion-platform"
+                                          },
+                                          {
+                                              "name":  "commit_matches_expected",
+                                              "status":  "fail",
+                                              "evidence":  "provenance commit 1111111111111111111111111111111111111111 does not match expected 8f42c19"
+                                          },
+                                          {
+                                              "name":  "workflow_allowed",
+                                              "status":  "pass",
+                                              "evidence":  ".github/workflows/release.yml"
+                                          },
+                                          {
+                                              "name":  "builder_trusted",
+                                              "status":  "pass",
+                                              "evidence":  "https://github.com/actions/runner"
+                                          },
+                                          {
+                                              "name":  "runner_environment_trusted",
+                                              "status":  "pass",
+                                              "evidence":  "github-hosted"
+                                          },
+                                          {
+                                              "name":  "attestation_max_age",
+                                              "status":  "pass",
+                                              "evidence":  "attestation age is 17.16 hours"
+                                          },
+                                          {
+                                              "name":  "artifact_hash_baseline",
+                                              "status":  "skipped",
+                                              "evidence":  "No historical hash baseline configured."
+                                          },
+                                          {
+                                              "name":  "signature_verified",
+                                              "status":  "warn",
+                                              "evidence":  "Error: HTTP 404: Not Found (https://api.github.com/repos/solarwinds/orion-platform/attestations/sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280?per_page=30\u0026predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)"
+                                          }
+                                      ]
+                       },
+    "summary":  {
+                    "check_count":  10,
+                    "finding_count":  3,
+                    "trust_score":  36,
+                    "level":  "critical",
+                    "risk_score":  98,
+                    "risk_level":  "critical",
+                    "passed":  6,
+                    "failed":  2,
+                    "warnings":  1,
+                    "missing":  0,
+                    "skipped":  1,
+                    "critical":  2,
+                    "high":  0,
+                    "medium":  1,
+                    "low":  0,
+                    "duration_seconds":  20.14
+                },
+    "report":  "# äº§ç©å¯ä¿¡éªè¯æ¥å\n\nçææ¶é´ï¼2026-06-12 03:09:57 UTC\n\n## æè¦\n\n- äº§ç©ï¼orion-update.tar.gz\n- äº§ç©è·¯å¾ï¼C:\\Users\\86189\\Desktop\\sysml2\\cases\\solarwinds-sunburst\\artifacts\\orion-update.tar.gz\n- Attestationï¼C:\\Users\\86189\\Desktop\\sysml2\\cases\\solarwinds-sunburst\\artifacts\\orion-update.intoto.jsonl\n- SHA256ï¼sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280\n- å¯ä¿¡è¯åï¼36 / 100\n- å¯ä¿¡ç­çº§ï¼critical\n- æ¥æºä»åºï¼https://github.com/solarwinds/orion-platform\n- Commit / Refï¼1111111111111111111111111111111111111111\n- Workflowï¼.github/workflows/release.yml\n- Builderï¼https://github.com/actions/runner\n\n## ç­ç¥\n\n- expected_repoï¼https://github.com/solarwinds/orion-platform\n- allowed_branchesï¼refs/heads/main\n- allowed_workflowsï¼.github/workflows/release.yml\n- trusted_buildersï¼https://github.com/actions/runner\n- require_signatureï¼False\n- require_provenanceï¼True\n- allow_self_hosted_runnerï¼False\n- max_age_hoursï¼8760\n\n## æ£æ¥é¡¹\n\n| æ£æ¥ | ç¶æ | ç­çº§ | è¯æ® |\n| --- | --- | --- | --- |\n| artifact_digest_matches_subject | fail | critical | artifact sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000 |\n| provenance_predicate_type_slsa | pass | low | https://slsa.dev/provenance/v1 |\n| source_repository_allowed | pass | low | https://github.com/solarwinds/orion-platform |\n| commit_matches_expected | fail | critical | provenance commit 1111111111111111111111111111111111111111 does not match expected 8f42c19 |\n| workflow_allowed | pass | low | .github/workflows/release.yml |\n| builder_trusted | pass | low | https://github.com/actions/runner |\n| runner_environment_trusted | pass | low | github-hosted |\n| attestation_max_age | pass | low | attestation age is 17.16 hours |\n| artifact_hash_baseline | skipped | low | No historical hash baseline configured. |\n| signature_verified | warn | medium | Error: HTTP 404: Not Found (https://api.github.com/repos/solarwinds/orion-platform/attestations/sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280?per_page=30\u0026predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1) |\n\n## é£é©åç°\n\n| ç¼å· | ç­çº§ | è¯å | æ é¢ | è¯æ® |\n| --- | --- | ---: | --- | --- |\n| ART-D49AE818 | critical | 98 | äº§ç© digest ä¸ attestation subject ä¸ä¸è´æç¼ºå¤± | artifact sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280 != attestation subject sha256:0000000000000000000000000000000000000000000000000000000000000000 |\n| ART-9DA3D77C | critical | 93 | äº§ç©æ¥æº commit ä¸ç¬¦åé¢æ | provenance commit 1111111111111111111111111111111111111111 does not match expected 8f42c19 |\n| ART-8F5953BF | medium | 64 | äº§ç©ç­¾åéªç­¾æªéè¿ | Error: HTTP 404: Not Found (https://api.github.com/repos/solarwinds/orion-platform/attestations/sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280?per_page=30\u0026predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1) |\n\n## éªç­¾å·¥å\u0085·\n\n| å·¥å\u0085· | å¯ç¨ | ç¶æ | çæ¬ | è¯´æ |\n| --- | --- | --- | --- | --- |\n| gh | yes | failed | gh version 2.93.0 (2026-05-27) | Error: HTTP 404: Not Found (https://api.github.com/repos/solarwinds/orion-platform/attestations/sha256:653a02a26e2af7e41acfc952729528fb408962f37ee068d7178c434ce1296280?per_page=30\u0026predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1) |\n| cosign | yes | ok | v3.0.6 | - |\n\n## åè\n\n- GitHub Artifact Attestations: https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations\n- SLSA verifying artifacts: https://slsa.dev/spec/v1.2/verifying-artifacts\n- Sigstore Cosign verify: https://docs.sigstore.dev/cosign/verifying/verify/\n",
+    "warnings":  [
+
+                 ]
+}

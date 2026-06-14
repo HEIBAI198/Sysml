@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react'
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
 import {
   Collapsible,
@@ -36,6 +36,7 @@ import {
 export function NavGroup({ title, items }: NavGroupProps) {
   const { state, isMobile } = useSidebar()
   const href = useLocation({ select: (location) => location.href })
+  const navigate = useNavigate()
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
@@ -44,14 +45,14 @@ export function NavGroup({ title, items }: NavGroupProps) {
           const key = `${item.title}-${item.url}`
 
           if (!item.items)
-            return <SidebarMenuLink key={key} item={item} href={href} />
+            return <SidebarMenuLink key={key} item={item} href={href} navigate={navigate} />
 
           if (state === 'collapsed' && !isMobile)
             return (
-              <SidebarMenuCollapsedDropdown key={key} item={item} href={href} />
+              <SidebarMenuCollapsedDropdown key={key} item={item} href={href} navigate={navigate} />
             )
 
-          return <SidebarMenuCollapsible key={key} item={item} href={href} />
+          return <SidebarMenuCollapsible key={key} item={item} href={href} navigate={navigate} />
         })}
       </SidebarMenu>
     </SidebarGroup>
@@ -62,9 +63,18 @@ function NavBadge({ children }: { children: ReactNode }) {
   return <Badge className='rounded-full px-1 py-0 text-xs'>{children}</Badge>
 }
 
-function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
+function SidebarMenuLink({
+  item,
+  href,
+  navigate,
+}: {
+  item: NavLink
+  href: string
+  navigate: ReturnType<typeof useNavigate>
+}) {
   const { setOpenMobile } = useSidebar()
   const workbenchHash = getWorkbenchHash(item.url)
+  const projectImportHash = getProjectImportHash(item.url)
 
   return (
     <SidebarMenuItem>
@@ -79,6 +89,19 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
             onClick={(event) => {
               event.preventDefault()
               openWorkbenchSection(workbenchHash)
+              setOpenMobile(false)
+            }}
+          >
+            {item.icon && <item.icon />}
+            <span>{item.title}</span>
+            {item.badge && <NavBadge>{item.badge}</NavBadge>}
+          </a>
+        ) : projectImportHash ? (
+          <a
+            href={`/project-import#${projectImportHash}`}
+            onClick={(event) => {
+              event.preventDefault()
+              openProjectImportSection(projectImportHash, navigate)
               setOpenMobile(false)
             }}
           >
@@ -101,9 +124,11 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
 function SidebarMenuCollapsible({
   item,
   href,
+  navigate,
 }: {
   item: NavCollapsible
   href: string
+  navigate: ReturnType<typeof useNavigate>
 }) {
   const { setOpenMobile } = useSidebar()
   return (
@@ -125,6 +150,7 @@ function SidebarMenuCollapsible({
           <SidebarMenuSub>
             {item.items.map((subItem) => {
               const workbenchHash = getWorkbenchHash(subItem.url)
+              const projectImportHash = getProjectImportHash(subItem.url)
 
               return (
                 <SidebarMenuSubItem key={subItem.title}>
@@ -138,6 +164,19 @@ function SidebarMenuCollapsible({
                         onClick={(event) => {
                           event.preventDefault()
                           openWorkbenchSection(workbenchHash)
+                          setOpenMobile(false)
+                        }}
+                      >
+                        {subItem.icon && <subItem.icon />}
+                        <span>{subItem.title}</span>
+                        {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}
+                      </a>
+                    ) : projectImportHash ? (
+                      <a
+                        href={`/project-import#${projectImportHash}`}
+                        onClick={(event) => {
+                          event.preventDefault()
+                          openProjectImportSection(projectImportHash, navigate)
                           setOpenMobile(false)
                         }}
                       >
@@ -169,9 +208,11 @@ function SidebarMenuCollapsible({
 function SidebarMenuCollapsedDropdown({
   item,
   href,
+  navigate,
 }: {
   item: NavCollapsible
   href: string
+  navigate: ReturnType<typeof useNavigate>
 }) {
   return (
     <SidebarMenuItem>
@@ -194,6 +235,7 @@ function SidebarMenuCollapsedDropdown({
           <DropdownMenuSeparator />
           {item.items.map((sub) => {
             const workbenchHash = getWorkbenchHash(sub.url)
+            const projectImportHash = getProjectImportHash(sub.url)
 
             return (
               <DropdownMenuItem key={`${sub.title}-${sub.url}`} asChild>
@@ -204,6 +246,21 @@ function SidebarMenuCollapsedDropdown({
                     onClick={(event) => {
                       event.preventDefault()
                       openWorkbenchSection(workbenchHash)
+                    }}
+                  >
+                    {sub.icon && <sub.icon />}
+                    <span className='max-w-52 text-wrap'>{sub.title}</span>
+                    {sub.badge && (
+                      <span className='ms-auto text-xs'>{sub.badge}</span>
+                    )}
+                  </a>
+                ) : projectImportHash ? (
+                  <a
+                    href={`/project-import#${projectImportHash}`}
+                    className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}
+                    onClick={(event) => {
+                      event.preventDefault()
+                      openProjectImportSection(projectImportHash, navigate)
                     }}
                   >
                     {sub.icon && <sub.icon />}
@@ -241,6 +298,13 @@ function checkIsActive(href: string, item: NavItem, mainNav = false) {
     return href.endsWith(workbenchHash) || currentHash === workbenchHash
   }
 
+  const projectImportHash = getProjectImportHash(item.url)
+  if (projectImportHash) {
+    const currentHash =
+      typeof window === 'undefined' ? '' : window.location.hash.replace(/^#/, '')
+    return href.startsWith('/project-import') && currentHash === projectImportHash
+  }
+
   return (
     href === item.url || // /endpint?search=param
     href.split('?')[0] === item.url || // endpoint
@@ -255,6 +319,12 @@ function getWorkbenchHash(url: NavItem['url'] | undefined) {
   return typeof url === 'string' && url.startsWith('/#')
     ? url.slice(1)
     : ''
+}
+
+function getProjectImportHash(url: NavItem['url'] | undefined) {
+  if (typeof url !== 'string') return ''
+  const match = url.match(/^\/project-import#(.+)$/)
+  return match?.[1] ?? ''
 }
 
 function openWorkbenchSection(hash: string) {
@@ -273,4 +343,17 @@ function openWorkbenchSection(hash: string) {
 
   window.history.pushState(null, '', hash)
   window.dispatchEvent(new HashChangeEvent('hashchange'))
+}
+
+function openProjectImportSection(
+  hash: string,
+  navigate: ReturnType<typeof useNavigate>
+) {
+  void navigate({ to: '/project-import', hash })
+  window.setTimeout(() => {
+    if (window.location.hash !== `#${hash}`) {
+      window.history.replaceState(null, '', `/project-import#${hash}`)
+    }
+    window.dispatchEvent(new HashChangeEvent('hashchange'))
+  }, 0)
 }

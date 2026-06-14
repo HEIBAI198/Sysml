@@ -1,0 +1,414 @@
+{
+  "scan_id": "artifact-trust-20260613162044",
+  "generated_at": "2026-06-13T16:20:44.917260+00:00",
+  "artifact": "test-checkout-api.tar.gz",
+  "artifact_path": "C:\\Users\\86189\\Desktop\\sysml2\\storage\\artifact_trust\\uploads\\test-checkout-api.tar.gz",
+  "attestation_path": "C:\\Users\\86189\\Desktop\\sysml2\\storage\\artifact_trust\\uploads\\test-attestation.jsonl",
+  "digest": "sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025",
+  "trustScore": 88,
+  "trust_score": 88,
+  "level": "warning",
+  "checks": [
+    {
+      "name": "artifact_digest_matches_subject",
+      "status": "pass",
+      "evidence": "artifact sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025 matches attestation subject",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "provenance_predicate_type_slsa",
+      "status": "pass",
+      "evidence": "https://slsa.dev/provenance/v1",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "source_repository_allowed",
+      "status": "pass",
+      "evidence": "https://github.com/HEIBAI198/Security",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "commit_matches_expected",
+      "status": "pass",
+      "evidence": "e3e9f7c03ce502642fa9bc9e2c35764c92354c9b",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "workflow_allowed",
+      "status": "pass",
+      "evidence": ".github/workflows/release.yml",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "builder_trusted",
+      "status": "pass",
+      "evidence": "https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "runner_environment_trusted",
+      "status": "pass",
+      "evidence": "github-hosted",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "attestation_max_age",
+      "status": "fail",
+      "evidence": "attestation age 264.33 hours exceeds policy max_age_hours=24",
+      "severity": "medium",
+      "score": 70
+    },
+    {
+      "name": "artifact_hash_baseline",
+      "status": "skipped",
+      "evidence": "No historical hash baseline configured.",
+      "severity": "low",
+      "score": 0
+    },
+    {
+      "name": "signature_verified",
+      "status": "pass",
+      "evidence": "gh attestation verify completed successfully.",
+      "severity": "low",
+      "score": 0
+    }
+  ],
+  "findings": [
+    {
+      "id": "ART-A91C8E97",
+      "title": "attestation 超出策略时效",
+      "severity": "medium",
+      "score": 70,
+      "evidence": "attestation age 264.33 hours exceeds policy max_age_hours=24",
+      "recommendation": "按 .supplyguard/trust-policy.yml 复核策略并重新生成可信 provenance。",
+      "check": "attestation_max_age",
+      "fingerprint": "a91c8e975207ed9f704b9463f90f044fa520d728705886279ce2bd0dd0add20f"
+    }
+  ],
+  "provenance": {
+    "subject_name": "checkout-api.tar.gz",
+    "subject_digest": "sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025",
+    "predicateType": "https://slsa.dev/provenance/v1",
+    "predicate_type": "https://slsa.dev/provenance/v1",
+    "builder_id": "https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main",
+    "build_type": "https://actions.github.io/buildtypes/workflow/v1",
+    "source_repo": "https://github.com/HEIBAI198/Security",
+    "commit": "e3e9f7c03ce502642fa9bc9e2c35764c92354c9b",
+    "workflow": ".github/workflows/release.yml",
+    "ref": "refs/heads/main",
+    "runner_environment": "github-hosted",
+    "invocation_id": "https://github.com/HEIBAI198/Security/actions/runs/26831906204/attempts/1",
+    "created_at": "2026-06-02T16:00:45+00:00",
+    "subject": [
+      {
+        "name": "checkout-api.tar.gz",
+        "digest": {
+          "sha256": "50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025"
+        }
+      }
+    ],
+    "external_parameters": {
+      "workflow": {
+        "ref": "refs/heads/main",
+        "repository": "https://github.com/HEIBAI198/Security",
+        "path": ".github/workflows/release.yml"
+      }
+    },
+    "has_envelope": true,
+    "envelope_signature_count": 1
+  },
+  "policy": {
+    "policy_artifact": "test-checkout-api.tar.gz",
+    "expected_repo": "https://github.com/HEIBAI198/Security",
+    "expected_commit": "e3e9f7c03ce502642fa9bc9e2c35764c92354c9b",
+    "allowed_branches": [],
+    "allowed_workflows": [
+      ".github/workflows/release.yml"
+    ],
+    "trusted_builders": [
+      "https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main"
+    ],
+    "require_signature": true,
+    "require_provenance": true,
+    "allow_self_hosted_runner": false,
+    "max_age_hours": 24,
+    "subject_name": null,
+    "expected_digest": "",
+    "hash_baselines": []
+  },
+  "tools": [
+    {
+      "name": "gh",
+      "available": true,
+      "command": "gh attestation verify",
+      "state": "ok",
+      "version": "gh version 2.93.0 (2026-05-27)",
+      "error": null
+    },
+    {
+      "name": "cosign",
+      "available": true,
+      "command": "cosign",
+      "state": "ok",
+      "version": "v3.0.6",
+      "error": null
+    }
+  ],
+  "graphEvidence": {
+    "nodes": [
+      {
+        "id": "artifact",
+        "type": "BuildArtifact",
+        "label": "test-checkout-api.tar.gz",
+        "digest": "sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025"
+      },
+      {
+        "id": "attestation",
+        "type": "Attestation",
+        "label": "checkout-api.tar.gz"
+      },
+      {
+        "id": "builder",
+        "type": "TrustedBuilder",
+        "label": "https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main"
+      },
+      {
+        "id": "workflow",
+        "type": "Workflow",
+        "label": ".github/workflows/release.yml"
+      },
+      {
+        "id": "commit",
+        "type": "SourceCommit",
+        "label": "e3e9f7c03ce502642fa9bc9e2c35764c92354c9b"
+      },
+      {
+        "id": "ART-A91C8E97",
+        "type": "TrustFinding",
+        "label": "attestation 超出策略时效",
+        "severity": "medium"
+      }
+    ],
+    "edges": [
+      {
+        "source": "artifact",
+        "target": "attestation",
+        "type": "ARTIFACT_ATTESTED_BY"
+      },
+      {
+        "source": "attestation",
+        "target": "commit",
+        "type": "ATTESTATION_CLAIMS_SOURCE"
+      },
+      {
+        "source": "attestation",
+        "target": "builder",
+        "type": "ATTESTATION_CLAIMS_BUILDER"
+      },
+      {
+        "source": "workflow",
+        "target": "artifact",
+        "type": "WORKFLOW_PRODUCES_ARTIFACT"
+      },
+      {
+        "source": "ART-A91C8E97",
+        "target": "artifact",
+        "type": "TRUST_FINDING_AFFECTS_ARTIFACT"
+      }
+    ],
+    "checks": [
+      {
+        "name": "artifact_digest_matches_subject",
+        "status": "pass",
+        "evidence": "artifact sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025 matches attestation subject"
+      },
+      {
+        "name": "provenance_predicate_type_slsa",
+        "status": "pass",
+        "evidence": "https://slsa.dev/provenance/v1"
+      },
+      {
+        "name": "source_repository_allowed",
+        "status": "pass",
+        "evidence": "https://github.com/HEIBAI198/Security"
+      },
+      {
+        "name": "commit_matches_expected",
+        "status": "pass",
+        "evidence": "e3e9f7c03ce502642fa9bc9e2c35764c92354c9b"
+      },
+      {
+        "name": "workflow_allowed",
+        "status": "pass",
+        "evidence": ".github/workflows/release.yml"
+      },
+      {
+        "name": "builder_trusted",
+        "status": "pass",
+        "evidence": "https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main"
+      },
+      {
+        "name": "runner_environment_trusted",
+        "status": "pass",
+        "evidence": "github-hosted"
+      },
+      {
+        "name": "attestation_max_age",
+        "status": "fail",
+        "evidence": "attestation age 264.33 hours exceeds policy max_age_hours=24"
+      },
+      {
+        "name": "artifact_hash_baseline",
+        "status": "skipped",
+        "evidence": "No historical hash baseline configured."
+      },
+      {
+        "name": "signature_verified",
+        "status": "pass",
+        "evidence": "gh attestation verify completed successfully."
+      }
+    ]
+  },
+  "graph_evidence": {
+    "nodes": [
+      {
+        "id": "artifact",
+        "type": "BuildArtifact",
+        "label": "test-checkout-api.tar.gz",
+        "digest": "sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025"
+      },
+      {
+        "id": "attestation",
+        "type": "Attestation",
+        "label": "checkout-api.tar.gz"
+      },
+      {
+        "id": "builder",
+        "type": "TrustedBuilder",
+        "label": "https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main"
+      },
+      {
+        "id": "workflow",
+        "type": "Workflow",
+        "label": ".github/workflows/release.yml"
+      },
+      {
+        "id": "commit",
+        "type": "SourceCommit",
+        "label": "e3e9f7c03ce502642fa9bc9e2c35764c92354c9b"
+      },
+      {
+        "id": "ART-A91C8E97",
+        "type": "TrustFinding",
+        "label": "attestation 超出策略时效",
+        "severity": "medium"
+      }
+    ],
+    "edges": [
+      {
+        "source": "artifact",
+        "target": "attestation",
+        "type": "ARTIFACT_ATTESTED_BY"
+      },
+      {
+        "source": "attestation",
+        "target": "commit",
+        "type": "ATTESTATION_CLAIMS_SOURCE"
+      },
+      {
+        "source": "attestation",
+        "target": "builder",
+        "type": "ATTESTATION_CLAIMS_BUILDER"
+      },
+      {
+        "source": "workflow",
+        "target": "artifact",
+        "type": "WORKFLOW_PRODUCES_ARTIFACT"
+      },
+      {
+        "source": "ART-A91C8E97",
+        "target": "artifact",
+        "type": "TRUST_FINDING_AFFECTS_ARTIFACT"
+      }
+    ],
+    "checks": [
+      {
+        "name": "artifact_digest_matches_subject",
+        "status": "pass",
+        "evidence": "artifact sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025 matches attestation subject"
+      },
+      {
+        "name": "provenance_predicate_type_slsa",
+        "status": "pass",
+        "evidence": "https://slsa.dev/provenance/v1"
+      },
+      {
+        "name": "source_repository_allowed",
+        "status": "pass",
+        "evidence": "https://github.com/HEIBAI198/Security"
+      },
+      {
+        "name": "commit_matches_expected",
+        "status": "pass",
+        "evidence": "e3e9f7c03ce502642fa9bc9e2c35764c92354c9b"
+      },
+      {
+        "name": "workflow_allowed",
+        "status": "pass",
+        "evidence": ".github/workflows/release.yml"
+      },
+      {
+        "name": "builder_trusted",
+        "status": "pass",
+        "evidence": "https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main"
+      },
+      {
+        "name": "runner_environment_trusted",
+        "status": "pass",
+        "evidence": "github-hosted"
+      },
+      {
+        "name": "attestation_max_age",
+        "status": "fail",
+        "evidence": "attestation age 264.33 hours exceeds policy max_age_hours=24"
+      },
+      {
+        "name": "artifact_hash_baseline",
+        "status": "skipped",
+        "evidence": "No historical hash baseline configured."
+      },
+      {
+        "name": "signature_verified",
+        "status": "pass",
+        "evidence": "gh attestation verify completed successfully."
+      }
+    ]
+  },
+  "summary": {
+    "check_count": 10,
+    "finding_count": 1,
+    "trust_score": 88,
+    "level": "warning",
+    "risk_score": 70,
+    "risk_level": "medium",
+    "passed": 8,
+    "failed": 1,
+    "warnings": 0,
+    "missing": 0,
+    "skipped": 1,
+    "critical": 0,
+    "high": 0,
+    "medium": 1,
+    "low": 0,
+    "duration_seconds": 24.09
+  },
+  "report": "# 产物可信验证报告\n\n生成时间：2026-06-13 16:21:08 UTC\n\n## 摘要\n\n- 产物：test-checkout-api.tar.gz\n- 产物路径：C:\\Users\\86189\\Desktop\\sysml2\\storage\\artifact_trust\\uploads\\test-checkout-api.tar.gz\n- Attestation：C:\\Users\\86189\\Desktop\\sysml2\\storage\\artifact_trust\\uploads\\test-attestation.jsonl\n- SHA256：sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025\n- 可信评分：88 / 100\n- 可信等级：warning\n- 来源仓库：https://github.com/HEIBAI198/Security\n- Commit / Ref：e3e9f7c03ce502642fa9bc9e2c35764c92354c9b\n- Workflow：.github/workflows/release.yml\n- Builder：https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main\n\n## 策略\n\n- expected_repo：https://github.com/HEIBAI198/Security\n- allowed_branches：-\n- allowed_workflows：.github/workflows/release.yml\n- trusted_builders：https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main\n- require_signature：True\n- require_provenance：True\n- allow_self_hosted_runner：False\n- max_age_hours：24\n\n## 检查项\n\n| 检查 | 状态 | 等级 | 证据 |\n| --- | --- | --- | --- |\n| artifact_digest_matches_subject | pass | low | artifact sha256:50e0f002fba51e6749dcbde16cec2bd9abfc36fa939821194a8e19b401b40025 matches attestation subject |\n| provenance_predicate_type_slsa | pass | low | https://slsa.dev/provenance/v1 |\n| source_repository_allowed | pass | low | https://github.com/HEIBAI198/Security |\n| commit_matches_expected | pass | low | e3e9f7c03ce502642fa9bc9e2c35764c92354c9b |\n| workflow_allowed | pass | low | .github/workflows/release.yml |\n| builder_trusted | pass | low | https://github.com/HEIBAI198/Security/.github/workflows/release.yml@refs/heads/main |\n| runner_environment_trusted | pass | low | github-hosted |\n| attestation_max_age | fail | medium | attestation age 264.33 hours exceeds policy max_age_hours=24 |\n| artifact_hash_baseline | skipped | low | No historical hash baseline configured. |\n| signature_verified | pass | low | gh attestation verify completed successfully. |\n\n## 风险发现\n\n| 编号 | 等级 | 评分 | 标题 | 证据 |\n| --- | --- | ---: | --- | --- |\n| ART-A91C8E97 | medium | 70 | attestation 超出策略时效 | attestation age 264.33 hours exceeds policy max_age_hours=24 |\n\n## 验签工具\n\n| 工具 | 可用 | 状态 | 版本 | 说明 |\n| --- | --- | --- | --- | --- |\n| gh | yes | ok | gh version 2.93.0 (2026-05-27) | - |\n| cosign | yes | ok | v3.0.6 | - |\n\n## 参考\n\n- GitHub Artifact Attestations: https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations\n- SLSA verifying artifacts: https://slsa.dev/spec/v1.2/verifying-artifacts\n- Sigstore Cosign verify: https://docs.sigstore.dev/cosign/verifying/verify/\n",
+  "warnings": []
+}

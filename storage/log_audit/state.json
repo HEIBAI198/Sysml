@@ -2,30 +2,72 @@
   "version": 1,
   "ignored": {},
   "baseline": {
-    "created_at": "2026-06-02T07:20:53.106623+00:00",
+    "created_at": "2026-06-11T15:45:09.230801+00:00",
     "note": "前端手动建立实时日志基线",
     "keys": [
       "0b1a8cfacb555d48e1ee4ef178968adc495fa56732e85b2b7d52482b5c4d655c",
+      "0c60a397b938a0220e487f3398de87a9243364bb83ef5ce9159d4147a011f43b",
       "0f98de095fde0266e51f73435fb7a9cca34bb3b29d6a13c2ea216f7f09e3d8e4",
+      "1441be5182987a959296b54c642e626705f344214ea802b5d6ee2920cef8c65b",
+      "1943809db6b2a37352939250540e821efc7a791b1168e6187e0a5bf12de3884d",
+      "1c5067536b89f08050e57633d28db3db0066fc6a70e47d09c842682966e4db2e",
+      "259d9c33d58c443acbdf0df56ca0b9cd9f940607b838c102dd475a0f5fedfac4",
       "2669ae1bc696812eee7395226f05e1a654978f46a680bcd84938c33674bae590",
+      "276713dd89036cb23615022b5e74a97c0a30989697dbe0c1495a9a1f5f62fba3",
       "28f10ea4af5e21aba2108f2bc8bbe6c5226b18f8f454cb82fc3f78ae12f81496",
+      "2a1fd9ac5dfc36bf2ef54ac38ae155dd0a5dd289f5dab86862f2e7f2fd1170dd",
       "338c4de4859169bb62cdff3cc06c8ebefa71e8be22a220ece9cec3bd16aeb36a",
+      "35e6de15cd37e5ade29d5e97719b42c3f6bc7afe1ca8711b6e5b0fd2da581cfc",
       "3827d2ba7f012d11d9b51c971233ec2c33bbd844b208a7abfbdd607aa14a6744",
+      "3bd27c943d13978d968780ae78466d65028ce4523f8fb0701865a07a82566d77",
+      "3be03a901b91976691508b97d410287580aa5dcadc009fa86d6aa52833757344",
+      "3d059f823420c4686968efc534259d2921d86a2be807243f2720e7d2e4334880",
+      "4a1e63a3b7f21f5e3ca653b33f89713de048956510e4297cd36dd72d30a9987b",
+      "53f3a6f5fc669c6c49fee1e89f1288c55641e5fc0bacc1a8804bf5b80abbabf4",
+      "573284e98c1d69f59ee2e8e4edbd7b4c146a8170e664ecb164f2c7046492f40a",
+      "5f41d53a660b0d72cd189fa1052d2ed147d71c975021a1687a862928de5f9df3",
       "65f715194bf2791a80a3ac21f77f2214fb3fd8f7c07f4eaad1ef3bb83cad88e3",
+      "67b88532c199946ccc5c268f92ceade7d22a62195b3138b4db6fa9573d58f9c5",
+      "714fe9e8c95910be96da21105545758d717cfc79cc0016ef808a1b85fd41efae",
       "7bac18c33f710a7980e8acb40e5faa883434bc59a4180f941e60e7bf987c35f2",
+      "7c298cf1fe891caa004433c0ed524ac4ede0b4447fb44d4b2504abe240ef5bc7",
+      "80b630b4ab092580b9eccacec7a945ee8c08152926ada1263d812c5812aae76f",
       "82a709eae5f9b9abf03ea4013c849e8f49a007c889bae18b12b8791de26e40c9",
       "85aa40a1575813803f114ba6a27b547b150bfce735dd8700bdae06650bb35254",
+      "86afcab88bc483a5922e64c2e7fd4931064a05c7a55ce4adb870a75c21d64178",
       "892a9133c7125e838d7f645b3c144d487aecea34ee8fa8e3d4b161c5d8ff3ea3",
+      "8e0d93f1681d991430483c62d9407dd05bf789baafb4dab11263d54cf7947869",
       "8e72a01c2eb8a78a8eb03593a696f97ddded217f467c99a1416f67bf63419d67",
+      "8ffe9ca6953077cb66bfc7e53db5d70ac0d290e623d733ec74d83496a44faefd",
       "956c047f81340eaaf426db8b26b6cf12ffe235630b3f2eb7cf152073802ee765",
+      "97ca5e3f7c11e11d2e0ff086e86f6a47fd1038200beb2c153fc7fae4e2dfb722",
       "9ebc793db1580e54a6a841f4b03c0f370cd1bf935ed8ca551b2f20a880eb9237",
       "a19fcf5c7c9fc4ea41cc1e1bb76ecf11f2817c9ce78bc83653e1182171c05f3e",
+      "a41d9283c879ffd361c2c6e9ea8157aef6fc388d06dc5496c0d01d3b15693681",
       "a4776ec9ea85adbfd94493a7dbdded54fe0adb51b08c74b5e87b3fb0f7e4c7d6",
+      "aff259db024ddccd3a3b2d5d49f1d467b2c49b3d1bc6970cc92999179951ea0f",
+      "b00abd8fb9103a88efcf1e2acc190e3f7b823843337141e49c1ad7ae96c99a7f",
+      "b05df93679dfec73886f983d4396630b0212d59dfd08e521026ee69b1dac1d2c",
       "b0e358134b75f248723c51a7a7f75c773e2232b9b84397a49e2d0ae36437bfec",
+      "b24c8d409fd885670ee1998b41c33c1115f8e7703ce4fe92bcfb068abd5fdfe0",
+      "b583a0f60714d749a3344d16ea7a0c92c7e3afb02ba1115278d8125deee3060a",
+      "b8b3a6b721603140bd7b0163925d61d74e67e28b6bf21b62a7bc9d62722a63ac",
+      "c204d54c67adfab62b42a382e0fdc044374d8fce02eab7bb19d54a085b89d059",
+      "c7ddaf338d677dc665c109c376ac7ec8b29366673283a3cdee7919681543a471",
+      "ce26e90bcf312bdcea5aa6e8ef1f1a5899d7c03b12e6c0d6cde8922a005d62b8",
       "d3c7054c3d2ac7f05363038219188fde686ba3fc1a5f3d92cd0b6d04dba37149",
-      "f5c51e3717ef5c7cbd1864fc70dabce5e6b0815cb7c8453abcbbf34ff63f9529"
+      "d743207c3d841521bf3460ebd3fc8a6f85599fb9aabe45d0201b6065473da7ca",
+      "da5301463ff761a5148b09d7a93eb64bb398a07944683f1c16cf16a987e85d15",
+      "e20d1a66389561efce40ce3068731dc3a59e598b5bbdaca7dab566081f1e372c",
+      "e6091b1bf5131d7157b9fdea0921f1b46b5b0273283b04f7542d6d8ba8d891ab",
+      "e86bcf45ce4754de965a6024e52f913162bf94af0e3192ac6bbd2be07b98a16c",
+      "ec317acdde3e4b9a92f224b5cbc0ce67cd5720b027b952dc1790d7ed15c53c1b",
+      "f5c51e3717ef5c7cbd1864fc70dabce5e6b0815cb7c8453abcbbf34ff63f9529",
+      "f7c53812c25a9c926d704350990f2c95a50f5b3fd463fa092a8801dc0a33d699",
+      "fda4407627fe8266449ed8af625508603ac877f6a40b87b019417db19139b23b",
+      "feb7555073dbd0e1a35eb48777803f095c9bfb5fdf1371394c5c61ba5f2a42c6"
     ],
-    "finding_count": 19
+    "finding_count": 61
   },
   "runs": [
     {
@@ -139,7 +181,56 @@
       "event_count": 399,
       "finding_count": 22,
       "risk_score": 100
+    },
+    {
+      "time": "2026-06-05T11:22:51.914547+00:00",
+      "accepted": 25,
+      "event_count": 424,
+      "finding_count": 27,
+      "risk_score": 100
+    },
+    {
+      "time": "2026-06-05T11:22:53.760573+00:00",
+      "accepted": 25,
+      "event_count": 449,
+      "finding_count": 27,
+      "risk_score": 100
+    },
+    {
+      "time": "2026-06-11T11:47:13.703436+00:00",
+      "accepted": 25,
+      "event_count": 474,
+      "finding_count": 31,
+      "risk_score": 100
+    },
+    {
+      "time": "2026-06-11T12:01:25.636876+00:00",
+      "accepted": 25,
+      "event_count": 499,
+      "finding_count": 35,
+      "risk_score": 100
+    },
+    {
+      "time": "2026-06-11T15:41:01.449274+00:00",
+      "accepted": 25,
+      "event_count": 524,
+      "finding_count": 40,
+      "risk_score": 100
+    },
+    {
+      "time": "2026-06-11T15:42:25.519115+00:00",
+      "accepted": 25,
+      "event_count": 549,
+      "finding_count": 1,
+      "risk_score": 84
+    },
+    {
+      "time": "2026-06-11T15:42:35.368081+00:00",
+      "accepted": 25,
+      "event_count": 574,
+      "finding_count": 2,
+      "risk_score": 92
     }
   ],
-  "updated_at": "2026-06-02T14:41:51.647515+00:00"
+  "updated_at": "2026-06-11T15:45:09.230801+00:00"
 }

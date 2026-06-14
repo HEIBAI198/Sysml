@@ -465,6 +465,7 @@ export type ArtifactTrustResult = {
 }
 
 export type ArtifactTrustScanOptions = {
+  workspaceId?: string
   artifactPath?: string
   attestationPath?: string
   policyArtifact?: string
@@ -927,8 +928,13 @@ export type SecurityAssistantPayload = {
 }
 
 export type SecurityWorkspace = {
+  workspaceId?: string
+  workspace_id?: string
   generated_at: string
   workspace: {
+    workspaceId?: string
+    importId?: string
+    preset?: string
     name: string
     repository: string
     branch: string
@@ -1000,6 +1006,26 @@ export type SecurityWorkspace = {
   artifact_trust?: ArtifactTrustResult | null
   log_audit?: LogAuditResult | null
   multimodal_audit?: MultimodalAuditResult | null
+  guidance?: {
+    currentStep: string
+    currentStepLabel: string
+    defenseNotice: string
+    steps: Array<{
+      id: string
+      label: string
+      description: string
+      done: boolean
+      target: string
+    }>
+    nextActions: Array<{
+      title: string
+      description: string
+      target: string
+    }>
+  }
+  evidence?: Array<Record<string, unknown>>
+  normalized_findings?: Array<Record<string, unknown>>
+  report_html?: string | null
   report?: string | null
 }
 
@@ -1009,6 +1035,122 @@ export type SecurityAssistantResponse = {
   retrieval: string[]
   next_actions: string[]
   model: string
+}
+
+export type AgentRunStepStatus = 'pending' | 'running' | 'success' | 'skipped' | 'failed'
+export type AgentJobStatus = 'idle' | 'queued' | 'running' | 'success' | 'partial' | 'failed' | 'cancelled' | string
+export type AgentActionKind =
+  | 'open_evidence_gap'
+  | 'open_module'
+  | 'scan_logs'
+  | 'rerun_artifact_trust'
+  | 'review_high_risk_dependencies'
+  | 'generate_defense_brief'
+  | 'export_evidence_package'
+  | 'copy_keywords'
+  | 'show_examples'
+  | string
+
+export type AgentRunStep = {
+  id: string
+  name: string
+  description: string
+  status: AgentRunStepStatus
+  durationSeconds: number
+  input: Record<string, unknown>
+  summary: Record<string, unknown>
+  error: string
+}
+
+export type AgentRunEvent = {
+  id: string
+  stepId: string
+  kind: string
+  level: 'info' | 'warning' | 'error' | string
+  message: string
+  createdAt: string
+}
+
+export type AgentEvidenceGap = {
+  id: string
+  module: string
+  severity: SecuritySeverity
+  question?: string
+  missingItems?: string[]
+  reason: string
+  whereToFind: string[]
+  uploadTo: string
+  proves: string
+  keywords: string[]
+  examplePaths?: string[]
+  actionButtons?: Array<{
+    label: string
+    actionKind: AgentActionKind
+    targetModule?: string
+  }>
+}
+
+export type AgentNextAction = {
+  priority: 'high' | 'medium' | 'low'
+  title: string
+  action: string
+  targetModule: string
+  keywords: string[]
+  actionKind?: AgentActionKind
+  payload?: Record<string, unknown>
+}
+
+export type AgentRunRequest = {
+  workspaceId?: string
+  importId?: string
+  targetPath?: string
+  artifactPath?: string
+  attestationPath?: string
+  expectedRepo?: string
+  expectedCommit?: string
+  allowedWorkflows?: string[]
+  allowedBuilders?: string[]
+  allowSelfHostedRunner?: boolean
+  requireSignature?: boolean
+  logPaths?: string[]
+  includeCodeAudit?: boolean
+  includeDependencyAudit?: boolean
+  includeCicdAudit?: boolean
+  includeArtifactTrust?: boolean
+  includeLogAudit?: boolean
+  timeoutSeconds?: number
+}
+
+export type AgentRunResult = {
+  runId: string | null
+  status: AgentJobStatus
+  startedAt?: string
+  durationSeconds?: number
+  input?: AgentRunRequest
+  steps: AgentRunStep[]
+  events?: AgentRunEvent[]
+  summary: {
+    stepCount: number
+    success: number
+    skipped: number
+    failed: number
+    evidenceGapCount: number
+    riskScore: number
+    riskLevel: SecuritySeverity
+  }
+  evidenceGaps: AgentEvidenceGap[]
+  nextActions: AgentNextAction[]
+  narrative?: {
+    summary: string
+    timeline: string[]
+    verdict: string
+    confidence: number
+    keyEvidence: string[]
+    defenseBrief: string
+  }
+  workspace?: SecurityWorkspace
+  report?: string
+  error?: string
 }
 
 const apiBase = (import.meta.env.VITE_SECURITY_API_BASE || '').replace(/\/$/, '')
@@ -1041,6 +1183,49 @@ export async function loadSecurityWorkspace() {
   return api<SecurityWorkspace>('/api/security/workspace')
 }
 
+export async function createSecurityWorkspace(options: {
+  importId?: string
+  preset?: string
+  name?: string
+}) {
+  return api<SecurityWorkspace>('/api/security/workspaces', {
+    method: 'POST',
+    body: JSON.stringify(options),
+  })
+}
+
+export async function loadSecurityWorkspaceById(workspaceId: string) {
+  return api<SecurityWorkspace>(`/api/security/workspaces/${encodeURIComponent(workspaceId)}`)
+}
+
+export async function runWorkspaceScanSuite(workspaceId: string, options: AgentRunRequest = {}) {
+  const timeoutSeconds = options.timeoutSeconds ?? 180
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), (timeoutSeconds + 120) * 1000)
+  try {
+    return await api<SecurityWorkspace>(`/api/security/workspaces/${encodeURIComponent(workspaceId)}/scan-suite`, {
+      method: 'POST',
+      signal: controller.signal,
+      body: JSON.stringify({ ...options, timeoutSeconds }),
+    })
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error('一键溯源超时，请切换分步模式或缩小扫描范围后重试')
+    }
+    throw error
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
+
+export async function downloadWorkspaceEvidencePackage(workspaceId: string) {
+  const response = await fetch(`${apiBase}/api/security/workspaces/${encodeURIComponent(workspaceId)}/evidence-package`)
+  if (!response.ok) {
+    throw new Error((await response.text()) || '工作空间证据包导出失败')
+  }
+  return response.blob()
+}
+
 export async function askSecurityAssistant(question: string) {
   return api<SecurityAssistantResponse>('/api/security/assistant', {
     method: 'POST',
@@ -1048,7 +1233,55 @@ export async function askSecurityAssistant(question: string) {
   })
 }
 
+export async function runSecurityAgent(options: AgentRunRequest) {
+  const timeoutSeconds = options.timeoutSeconds ?? 180
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), (timeoutSeconds + 90) * 1000)
+  try {
+    return await api<AgentRunResult>('/api/security/agent/run', {
+      method: 'POST',
+      signal: controller.signal,
+      body: JSON.stringify(options),
+    })
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error('Agent 智能溯源超时，请缩小扫描范围或关闭部分扫描模块后重试')
+    }
+    throw error
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
+
+export async function loadLatestSecurityAgentRun() {
+  return api<AgentRunResult>('/api/security/agent/latest')
+}
+
+export async function createSecurityAgentJob(options: AgentRunRequest) {
+  return api<AgentRunResult>('/api/security/agent/jobs', {
+    method: 'POST',
+    body: JSON.stringify(options),
+  })
+}
+
+export async function loadSecurityAgentJob(runId: string) {
+  return api<AgentRunResult>(`/api/security/agent/jobs/${encodeURIComponent(runId)}`)
+}
+
+export async function loadLatestSecurityAgentJob() {
+  return api<AgentRunResult>('/api/security/agent/jobs/latest')
+}
+
+export async function downloadAgentEvidencePackage(runId: string) {
+  const response = await fetch(`${apiBase}/api/security/agent/jobs/${encodeURIComponent(runId)}/evidence-package`)
+  if (!response.ok) {
+    throw new Error((await response.text()) || '证据包导出失败')
+  }
+  return response.blob()
+}
+
 export type CodeAuditScanOptions = {
+  workspaceId?: string
   importId?: string
   targetPath?: string
   includeCheckov?: boolean
@@ -1069,6 +1302,7 @@ export async function runCodeAuditScan(options: CodeAuditScanOptions = {}) {
       signal: controller.signal,
       body: JSON.stringify({
         ...(options.importId ? { importId: options.importId } : {}),
+        ...(options.workspaceId ? { workspaceId: options.workspaceId } : {}),
         ...(options.targetPath ? { target_path: options.targetPath } : {}),
         ...(options.includeCheckov === undefined ? {} : { include_checkov: options.includeCheckov }),
         ...(timeoutSeconds === undefined ? {} : { timeout_seconds: timeoutSeconds }),
@@ -1107,6 +1341,7 @@ export async function loadCodeAuditSarif() {
 }
 
 export type DependencyAuditScanOptions = {
+  workspaceId?: string
   importId?: string
   targetPath?: string
   includeDev?: boolean
@@ -1121,6 +1356,7 @@ export async function runDependencyAuditScan(options: DependencyAuditScanOptions
     method: 'POST',
     body: JSON.stringify({
       ...(options.importId ? { importId: options.importId } : {}),
+      ...(options.workspaceId ? { workspaceId: options.workspaceId } : {}),
       ...(options.targetPath ? { targetPath: options.targetPath } : {}),
       ...(options.includeDev === undefined ? {} : { includeDev: options.includeDev }),
       ...(options.includeOsv === undefined ? {} : { includeOsv: options.includeOsv }),
@@ -1140,6 +1376,7 @@ export async function loadDependencyAuditVex() {
 }
 
 export type CICDAuditScanOptions = {
+  workspaceId?: string
   importId?: string
   targetPath?: string
 }
@@ -1149,6 +1386,7 @@ export async function runCICDAuditScan(options: CICDAuditScanOptions = {}) {
     method: 'POST',
     body: JSON.stringify({
       ...(options.importId ? { importId: options.importId } : {}),
+      ...(options.workspaceId ? { workspaceId: options.workspaceId } : {}),
       ...(options.targetPath ? { targetPath: options.targetPath } : {}),
     }),
   })
@@ -1178,6 +1416,7 @@ export async function uploadArtifactTrustScan(options: ArtifactTrustUploadOption
   if (options.requireProvenance !== undefined) formData.set('requireProvenance', String(options.requireProvenance))
   if (options.allowSelfHostedRunner !== undefined) formData.set('allowSelfHostedRunner', String(options.allowSelfHostedRunner))
   if (options.maxAgeHours !== undefined) formData.set('maxAgeHours', String(options.maxAgeHours))
+  if (options.workspaceId) formData.set('workspaceId', options.workspaceId)
 
   const response = await fetch(`${apiBase}/api/security/artifact-trust/upload`, {
     method: 'POST',
@@ -1229,12 +1468,14 @@ export type LogAuditSource = 'web' | 'app' | 'auth' | 'auto'
 export type LogAuditScanOptions = {
   files: File[]
   source?: LogAuditSource
+  workspaceId?: string
 }
 
-export async function runLogAuditScan({ files, source = 'auto' }: LogAuditScanOptions) {
+export async function runLogAuditScan({ files, source = 'auto', workspaceId }: LogAuditScanOptions) {
   const formData = new FormData()
   files.forEach((file) => formData.append('files', file))
   if (source !== 'auto') formData.set('source', source)
+  if (workspaceId) formData.set('workspaceId', workspaceId)
 
   const response = await fetch(`${apiBase}/api/security/logs/scan`, {
     method: 'POST',
@@ -1256,9 +1497,10 @@ export async function runLogAuditScan({ files, source = 'auto' }: LogAuditScanOp
   return response.json() as Promise<LogAuditResult>
 }
 
-export async function runMultimodalEvidenceScan(files: File[]) {
+export async function runMultimodalEvidenceScan(files: File[], workspaceId?: string) {
   const formData = new FormData()
   files.forEach((file) => formData.append('files', file))
+  if (workspaceId) formData.set('workspaceId', workspaceId)
 
   const response = await fetch(`${apiBase}/api/security/multimodal/scan`, {
     method: 'POST',
@@ -1281,6 +1523,7 @@ export async function runMultimodalEvidenceScan(files: File[]) {
 }
 
 export type MultimodalTextAnalyzeOptions = {
+  workspaceId?: string
   recognizedText: string
   sourceType?: MultimodalSourceType
   evidenceType?: string
@@ -1293,6 +1536,7 @@ export async function analyzeMultimodalRecognizedText(options: MultimodalTextAna
     method: 'POST',
     body: JSON.stringify({
       recognized_text: options.recognizedText,
+      ...(options.workspaceId ? { workspaceId: options.workspaceId } : {}),
       source_type: options.sourceType ?? 'image',
       evidence_type: options.evidenceType ?? ((options.sourceType ?? 'image') === 'audio' ? 'audio_asr' : 'visual_ocr'),
       source_name: options.sourceName ?? 'manual-recognized-text.txt',

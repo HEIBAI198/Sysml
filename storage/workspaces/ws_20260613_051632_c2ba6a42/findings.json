@@ -1,0 +1,292 @@
+[
+  {
+    "id": "LOG-2026-0133",
+    "module": "日志风险",
+    "title": "构建后服务出现异常外联和敏感接口探测",
+    "severity": "critical",
+    "score": 93,
+    "asset": "checkout-api.prod",
+    "recommendation": "关联到攻击链",
+    "status": "关联到攻击链"
+  },
+  {
+    "id": "MMF-217C8CCA9ADB3D5A",
+    "module": "多模态证据",
+    "title": "截图或语音中出现安装脚本外联",
+    "severity": "critical",
+    "score": 96,
+    "asset": "manual-ocr-screenshot.txt (MME-20260603080139438792-D40CCA7A)",
+    "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+    "status": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。"
+  },
+  {
+    "id": "MMF-32243C956BC937F1",
+    "module": "多模态证据",
+    "title": "截图或语音中出现安装脚本外联",
+    "severity": "critical",
+    "score": 96,
+    "asset": "cicd-error.png (MME-20260603080052880859-DDC20BBF)",
+    "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+    "status": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。"
+  },
+  {
+    "id": "MMF-3DEFA11019F67584",
+    "module": "多模态证据",
+    "title": "截图或语音中出现安装脚本外联",
+    "severity": "critical",
+    "score": 96,
+    "asset": "manual-ocr-screenshot.txt (MME-20260603075748475445-D40CCA7A)",
+    "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+    "status": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。"
+  },
+  {
+    "id": "MMF-54BCF807333B81B2",
+    "module": "多模态证据",
+    "title": "截图或语音中出现安装脚本外联",
+    "severity": "critical",
+    "score": 96,
+    "asset": "manual-asr-alert.txt (MME-20260603075454746097-D40CCA7A)",
+    "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+    "status": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。"
+  },
+  {
+    "id": "MMF-5AFEB0DCB0C845B6",
+    "module": "多模态证据",
+    "title": "截图或语音中出现安装脚本外联",
+    "severity": "critical",
+    "score": 96,
+    "asset": "manual-ocr-screenshot.txt (MME-20260603075744148911-D40CCA7A)",
+    "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+    "status": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。"
+  },
+  {
+    "id": "MMF-5C292C415318F931",
+    "module": "多模态证据",
+    "title": "截图或语音中出现安装脚本外联",
+    "severity": "critical",
+    "score": 96,
+    "asset": "manual-asr-alert.txt (MME-20260603075737188756-D40CCA7A)",
+    "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+    "status": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。"
+  },
+  {
+    "id": "MMF-693ECD0AC98601A7",
+    "module": "多模态证据",
+    "title": "截图或语音中出现安装脚本外联",
+    "severity": "critical",
+    "score": 96,
+    "asset": "manual-ocr-screenshot.txt (MME-20260603075448831178-D40CCA7A)",
+    "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+    "status": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。"
+  },
+  {
+    "id": "MMF-6986CDA1FDCF478B",
+    "module": "多模态证据",
+    "title": "截图或语音中出现安装脚本外联",
+    "severity": "critical",
+    "score": 96,
+    "asset": "manual-ocr-screenshot.txt (MME-20260603075458712842-D40CCA7A)",
+    "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+    "status": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。"
+  },
+  {
+    "id": "MMF-B2364D83444672DB",
+    "module": "多模态证据",
+    "title": "截图或语音中出现安装脚本外联",
+    "severity": "critical",
+    "score": 96,
+    "asset": "cicd-error.png (MME-20260603075345873115-DDC20BBF)",
+    "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+    "status": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。"
+  },
+  {
+    "id": "MMF-E1173316AF46FE47",
+    "module": "多模态证据",
+    "title": "截图或语音中出现安装脚本外联",
+    "severity": "critical",
+    "score": 96,
+    "asset": "manual-ocr-screenshot.txt (MME-20260603075732841030-D40CCA7A)",
+    "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+    "status": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。"
+  },
+  {
+    "id": "MMF-F501D8AD0B3059B2",
+    "module": "多模态证据",
+    "title": "截图或语音中出现安装脚本外联",
+    "severity": "critical",
+    "score": 96,
+    "asset": "manual-ocr-screenshot.txt (MME-20260605112212515224-D40CCA7A)",
+    "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+    "status": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。"
+  },
+  {
+    "id": "MMF-005E22E3CC9D6322",
+    "module": "多模态证据",
+    "title": "语音或截图中出现敏感接口异常访问",
+    "severity": "high",
+    "score": 84,
+    "asset": "manual-ocr-screenshot.txt (MME-20260603075748475445-D40CCA7A)",
+    "recommendation": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。",
+    "status": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。"
+  },
+  {
+    "id": "MMF-1499809F84FBC553",
+    "module": "多模态证据",
+    "title": "语音或截图中出现敏感接口异常访问",
+    "severity": "high",
+    "score": 84,
+    "asset": "manual-ocr-screenshot.txt (MME-20260603075732841030-D40CCA7A)",
+    "recommendation": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。",
+    "status": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。"
+  },
+  {
+    "id": "MMF-2BDEBC0EAC464795",
+    "module": "多模态证据",
+    "title": "语音或截图中出现敏感接口异常访问",
+    "severity": "high",
+    "score": 84,
+    "asset": "manual-asr-alert.txt (MME-20260603075454746097-D40CCA7A)",
+    "recommendation": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。",
+    "status": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。"
+  },
+  {
+    "id": "MMF-3A867A4A881D015B",
+    "module": "多模态证据",
+    "title": "语音或截图中出现敏感接口异常访问",
+    "severity": "high",
+    "score": 84,
+    "asset": "manual-asr-alert.txt (MME-20260603075737188756-D40CCA7A)",
+    "recommendation": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。",
+    "status": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。"
+  },
+  {
+    "id": "MMF-4AB6CFF15E2B9C2C",
+    "module": "多模态证据",
+    "title": "语音或截图中出现敏感接口异常访问",
+    "severity": "high",
+    "score": 84,
+    "asset": "manual-ocr-screenshot.txt (MME-20260603075458712842-D40CCA7A)",
+    "recommendation": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。",
+    "status": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。"
+  },
+  {
+    "id": "MMF-5919820287FCB6C4",
+    "module": "多模态证据",
+    "title": "语音或截图中出现敏感接口异常访问",
+    "severity": "high",
+    "score": 84,
+    "asset": "incident-alert.png (MME-20260603080102092971-B4A4919E)",
+    "recommendation": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。",
+    "status": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。"
+  },
+  {
+    "id": "MMF-78913E6F06230313",
+    "module": "多模态证据",
+    "title": "语音或截图中出现敏感接口异常访问",
+    "severity": "high",
+    "score": 84,
+    "asset": "manual-ocr-screenshot.txt (MME-20260603075744148911-D40CCA7A)",
+    "recommendation": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。",
+    "status": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。"
+  },
+  {
+    "id": "MMF-7A7FC0CAE9F90847",
+    "module": "多模态证据",
+    "title": "语音或截图中出现敏感接口异常访问",
+    "severity": "high",
+    "score": 84,
+    "asset": "incident-alert.png (MME-20260603075359219969-B4A4919E)",
+    "recommendation": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。",
+    "status": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。"
+  },
+  {
+    "id": "MMF-95D3A7032E858B7B",
+    "module": "多模态证据",
+    "title": "语音或截图中出现敏感接口异常访问",
+    "severity": "high",
+    "score": 84,
+    "asset": "manual-ocr-screenshot.txt (MME-20260603075448831178-D40CCA7A)",
+    "recommendation": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。",
+    "status": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。"
+  },
+  {
+    "id": "ART-A91C8E97",
+    "module": "产物可信",
+    "title": "attestation 超出策略时效",
+    "severity": "medium",
+    "score": 70,
+    "asset": "test-checkout-api.tar.gz",
+    "recommendation": "按 .supplyguard/trust-policy.yml 复核策略并重新生成可信 provenance。",
+    "status": "按 .supplyguard/trust-policy.yml 复核策略并重新生成可信 provenance。"
+  },
+  {
+    "id": "CI-63BFF724",
+    "module": "CI/CD",
+    "title": "GitHub Token 权限过宽",
+    "severity": "high",
+    "score": 88,
+    "asset": ".github/workflows/desktop-release.yml:7",
+    "recommendation": "按 workflow/job 最小化声明权限，例如 contents: read；发布任务只授予必要写权限。",
+    "status": "按 workflow/job 最小化声明权限，例如 contents: read；发布任务只授予必要写权限。"
+  },
+  {
+    "id": "CI-9D9F44B4",
+    "module": "CI/CD",
+    "title": "zizmor: unpinned-uses",
+    "severity": "high",
+    "score": 75,
+    "asset": ".github/workflows/desktop-release.yml:13 (desktop-build)",
+    "recommendation": "参考 zizmor 审计 https://docs.zizmor.sh/audits/#unpinned-uses 修复该 GitHub Actions 风险。",
+    "status": "参考 zizmor 审计 https://docs.zizmor.sh/audits/#unpinned-uses 修复该 GitHub Actions 风险。"
+  },
+  {
+    "id": "CI-CEACE3B8",
+    "module": "CI/CD",
+    "title": "Action 未固定到完整 commit SHA",
+    "severity": "high",
+    "score": 75,
+    "asset": ".github/workflows/desktop-release.yml:14 (desktop-build) / step 2",
+    "recommendation": "在高安全流程中使用 40 位完整 commit SHA；普通流程至少固定可信 tag 并启用变更审查。",
+    "status": "在高安全流程中使用 40 位完整 commit SHA；普通流程至少固定可信 tag 并启用变更审查。"
+  },
+  {
+    "id": "CI-15B49247",
+    "module": "CI/CD",
+    "title": "zizmor: unpinned-uses",
+    "severity": "high",
+    "score": 75,
+    "asset": ".github/workflows/desktop-release.yml:14 (desktop-build)",
+    "recommendation": "参考 zizmor 审计 https://docs.zizmor.sh/audits/#unpinned-uses 修复该 GitHub Actions 风险。",
+    "status": "参考 zizmor 审计 https://docs.zizmor.sh/audits/#unpinned-uses 修复该 GitHub Actions 风险。"
+  },
+  {
+    "id": "CI-54AF2090",
+    "module": "CI/CD",
+    "title": "zizmor: artipacked",
+    "severity": "medium",
+    "score": 62,
+    "asset": ".github/workflows/desktop-release.yml:13 (desktop-build)",
+    "recommendation": "参考 zizmor 审计 https://docs.zizmor.sh/audits/#artipacked 修复该 GitHub Actions 风险。",
+    "status": "参考 zizmor 审计 https://docs.zizmor.sh/audits/#artipacked 修复该 GitHub Actions 风险。"
+  },
+  {
+    "id": "CI-0D73DD3B",
+    "module": "CI/CD",
+    "title": "Action 未固定到完整 commit SHA",
+    "severity": "low",
+    "score": 45,
+    "asset": ".github/workflows/desktop-release.yml:13 (desktop-build) / step 1",
+    "recommendation": "在高安全流程中使用 40 位完整 commit SHA；普通流程至少固定可信 tag 并启用变更审查。",
+    "status": "在高安全流程中使用 40 位完整 commit SHA；普通流程至少固定可信 tag 并启用变更审查。"
+  },
+  {
+    "id": "SC-2026-0041",
+    "module": "供应链",
+    "title": "疑似依赖混淆包在构建阶段执行安装脚本",
+    "severity": "critical",
+    "score": 96,
+    "asset": "npm package @acme/payments-helper",
+    "recommendation": "需要隔离",
+    "status": "需要隔离"
+  }
+]

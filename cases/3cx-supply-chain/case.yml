@@ -1,0 +1,42 @@
+case_id: 3cx-supply-chain
+case_name: 3CX / X_TRADER defensive replay
+contest_topic: APT 供应链攻击检测与溯源系统
+scenario: cascaded_software_supply_chain_compromise
+public_references:
+  - title: Mandiant 3CX Software Supply Chain Compromise
+    url: https://cloud.google.com/blog/topics/threat-intelligence/3cx-software-supply-chain-compromise/
+  - title: MITRE ATT&CK 3CX Supply Chain Attack C0057
+    url: https://attack.mitre.org/campaigns/C0057/
+  - title: MITRE ATT&CK T1195 Supply Chain Compromise
+    url: https://attack.mitre.org/techniques/T1195/
+safety_boundary:
+  malware: none
+  payloads: harmless placeholders only
+  network: example.invalid domains and documentation IPs only
+expected_stages:
+  - x_trader_seed_software
+  - build_runner_compromise
+  - desktop_release_pipeline_risk
+  - artifact_provenance_mismatch
+  - customer_endpoint_egress
+ground_truth:
+  polluted_stage: desktop_release_build_pipeline
+  entry_signal: x-trader-codec package and build runner evidence
+  affected_assets:
+    - 3cx-desktop-app.tar.gz
+    - build-runner-01
+    - customer-pc-01
+expected_findings:
+  dependency:
+    - x-trader-codec has install script signal
+  cicd:
+    - permissions write-all
+    - unpinned vendor/electron-builder action
+    - PowerShell remote script text evidence
+  artifact_trust:
+    - artifact digest differs from attestation subject
+    - self-hosted runner not allowed
+  logs:
+    - suspicious external egress from desktop app
+    - build runner loaded unsigned tool
+

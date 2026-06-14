@@ -1,0 +1,3 @@
+{"time":"2026-06-11T11:10:11Z","source":"app","host":"build-runner-01","event":"unsigned_build_tool_loaded","message":"build runner loaded unsigned x_trader_codec.dll during simulated replay","status":0}
+{"time":"2026-06-11T11:12:44Z","source":"app","host":"build-runner-01","event":"artifact_created","message":"3cx-desktop-app.tar.gz created with digest mismatch","status":0}
+{"time":"2026-06-11T11:13:22Z","source":"app","host":"build-runner-01","event":"egress","message":"outbound callback destination 45.83.64.11 for build-tools.example.invalid","dst_ip":"45.83.64.11","status":0}
